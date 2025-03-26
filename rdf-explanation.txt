@@ -1,0 +1,31 @@
+• Pokémon as a Resource
+ – Each Pokémon is represented as an instance of a class (e.g., ex:Pokemon).
+ – Use the “Unnamed: 0” column to generate unique URIs (e.g., ex:Pokemon/0, ex:Pokemon/1, …) because pokedex numbers may be repeated.
+
+• Basic Attributes
+ – Attach literal properties for attributes such as name, generation, is_legendary, height_m, weight_kg, total_points, and all the stats (hp, attack, defense, sp_attack, sp_defense, speed).
+ – Other numerical or string values (like base_friendship) are also modeled as literal properties.
+
+• Types as Separate Resources
+ – Create a separate resource (or class, e.g., ex:Type) for each Pokémon type.
+ – The Pokémon resource will have properties (e.g., ex:primaryType and ex:secondaryType) that link to these type resources.
+ – This allows further enrichment if you wish to describe types in more detail later.
+
+• Abilities as Relationships
+ – Model abilities as resources (e.g., ex:Ability).
+ – For each Pokémon, properties like ex:ability1 and ex:ability2 can link to these ability resources rather than storing the ability names as plain literals.
+ – This provides flexibility to later attach additional metadata (e.g., description, effect) to each ability.
+
+• Effectiveness Using Blank Nodes
+ – Use a blank node to encapsulate the effectiveness multipliers for each Pokémon.
+ – The Pokémon resource will be linked (e.g., via ex:effectiveness) to a blank node that has properties like ex:againstNormal, ex:againstFire, ex:againstWater, etc.
+ – This way, you group all the multipliers together without creating individual named resources for each relation.
+
+• Evolution Relationships
+ – Model the evolution chain by linking Pokémon resources using a property like ex:evolvesTo.
+ – For instance, Charmander would have ex:evolvesTo pointing to Charmeleon, and Charmeleon would have ex:evolvesTo pointing to Charizard.
+ – This creates a linked chain that reflects the natural evolutionary progression.
+
+• Mega Evolutions
+ – If a Pokémon is a mega evolution (indicated, for example, by a specific value in the “form” column), link it to its base form using a property like ex:megaEvolutionOf.
+ – The mega evolution resource would then point to the Pokémon identified by the base_name, indicating that it is an alternate, powered-up version of that base form.
