@@ -1,0 +1,1 @@
+# Um ponto de entrada para webservers compatíveis com WSGI.

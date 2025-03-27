@@ -1,0 +1,1 @@
+# Ficheiro que define esta pasta como um pacote, em Python.
