@@ -8,16 +8,19 @@ services:
       - "7200:7200"
     environment:
       - GRAPHDB_HOME=/opt/graphdb/home
+      - GRAPHDB_MIN_DISK_SPACE_MB=50
+      - JAVA_OPTS=-Dgraphdb.workbench.maxUploadSize=5000000
+
     volumes:
       - graphdb-data:/opt/graphdb/home
     restart: unless-stopped
 
   web:
-    build: ./app
+    build: ./webproj
     container_name: django_app
     entrypoint: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
-      - ./app:/app
+      - ./webproj:/webproj
     ports:
       - "8000:8000"
     depends_on:
