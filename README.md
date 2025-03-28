@@ -24,6 +24,7 @@ app/ ------- Aplicação web individual, podendo coexistir várias.\
     static/ ------- CSS, JS, imagens, etc. – configurável em “settings.py”
     __init__.py --
     views/ ------ Recebe os pedidos dos clientes e devolve as respostas.
+        __init__.py
         fight/
             fight_view.py
         search/
@@ -31,6 +32,7 @@ app/ ------- Aplicação web individual, podendo coexistir várias.\
         stats/
             stats_view.py
     models/ --- Modelos dos dados.
+        __init__.py
         fight/
             fight_view.py
         search/
