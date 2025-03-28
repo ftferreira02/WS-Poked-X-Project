@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Search</title>
+    <!-- Adiciona o Bootstrap para fácil estilização -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Pokémon Encontrados</h1>
+        <ul class="list-group mt-3">
+            {% for pokemon in pokemons %}
+                <li class="list-group-item">{{ pokemon }}</li>
+            {% empty %}
+                <li class="list-group-item">Nenhum Pokémon encontrado.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Adiciona o script do Bootstrap -->
+    <script src
