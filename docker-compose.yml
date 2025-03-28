@@ -16,11 +16,11 @@ services:
     restart: unless-stopped
 
   web:
-    build: ./webproj
+    build: ./app
     container_name: django_app
     entrypoint: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
-      - ./webproj:/webproj
+      - ./app:/app
     ports:
       - "8000:8000"
     depends_on:
