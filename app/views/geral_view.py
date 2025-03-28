@@ -1,4 +1,3 @@
-
 from django.shortcuts import render
 from app.forms import PokemonSearchForm
 from app.sparql_client import run_query
@@ -19,6 +18,15 @@ def search_pokemon(request):
         else:
             pokemons = PokemonManager.get_all_pokemons()
         
-    
-    # Passa o formulário e os Pokémon encontrados para o template
     return render(request, 'pokemon_search_form.html', {'form': form, 'pokemons': pokemons})
+
+
+def pokemon_stats(request, pokemon_id):
+    stats = PokemonManager.get_stats_by_id(pokemon_id)
+
+    if stats is None:
+        return render(request, 'stats.html', {'error': 'Pokémon not found.'})
+
+    return render(request, 'stats.html', {
+        'stats': stats
+    })
