@@ -1,3 +1,4 @@
+<!-- app/templates/pokemon_search_form.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,9 +11,9 @@
     <div class="container">
         <h1 class="mt-5">Pesquise Pokémon</h1>
 
-        <!-- Formulário de pesquisa -->
+        <!-- Formulário -->
         <form method="GET" action="/pokemon/search/">
-            <input type="text" name="name" placeholder="Pesquisar por nome" class="form-control mb-3" value="{{ name_filter }}" />
+            {{ form.as_p }}  <!-- Renderiza o formulário -->
             <button type="submit" class="btn btn-primary">Pesquisar</button>
         </form>
 
