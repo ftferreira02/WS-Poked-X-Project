@@ -72,4 +72,5 @@ STATICFILES_DIRS = [
 ]
 
 # SPARQL endpoint para GraphDB
-GRAPHDB_ENDPOINT = "http://035519b702e5:7200/repositories/Poked-X"
+GRAPHDB_ENDPOINT = "http://graphdb:7200/repositories/Poked-X"
+

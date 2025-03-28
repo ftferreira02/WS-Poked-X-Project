@@ -1,5 +1,6 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
-from ..webproj.settings import settings
+from django.conf import settings 
+
 
 def run_query(query):
     sparql = SPARQLWrapper(settings.GRAPHDB_ENDPOINT)
