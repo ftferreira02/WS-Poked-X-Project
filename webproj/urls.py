@@ -1,7 +1,7 @@
 # webproj/urls.py
 from django.contrib import admin
 from django.urls import path
-from app.views.fight.fight_view import search_pokemon
+from app.views.geral_view import search_pokemon
 
 urlpatterns = [
     path('admin/', admin.site.urls),
