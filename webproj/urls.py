@@ -3,11 +3,12 @@ from django.contrib import admin
 from django.urls import path
 from app.views.geral_view import search_pokemon
 from app.views.geral_view import pokemon_stats
+from app.views.fight.fight_view import battle
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('pokemon/search/', search_pokemon, name='search_pokemon'),
-    path('pokemon/stats/<int:pokemon_id>/', pokemon_stats),
+    path('battle/<int:pokemon_id1>/<int:pokemon_id2>/', battle, name='battle'),
 ]
 
 
