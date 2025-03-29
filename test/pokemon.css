@@ -7,7 +7,7 @@ body {
     background-attachment: fixed;
     background-position: center;
     padding-top: 3%;
-    padding-left: 15%;
+    padding-left: 18%;
 
 }
 
@@ -41,7 +41,7 @@ body {
   
   .opponent .stats {
     position: absolute;
-    top: 350px;
+    top: 280px;
     left: 40px;
     width: 320px;
   }
@@ -50,7 +50,7 @@ body {
     position: absolute;
     bottom: 70px;
     right: 200px;
-    width: 300px;
+    width: 200px;
   }
   
   .player {
@@ -60,7 +60,6 @@ body {
   
   .player .stats {
     position: absolute;
-    top: 48px;
     right: 40px;
     width: 320px;
   }
@@ -69,7 +68,7 @@ body {
     position: absolute;
     left: 100px;
     bottom: 10px;
-    width: 160px;
+    width: 350px;
   }
   
   .box {
@@ -186,4 +185,108 @@ body {
 
   .stats .level {
     float: right;
+  }
+
+
+
+   /* Estilos para a animação das espadas */
+   .swords-container {
+    position: fixed;
+    top: 50%;
+    left: 52%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    z-index: 999;
+    pointer-events: none; /* Para não interferir nos cliques */
+  }
+  
+  .sword {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    opacity: 0;
+    transform: scale(0);
+    transform-origin: center;
+  }
+  
+  .sword-left {
+    animation: appearLeft 1.5s forwards;
+  }
+  
+  .sword-right {
+    animation: appearRight 1.5s forwards;
+  }
+  
+  @keyframes appearLeft {
+    0% {
+      opacity: 0;
+      transform: translateX(-100px) rotate(-45deg) scale(0);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(-30px) rotate(-45deg) scale(1);
+    }
+  }
+  
+  @keyframes appearRight {
+    0% {
+      opacity: 0;
+      transform: translateX(100px) rotate(45deg) scale(0);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(30px) rotate(45deg) scale(1);
+    }
+  }
+  
+  .sword-svg {
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Fazer as espadas desaparecerem após a animação */
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  
+  .swords-container.fade-out {
+    animation: fadeOut 1s forwards;
+    animation-delay: 4s; /* Aumentado para dar tempo ao texto FIGHT */
+  }
+  
+  /* Estilo para o texto FIGHT */
+  .fight-text {
+    position: absolute;
+    top: 50%;
+    left: 35%;
+    transform: translate(-50%, -50%) scale(0);
+    font-family: 'Arial', sans-serif;
+    font-size: 80px;
+    font-weight: bold;
+    color: #ff0000;
+    text-shadow: 3px 3px 0 #000, -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000;
+    z-index: 1000;
+    animation: fightAppear 0.5s forwards;
+    animation-delay: 1.8s; /* Aparece depois das espadas se cruzarem */
+  }
+  
+  @keyframes fightAppear {
+    0% {
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.2);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
   }
