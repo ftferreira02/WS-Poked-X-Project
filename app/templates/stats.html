@@ -1,68 +1,68 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'stats.css' %}">
-
 <!DOCTYPE html>
-<html lang="PT-BR">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <title>Card Cubone</title>
-  
-  <link rel="shortcut icon" href="favicon/favicon-16x16.png" type="image/x-icon">
-  <link href="style.css" rel="stylesheet" type="text/css" />
+  <title>{{ stats.name }} Card</title>
+  <link rel="shortcut icon" href="{% static 'favicon/favicon-16x16.png' %}" type="image/x-icon">
+  <link rel="stylesheet" href="{% static 'stats.css' %}">
 </head>
 
-<body>
+<body class="type-{{ stats.primaryType|lower }}">
   <div class="card">
-    <h1>Cubone</h1>
-    <div class="header">
-      <img src="https://img.rankedboost.com/wp-content/uploads/2022/10/Pokemon-SV-Best-Ground-Pokemon.png" alt="categoria">
-      <p class="type">Terra</p>
-    </div>
+    <h1>{{ stats.name }}</h1>
+
     <div class="image">
-      <img src="https://static.pokemonpets.com/images/monsters-images-800-800/2104-Shiny-Cubone.webp" alt="Cubone">
+      <img src="https://static.pokemonpets.com/images/monsters-images-800-800/2104-Shiny-Cubone.webp" alt="{{ stats.name }}">
     </div>
-  <div class="info">
-    <p><span class="destaque">Tamanho:</span> 0'4"</p>
-    <p><span class="destaque">Peso:</span> 6.5 lbs</p>
-    <p><span class="destaque">Categoria:</span> Lonely</p>
-    <p><span class="destaque">Habilidades:</span> Rock Head, Lightning Rod</p>
-  </div>
-  <p class="description">
-    Este Pokémon usa a caveira de sua falecida mãe. Às vezes, os sonhos de Cubone o fazem chorar, mas cada lágrima que Cubone derrama o torna mais forte. Arqueólogo seria uma carreira engraçada para ele seguir, sempre com um osso na mão, perfeito para desenterrar fósseis de outros Pokémons.
-  </p>
-  <div class="stats">
-    <div class="column">
-      <div class="stat">
-        <span>HP</span>
-        <div class="bar"><div class="fill" style="width: 30%;"></div></div>
+
+    <div class="info">
+      <p><span class="highlight">Height:</span> {{ stats.height }} m</p>
+      <p><span class="highlight">Weight:</span> {{ stats.weight }} kg</p>
+      <p><span class="highlight">Generation:</span> {{ stats.generation }}</p>
+      {% if stats.secondaryType != "nan" and stats.secondaryType %}
+        <p><span class="highlight">Secondary Type:</span> {{ stats.secondaryType|title }}</p>
+      {% endif %}
+      <p><span class="highlight">Legendary:</span> {{ stats.isLegendary|yesno:"Yes,No" }}</p>
     </div>
-      <div class="stat">
-        <span>Attack</span>
-        <div class="bar"><div class="fill" style="width: 30%;"></div></div>
+
+    <div class="stats">
+      <div class="column">
+        <div class="stat">
+          <span>HP</span>
+          <div class="bar"><div class="fill" style="width: {{ stats.hp|floatformat:0 }}%;"></div></div>
+        </div>
+        <div class="stat">
+          <span>Attack</span>
+          <div class="bar"><div class="fill" style="width: {{ stats.attack|floatformat:0 }}%;"></div></div>
+        </div>
+        <div class="stat">
+          <span>Defense</span>
+          <div class="bar"><div class="fill" style="width: {{ stats.defense|floatformat:0 }}%;"></div></div>
+        </div>
       </div>
-      <div class="stat">
-        <span>Defense</span>
-        <div class="bar"><div class="fill" style="width: 60%;"></div></div>
+
+      <div class="column">
+        <div class="stat">
+          <span>Sp. Attack</span>
+          <div class="bar"><div class="fill" style="width: {{ stats.spAttack|floatformat:0 }}%;"></div></div>
+        </div>
+        <div class="stat">
+          <span>Sp. Defense</span>
+          <div class="bar"><div class="fill" style="width: {{ stats.spDefense|floatformat:0 }}%;"></div></div>
+        </div>
+        <div class="stat">
+          <span>Speed</span>
+          <div class="bar"><div class="fill" style="width: {{ stats.speed|floatformat:0 }}%;"></div></div>
+        </div>
       </div>
     </div>
 
-  <div class="column">
-    <div class="stat">
-      <span>Special Attack</span>
-      <div class="bar"><div class="fill" style="width: 30%;"></div></div>
-    </div>
-    <div class="stat">
-      <span>Special Defense</span>
-      <div class="bar"><div class="fill" style="width: 30%;"></div></div>
-    </div>
-    <div class="stat">
-      <span>Speed</span>
-      <div class="bar"><div class="fill" style="width: 30%;"></div></div>
-      </div>
-    </div>
+    <img src="https://png.pngtree.com/png-vector/20220723/ourmid/pngtree-pokeball-icon-vector-isolated-black-design-isolated-vector-png-image_22496306.png" alt="pokeball" width="70">
+
+    <br><br>
+    <a href="{% url 'search_pokemon' %}">← Back to Search</a>
   </div>
-  <img src="https://png.pngtree.com/png-vector/20220723/ourmid/pngtree-pokeball-icon-vector-isolated-black-design-isolated-vector-png-image_22496306.png" alt="pokebola" width="70">
-</div>
 </body>
 </html>

@@ -2,10 +2,12 @@
 from django.contrib import admin
 from django.urls import path
 from app.views.geral_view import search_pokemon
+from app.views.geral_view import pokemon_stats
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('pokemon/search/', search_pokemon),  # 👈 rota para veres no browser
+    path('pokemon/search/', search_pokemon, name='search_pokemon'),
+    path('pokemon/stats/<int:pokemon_id>/', pokemon_stats),
 ]
 
 
