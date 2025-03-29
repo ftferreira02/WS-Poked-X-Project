@@ -7,62 +7,137 @@
   <title>{{ stats.name }} Card</title>
   <link rel="shortcut icon" href="{% static 'favicon/favicon-16x16.png' %}" type="image/x-icon">
   <link rel="stylesheet" href="{% static 'stats.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="type-{{ stats.primaryType|lower }}">
-  <div class="card">
-    <h1>{{ stats.name }}</h1>
+  <div class="container">
+    <!-- First column: Existing Pokemon card -->
+    <div class="column card-column">
+      <div class="card">
+        <h1>{{ stats.name }}</h1>
 
-    <div class="image">
-      <img src="https://static.pokemonpets.com/images/monsters-images-800-800/2104-Shiny-Cubone.webp" alt="{{ stats.name }}">
+        <div class="image">
+          <img src="{% static 'pokemon-images/' %}{{ stats.id|add:'1' }}.png?v={{ stats.id }}" alt="{{ stats.name }}">
+        </div>
+
+        <div class="info">
+          <p><span class="highlight">Height:</span> {{ stats.height }} m</p>
+          <p><span class="highlight">Weight:</span> {{ stats.weight }} kg</p>
+          <p><span class="highlight">Generation:</span> {{ stats.generation }}</p>
+          {% if stats.secondaryType != "nan" and stats.secondaryType %}
+            <p><span class="highlight">Secondary Type:</span> {{ stats.secondaryType|title }}</p>
+          {% endif %}
+          <p><span class="highlight">Legendary:</span> {{ stats.isLegendary|yesno:"Yes,No" }}</p>
+        </div>
+
+        <div class="stats">
+          <div class="column">
+            <div class="stat">
+              <span>HP</span>
+              <div class="bar"><div class="fill" style="width: {{ stats.hp|floatformat:0 }}%;"></div></div>
+            </div>
+            <div class="stat">
+              <span>Attack</span>
+              <div class="bar"><div class="fill" style="width: {{ stats.attack|floatformat:0 }}%;"></div></div>
+            </div>
+            <div class="stat">
+              <span>Defense</span>
+              <div class="bar"><div class="fill" style="width: {{ stats.defense|floatformat:0 }}%;"></div></div>
+            </div>
+          </div>
+
+          <div class="column">
+            <div class="stat">
+              <span>Sp. Attack</span>
+              <div class="bar"><div class="fill" style="width: {{ stats.spAttack|floatformat:0 }}%;"></div></div>
+            </div>
+            <div class="stat">
+              <span>Sp. Defense</span>
+              <div class="bar"><div class="fill" style="width: {{ stats.spDefense|floatformat:0 }}%;"></div></div>
+            </div>
+            <div class="stat">
+              <span>Speed</span>
+              <div class="bar"><div class="fill" style="width: {{ stats.speed|floatformat:0 }}%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <img class="pokeball" src="https://png.pngtree.com/png-vector/20220723/ourmid/pngtree-pokeball-icon-vector-isolated-black-design-isolated-vector-png-image_22496306.png" alt="pokeball" width="70">
+          <a class="back-link" href="{% url 'search_pokemon' %}">← Back to Search</a>
+        </div>
+      </div>
     </div>
 
-    <div class="info">
-      <p><span class="highlight">Height:</span> {{ stats.height }} m</p>
-      <p><span class="highlight">Weight:</span> {{ stats.weight }} kg</p>
-      <p><span class="highlight">Generation:</span> {{ stats.generation }}</p>
-      {% if stats.secondaryType != "nan" and stats.secondaryType %}
-        <p><span class="highlight">Secondary Type:</span> {{ stats.secondaryType|title }}</p>
-      {% endif %}
-      <p><span class="highlight">Legendary:</span> {{ stats.isLegendary|yesno:"Yes,No" }}</p>
-    </div>
-
-    <div class="stats">
-      <div class="column">
-        <div class="stat">
-          <span>HP</span>
-          <div class="bar"><div class="fill" style="width: {{ stats.hp|floatformat:0 }}%;"></div></div>
-        </div>
-        <div class="stat">
-          <span>Attack</span>
-          <div class="bar"><div class="fill" style="width: {{ stats.attack|floatformat:0 }}%;"></div></div>
-        </div>
-        <div class="stat">
-          <span>Defense</span>
-          <div class="bar"><div class="fill" style="width: {{ stats.defense|floatformat:0 }}%;"></div></div>
+    <!-- Second column: Radar chart and Type matchups -->
+    <div class="column data-column">
+      <div class="chart-section">
+        <h2>Stats Radar</h2>
+        <div class="radar-chart-container">
+          <canvas id="statsRadarChart"></canvas>
         </div>
       </div>
 
-      <div class="column">
-        <div class="stat">
-          <span>Sp. Attack</span>
-          <div class="bar"><div class="fill" style="width: {{ stats.spAttack|floatformat:0 }}%;"></div></div>
-        </div>
-        <div class="stat">
-          <span>Sp. Defense</span>
-          <div class="bar"><div class="fill" style="width: {{ stats.spDefense|floatformat:0 }}%;"></div></div>
-        </div>
-        <div class="stat">
-          <span>Speed</span>
-          <div class="bar"><div class="fill" style="width: {{ stats.speed|floatformat:0 }}%;"></div></div>
+      <div class="type-matchups">
+        <h2>Type Matchups</h2>
+        <div class="matchup-container">
+          <div class="weak-against">
+            <h3>Weak Against</h3>
+            <div class="type-list">
+              {% for type in stats.weakAgainst %}
+                <span class="type {{ type }}">{{ type|title }}</span>
+              {% empty %}
+                <span>No weaknesses</span>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="strong-against">
+            <h3>Strong Against</h3>
+            <div class="type-list">
+              {% for type in stats.strongAgainst %}
+                <span class="type {{ type }}">{{ type|title }}</span>
+              {% empty %}
+                <span>No strengths</span>
+              {% endfor %}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
-    <img src="https://png.pngtree.com/png-vector/20220723/ourmid/pngtree-pokeball-icon-vector-isolated-black-design-isolated-vector-png-image_22496306.png" alt="pokeball" width="70">
-
-    <br><br>
-    <a href="{% url 'search_pokemon' %}">← Back to Search</a>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const ctx = document.getElementById('statsRadarChart').getContext('2d');
+
+      const statsRadarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['HP', 'Attack', 'Defense', 'Sp. Attack', 'Sp. Defense', 'Speed'],
+          datasets: [{
+            label: '{{ stats.name }} Stats',
+            data: [{{ stats.hp }}, {{ stats.attack }}, {{ stats.defense }},
+                   {{ stats.spAttack }}, {{ stats.spDefense }}, {{ stats.speed }}],
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 2,
+            pointBackgroundColor: 'rgba(255, 99, 132, 1)'
+          }]
+        },
+        options: {
+          scales: {
+            r: {
+              angleLines: {
+                display: true
+              },
+              suggestedMin: 0,
+              suggestedMax: 100
+            }
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>

@@ -23,7 +23,6 @@ def search_pokemon(request):
 
 def pokemon_stats(request, pokemon_id):
     stats = PokemonManager.get_stats_by_id(pokemon_id)
-
     if stats is None:
         return render(request, 'stats.html', {'error': 'Pokémon not found.'})
 
