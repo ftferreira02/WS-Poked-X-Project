@@ -1,10 +1,14 @@
 from django.shortcuts import render
 from app.models.fight.fight_model import PokemonFight
+import json
 
 def pokemon_battle_view(request):
     fight = PokemonFight("6", "4")  # Charizard vs Charmander
     battle_logs = []
     hp_progress = []
+
+    battle_logs.append("A wild Pokemon appeared...")
+
 
     while not fight.is_battle_over():
         fight.execute_turn()
@@ -14,6 +18,11 @@ def pokemon_battle_view(request):
             "hp1": fight.current_hp1,
             "hp2": fight.current_hp2,
         })
+    
+    hp_progress.insert(0, {
+        "hp1": fight.pokemon1["hp"],
+        "hp2": fight.pokemon2["hp"]
+    })
 
     # Enhanced context with all the data needed by the template
     context = {
@@ -24,8 +33,7 @@ def pokemon_battle_view(request):
         "winner": fight.winner["name"]
     }
     
-    # Convert the logs and hp_progress to JSON for JavaScript
-    import json
+
     context["logs_json"] = json.dumps(battle_logs)
     context["hp_progress_json"] = json.dumps(hp_progress)
     
