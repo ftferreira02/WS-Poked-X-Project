@@ -2,10 +2,43 @@
 <html lang="pt-br">
 <head>
   <title>Pokemon</title>
-  <link rel="stylesheet" type="text/css" href="./pokemon.css" />
+  <link rel="stylesheet" href="{% static 'fight.css' %}">
+  <script>
+    let logs = {{ logs|safe }};
+    let hpProgress = {{ hp_progress|safe }};
+    let winner = "{{ winner }}";
+    let turn = 0;
+
+    function nextTurn() {
+      const roundText = document.querySelector('.round-text');
+      const hp1 = document.getElementById('hp1');
+      const hp2 = document.getElementById('hp2');
+
+      if (turn < logs.length) {
+        roundText.textContent = logs[turn];
+        hp1.textContent = hpProgress[Math.floor(turn/2)].hp1;
+        hp2.textContent = hpProgress[Math.floor(turn/2)].hp2;
+        turn++;
+      } else {
+        roundText.textContent = "🏆 " + winner + " venceu a batalha!";
+        document.getElementById("next-btn").disabled = true;
+      }
+    }
+
+    function typeColor(type) {
+      const colors = {
+        fire: "#F08030", water: "#6890F0", grass: "#78C850", electric: "#F8D030",
+        flying: "#A890F0", normal: "#A8A878", fighting: "#C03028", ground: "#E0C068",
+        rock: "#B8A038", psychic: "#F85888", ghost: "#705898", dark: "#705848",
+        steel: "#B8B8D0", fairy: "#EE99AC", dragon: "#7038F8", ice: "#98D8D8",
+        bug: "#A8B820", poison: "#A040A0"
+      };
+      return colors[type.toLowerCase()] || "#444";
+    }
+  </script>
 </head>
 
-<body>
+<body onload="nextTurn()">
   <!-- Contêiner das espadas -->
   <div class="swords-container fade-out">
     <div class="sword sword-left">
@@ -51,7 +84,13 @@
 
   <!-- Conteúdo original da página Pokémon -->
   <div>
+    
     <div class="game">
+      <div class="round-text">A batalha vai começar...
+        <div style="text-align: center; margin-top: 20px;">
+          <button id="next-btn" onclick="nextTurn()">➡️ Avançar</button>
+        </div>
+      </div>
       <div class="opponent">
         <div class="stats">
           <div class="top">
@@ -62,16 +101,15 @@
               <div class="pokeball"></div>
               <div class="pokeball"></div>
             </div>
-            <div id="attack" class="hp-count">100</div>
+            <div class="hp-count" id="hp2">{{ pokemon2.hp }}</div>
+            <div id="attack" class="hp-count">{{ pokemon2.attack }}</div>
           </div>
-          <span class="name">
-            Charizard
-          </span>
+          <span class="name">{{ pokemon2.name }}</span>
           <span id="defense" class="level">
-            86
+            {{ pokemon2.defense }} 
           </span>
         </div>
-        <img class="pokemon" src="http://img.pokemondb.net/sprites/black-white/anim/normal/charizard.gif" alt="A sprite of charizard" />
+        <img class="pokemon" src="http://img.pokemondb.net/sprites/black-white/anim/normal/{{ pokemon2.name|lower }}.gif" alt="A sprite" />
       </div>
       <div class="player">
         <div class="stats">
@@ -83,44 +121,59 @@
               <div class="pokeball"></div>
               <div class="pokeball"></div>
             </div>
-            <div id="attack" class="hp-count">100</div>
+            <div class="hp-count" id="hp1">{{ pokemon1.hp }}</div>
+            <div id="attack" class="hp-count"> {{ pokemon1.attack }}</div>
           </div>
-          <span class="name">
-            Blastoise
-          </span>
+          <span class="name">{{ pokemon1.name }}</span>
           <span id="defense" class="level">
-            86
+            {{ pokemon1.defense }} 
           </span>
         </div>
-        <img class="pokemon" src="http://img.pokemondb.net/sprites/black-white/anim/back-normal/charizard.gif" alt="A gif from blastoises back sprite" />
+        <img class="pokemon" src="http://img.pokemondb.net/sprites/black-white/anim/back-normal/{{ pokemon1.name|lower }}.gif" alt="A gif from blastoises back sprite" />
       </div>
     </div>
     <div class="status">
       <div class="box">
         <div id="message" class="message">
-          Blastoise habilities
-          <div class="types">
-            <button style="background-color: rgb(35, 78, 197);">Water</button>
-            <button style="background-color: rgb(68, 68, 68);">None</button>
-          </div>
+          {{ pokemon1.name }} abilities
+        <div class="types">
+          <button style="background-color: {{ pokemon1.primaryType|lower|cut:' '|add:'"|safe' }};">{{ pokemon1.primaryType }}</button>
+          {% if pokemon1.secondaryType %}
+          <button style="background-color: {{ pokemon1.secondaryType|lower|cut:' '|add:'"|safe' }};">{{ pokemon1.secondaryType }}</button>
+          {% else %}
+          <button style="background-color: #444;">None</button>
+          {% endif %}
+        </div>
         </div>
         <div class="actions">
-          <button>Water Cannon</button>
-          <button>Water Pulse</button>
+          <button>{{ pokemon1.ability1 }}</button>
+          {% if pokemon1.ability2 %}
+          <button>{{ pokemon1.ability2 }}</button>
+          {% else %}
+          <button>None</button>
+          {% endif %}
         </div>
       </div>
       <div class="box">
         <div id="message" class="message">
-          Charmandar habilities
+          {{ pokemon2.name }} abilities
           <div class="types">
-            <button style="background-color: rgb(35, 78, 197);">Water</button>
-            <button style="background-color: rgb(68, 68, 68);">None</button>
+            <button style="background-color: {{ pokemon1.primaryType|lower|cut:' '|add:'"|safe' }};">{{ pokemon2.primaryType }}</button>
+            {% if pokemon2.secondaryType %}
+            <button style="background-color: {{ pokemon1.secondaryType|lower|cut:' '|add:'"|safe' }};">{{ pokemon2.secondaryType }}</button>
+            {% else %}
+            <button style="background-color: #444;">None</button>
+            {% endif %}
           </div>
-        </div>
-        <div class="actions">
-          <button>Water Cannon</button>
-          <button>Water Pulse</button>
-        </div>
+          </div>
+          <div class="actions">
+            <button>{{ pokemon2.ability1 }}</button>
+            {% if pokemon2.ability2 %}
+            <button>{{ pokemon2.ability2 }}</button>
+            {% else %}
+            <button>None</button>
+            {% endif %}
+          </div>
       </div>
     </div>
   </div>

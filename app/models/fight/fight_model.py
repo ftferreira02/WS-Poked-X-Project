@@ -46,6 +46,10 @@ class PokemonFight:
                     pokemon_data[prop_name] = str(o).split("/")[-1]
                 elif prop_name == "effectiveness":
                     effectiveness_node = str(o)
+                elif prop_name == "ability1":
+                    pokemon_data["ability1"] = str(o).split("/")[-1]
+                elif prop_name == "ability2":
+                    pokemon_data["ability2"] = str(o).split("/")[-1]
 
         # Process effectiveness data
         if effectiveness_node:
