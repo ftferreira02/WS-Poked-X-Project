@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pokemon Battle{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/pokemon.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <!-- Contêiner das espadas -->
+  <div class="swords-container fade-out">
+    <div class="sword sword-left">
+      <svg class="sword-svg" viewBox="0 0 100 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- Lâmina -->
+        <path d="M50 10 L60 50 L60 300 L40 300 L40 50 Z" fill="silver" />
+        
+        <!-- Detalhe da lâmina -->
+        <path d="M50 10 L55 50 L55 300 L50 300 L50 50 Z" fill="#e0e0e0" />
+        
+        <!-- Guarda -->
+        <rect x="30" y="300" width="40" height="15" fill="#b8860b" />
+        
+        <!-- Cabo -->
+        <rect x="45" y="315" width="10" height="50" fill="#8b4513" />
+        
+        <!-- Pomo -->
+        <circle cx="50" cy="375" r="10" fill="#b8860b" />
+      </svg>
+    </div>
+    <div class="sword sword-right">
+      <svg class="sword-svg" viewBox="0 0 100 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- Lâmina -->
+        <path d="M50 10 L60 50 L60 300 L40 300 L40 50 Z" fill="silver" />
+        
+        <!-- Detalhe da lâmina -->
+        <path d="M50 10 L55 50 L55 300 L50 300 L50 50 Z" fill="#e0e0e0" />
+        
+        <!-- Guarda -->
+        <rect x="30" y="300" width="40" height="15" fill="#b8860b" />
+        
+        <!-- Cabo -->
+        <rect x="45" y="315" width="10" height="50" fill="#8b4513" />
+        
+        <!-- Pomo -->
+        <circle cx="50" cy="375" r="10" fill="#b8860b" />
+      </svg>
+    </div>
+    
+    <!-- Texto FIGHT -->
+    <div class="fight-text">FIGHT!</div>
+  </div>
+
+  <!-- Conteúdo original da página Pokémon -->
+  <div>
+    <div class="game">
+      <div class="opponent">
+        <div class="stats">
+          <div class="top">
+            <div class="pokeballs">
+              <div class="pokeball"></div>
+              <div class="pokeball"></div>
+              <div class="pokeball"></div>
+              <div class="pokeball"></div>
+              <div class="pokeball"></div>
+            </div>
+            <div id="hp" class="hp-count">{{ pokemon2.current_hp }}/{{ pokemon2.hp }}</div>
+          </div>
+          <span class="name">
+            {{ pokemon2.name }}
+          </span>
+          <span id="defense" class="level">
+            {{ pokemon2.defense }}
+          </span>
+          <div class="hp-bar">
+            <div class="hp-fill" style="width: {{ pokemon2.current_hp_percentage }}%;"></div>
+          </div>
+        </div>
+        <img class="pokemon" src="{{ pokemon2.sprite_url }}" alt="A sprite of {{ pokemon2.name }}" />
+      </div>
+      <div class="player">
+        <div class="stats">
+          <div class="top">
+            <div class="pokeballs">
+              <div class="pokeball"></div>
+              <div class="pokeball"></div>
+              <div class="pokeball"></div>
+              <div class="pokeball"></div>
+              <div class="pokeball"></div>
+            </div>
+            <div id="hp" class="hp-count">{{ pokemon1.current_hp }}/{{ pokemon1.hp }}</div>
+          </div>
+          <span class="name">
+            {{ pokemon1.name }}
+          </span>
+          <span id="defense" class="level">
+            {{ pokemon1.defense }}
+          </span>
+          <div class="hp-bar">
+            <div class="hp-fill" style="width: {{ pokemon1.current_hp_percentage }}%;"></div>
+          </div>
+        </div>
+        <img class="pokemon" src="{{ pokemon1.sprite_url }}" alt="A gif from {{ pokemon1.name }} back sprite" />
+      </div>
+      
+      <!-- Resultado da batalha -->
+      <div class="battle-result">
+        {{ battle_result }}
+      </div>
+    </div>
+    <div class="status">
+      <div class="box">
+        <div id="message" class="message">
+          {{ pokemon1.name }} habilidades
+          <div class="types">
+            <button style="background-color: {% if pokemon1.primary_type == 'Fire' %}#F08030{% elif pokemon1.primary_type == 'Water' %}#6890F0{% elif pokemon1.primary_type == 'Grass' %}#78C850{% elif pokemon1.primary_type == 'Electric' %}#F8D030{% else %}#A8A878{% endif %};">
+              {{ pokemon1.primary_type }}
+            </button>
+            {% if pokemon1.secondary_type %}
+            <button style="background-color: {% if pokemon1.secondary_type == 'Fire' %}#F08030{% elif pokemon1.secondary_type == 'Water' %}#6890F0{% elif pokemon1.secondary_type == 'Grass' %}#78C850{% elif pokemon1.secondary_type == 'Electric' %}#F8D030{% else %}#A8A878{% endif %};">
+              {{ pokemon1.secondary_type }}
+            </button>
+            {% else %}
+            <button style="background-color: rgb(68, 68, 68);">None</button>
+            {% endif %}
+          </div>
+        </div>
+        <div class="actions">
+          <button>{{ pokemon1.ability1 }}</button>
+          {% if pokemon1.ability2 %}
+          <button>{{ pokemon1.ability2 }}</button>
+          {% else %}
+          <button>Tackle</button>
+          {% endif %}
+        </div>
+      </div>
+      <div class="box">
+        <div id="message" class="message">
+          {{ pokemon2.name }} habilidades
+          <div class="types">
+            <button style="background-color: {% if pokemon2.primary_type == 'Fire' %}#F08030{% elif pokemon2.primary_type == 'Water' %}#6890F0{% elif pokemon2.primary_type == 'Grass' %}#78C850{% elif pokemon2.primary_type == 'Electric' %}#F8D030{% else %}#A8A878{% endif %};">
+              {{ pokemon2.primary_type }}
+            </button>
+            {% if pokemon2.secondary_type %}
+            <button style="background-color: {% if pokemon2.secondary_type == 'Fire' %}#F08030{% elif pokemon2.secondary_type == 'Water' %}#6890F0{% elif pokemon2.secondary_type == 'Grass' %}#78C850{% elif pokemon2.secondary_type == 'Electric' %}#F8D030{% else %}#A8A878{% endif %};">
+              {{ pokemon2.secondary_type }}
+            </button>
+            {% else %}
+            <button style="background-color: rgb(68, 68, 68);">None</button>
+            {% endif %}
+          </div>
+        </div>
+        <div class="actions">
+          <button>{{ pokemon2.ability1 }}</button>
+          {% if pokemon2.ability2 %}
+          <button>{{ pokemon2.ability2 }}</button>
+          {% else %}
+          <button>Tackle</button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Script para lidar com a animação das espadas
+  document.addEventListener('DOMContentLoaded', function() {
+    // Após 5 segundos, remove o contêiner das espadas
+    setTimeout(function() {
+      const swordsContainer = document.querySelector('.swords-container');
+      if (swordsContainer) {
+        swordsContainer.style.display = 'none';
+      }
+    }, 5000);
+  });
+</script>
+{% endblock %}
