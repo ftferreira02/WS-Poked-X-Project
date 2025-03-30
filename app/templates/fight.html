@@ -17,7 +17,8 @@
         const hp2 = document.getElementById('hp2');
 
         if (turn < battleLogs.length) {
-          battleMessage.textContent = battleLogs[turn];
+          const message = battleLogs[turn];
+          typeText(battleMessage, message);
           hp1.textContent = hpProgress[Math.floor(turn/2)].hp1;
           hp2.textContent = hpProgress[Math.floor(turn/2)].hp2;
           turn++;
@@ -84,6 +85,23 @@
         }
       });
     </script>
+
+
+    <script>
+      function typeText(element, text, speed = 30, callback = null) {
+        element.textContent = "";
+        let i = 0;
+        const interval = setInterval(() => {
+          element.textContent += text.charAt(i);
+          i++;
+          if (i >= text.length) {
+            clearInterval(interval);
+            if (callback) callback();
+          }
+        }, speed);
+      }
+      
+    </script>
   </head>
 
   <body onload="nextTurn()">
@@ -142,7 +160,7 @@
     <div>
       <div class="game">
         <div class="round-text">
-          <span id="battle-message">A batalha vai começar...</span>
+          <span id="battle-message"></span>
           <div class="battle-controls">
             <button id="next-btn" onclick="nextTurn()" class="next-button">
               <svg
