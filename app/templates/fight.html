@@ -1,11 +1,14 @@
+{% load static %}
+
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <title>Pokemon</title>
   <link rel="stylesheet" href="{% static 'fight.css' %}">
   <script>
-    let battleLogs = {{ logs|safe }};
-    let hpProgress = {{ hp_progress|safe }};
+    let battleLogs = {{ logs_json|safe }};
+    let hpProgress = {{ hp_progress_json|safe }};
     let winner = "{{ winner }}";
     let turn = 0;
 
@@ -35,6 +38,14 @@
       };
       return colors[type.toLowerCase()] || "#444";
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const typeButtons = document.querySelectorAll('[data-type]');
+      typeButtons.forEach(button => {
+        const type = button.getAttribute('data-type');
+        button.style.backgroundColor = typeColor(type);
+      });
+    });
   </script>
 </head>
 
@@ -102,7 +113,7 @@
               <div class="pokeball"></div>
             </div>
             <div class="hp-count" id="hp2">{{ pokemon2.hp }}</div>
-            <div id="attack1" class="hp-count">{{ pokemon2.attack }}</div>
+            <div id="attack1" class="attak-count">{{ pokemon2.attack }}</div>
           </div>
           <span class="name">{{ pokemon2.name }}</span>
           <span id="defense2" class="level">
@@ -122,7 +133,7 @@
               <div class="pokeball"></div>
             </div>
             <div class="hp-count" id="hp1">{{ pokemon1.hp }}</div>
-            <div id="attack2" class="hp-count"> {{ pokemon1.attack }}</div>
+            <div id="attack2" class="attak-count"> {{ pokemon1.attack }}</div>
           </div>
           <span class="name">{{ pokemon1.name }}</span>
           <span id="defense1" class="level">
@@ -137,9 +148,9 @@
         <div id="message" class="message">
           {{ pokemon1.name }} abilities
         <div class="types">
-          <button style="background-color: {{ pokemon1.primaryType|lower|cut:' '|add:'"|safe' }};">{{ pokemon1.primaryType }}</button>
+          <button id="type1-1" data-type="{{ pokemon1.primaryType }}">{{ pokemon1.primaryType }}</button>
           {% if pokemon1.secondaryType %}
-          <button style="background-color: {{ pokemon1.primaryType|lower|default:"#444" }}"> {{ pokemon1.secondaryType }} </button>
+          <button id="type1-2" data-type="{{ pokemon1.secondaryType }}">{{ pokemon1.secondaryType }}</button>
           {% endif %}
         </div>
         </div>
@@ -156,9 +167,9 @@
         <div id="message" class="message">
           {{ pokemon2.name }} abilities
           <div class="types">
-            <button style="background-color: {{ pokemon1.primaryType|lower|cut:' '|add:'"|safe' }};">{{ pokemon2.primaryType }}</button>
+            <button id="type2-1" data-type="{{ pokemon2.primaryType }}">{{ pokemon2.primaryType }}</button>
             {% if pokemon2.secondaryType %}
-            <button style="background-color: {{ pokemon1.primaryType|lower|default:"#444" }}"> {{ pokemon2.secondaryType }} </button>
+            <button id="type2-2" data-type="{{ pokemon2.secondaryType }}">{{ pokemon2.secondaryType }}</button>
             {% endif %}
           </div>
           </div>

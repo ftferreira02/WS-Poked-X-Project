@@ -15,6 +15,7 @@ def pokemon_battle_view(request):
             "hp2": fight.current_hp2,
         })
 
+    # Enhanced context with all the data needed by the template
     context = {
         "pokemon1": fight.pokemon1,
         "pokemon2": fight.pokemon2,
@@ -22,4 +23,10 @@ def pokemon_battle_view(request):
         "hp_progress": hp_progress,
         "winner": fight.winner["name"]
     }
-    return render(request, "battle.html", context)
+    
+    # Convert the logs and hp_progress to JSON for JavaScript
+    import json
+    context["logs_json"] = json.dumps(battle_logs)
+    context["hp_progress_json"] = json.dumps(hp_progress)
+    
+    return render(request, "fight.html", context)

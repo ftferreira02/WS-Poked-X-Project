@@ -50,7 +50,7 @@ body {
     position: absolute;
     bottom: 70px;
     right: 200px;
-    width: 200px;
+    width: 150px;
   }
   
   .player {
@@ -67,7 +67,7 @@ body {
   
   .player .pokemon {
     position: absolute;
-    left: 100px;
+    left: 50px;
     bottom: 10px;
     width: 350px;
   }
@@ -168,7 +168,15 @@ body {
   }
   
   .stats .hp-count:before {
+    content: 'Health: '
+  }
+
+  .stats .attak-count:before {
     content: 'Attack: '
+  }
+
+  .stats .attak-count {
+    float: right;
   }
   
   .stats .hp-count {
