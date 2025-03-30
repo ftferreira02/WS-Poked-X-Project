@@ -1,32 +1,77 @@
 # app/models.py
 from app.sparql_client import run_query
+import re
 
 class Pokemon:
-    def __init__(self, uri, name):
+
+    def __init__(self, uri, name, number, primary_type, secondary_type=None, exp=None):
         self.uri = uri
         self.name = name
+        self.number = number  # Pokedex number
+        self.id = self._extract_id_from_uri(uri) # Add id attribute
+        self.primary_type = primary_type
+        self.secondary_type = secondary_type
+        self.exp = exp
+        self.image_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{self.number}.png"
+
+
+    def _extract_id_from_uri(self, uri):
+        """Helper method to extract numeric ID from Pokémon URI."""
+        # Adjust regex if your URI structure is different, e.g., ends in /ID or #ID
+        match = re.search(r'/(\d+)$', uri)
+        return int(match.group(1)) if match else None
 
     def __str__(self):
         return self.name
 
 class PokemonManager:
     @staticmethod
+    def _parse_results(results):
+        """Helper function to parse SPARQL results into Pokemon objects."""
+        pokemons = []
+        if results and "results" in results and "bindings" in results["results"]:
+            for binding in results["results"]["bindings"]:
+                uri = binding.get("pokemon", {}).get("value")
+                name = binding.get("name", {}).get("value")
+                number = int(binding["number"]["value"])
+                primary_type = binding["primaryType"]["value"].split("/")[-1]  # Extract 'grass' from URI
+                secondary_type = binding.get("secondaryType", {}).get("value")
+                if secondary_type:
+                    secondary_type = secondary_type.split("/")[-1]
+                    exp = int(binding.get("totalPoints", {}).get("value", 0))
+
+                if uri and name: # Ensure we have the essential data
+                    pokemon_obj = Pokemon(uri, name,number, primary_type, secondary_type, exp)
+                    # Add the Pokémon object to the list
+                    if pokemon_obj.id is not None: # Only add if ID extraction was successful
+                       pokemons.append(pokemon_obj)
+        return pokemons
+
+    @staticmethod
     def get_all_pokemons():
         query = """
         PREFIX ex: <http://example.org/pokemon/>
         PREFIX sc: <http://schema.org/>
 
-        SELECT ?pokemon ?name WHERE {
-          ?pokemon a ex:Pokemon .
-          ?pokemon sc:name ?name .
+        SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints WHERE {
+        ?pokemon a ex:Pokemon ;
+                sc:name ?name ;
+                ex:pokedexNumber ?number ;
+                ex:primaryType ?primaryType ;
+                ex:totalPoints ?totalPoints .
+        OPTIONAL { ?pokemon ex:secondaryType ?secondaryType }
         }
+        ORDER BY ?number
         """
         results = run_query(query)
-        pokemons = [Pokemon(binding["pokemon"]["value"], binding["name"]["value"]) for binding in results["results"]["bindings"]]
-        return pokemons
+        return PokemonManager._parse_results(results) # Use the parser
 
     @staticmethod
     def search_by_name(name_filter):
+        # Basic escaping for the filter string (replace double quotes)
+        # More robust escaping might be needed depending on allowed characters
+        escaped_filter = name_filter.replace('"', '\\"')
+
         query = f"""
         PREFIX ex: <http://example.org/pokemon/>
         PREFIX sc: <http://schema.org/>
@@ -34,12 +79,11 @@ class PokemonManager:
         SELECT ?pokemon ?name WHERE {{
           ?pokemon a ex:Pokemon .
           ?pokemon sc:name ?name .
-          FILTER CONTAINS(LCASE(?name), LCASE("{name_filter}"))
-        }}
+          FILTER CONTAINS(LCASE(?name), LCASE("{escaped_filter}"))
+        }} ORDER BY ?name # Optional: Order results
         """
         results = run_query(query)
-        pokemons = [Pokemon(binding["pokemon"]["value"], binding["name"]["value"]) for binding in results["results"]["bindings"]]
-        return pokemons
+        return PokemonManager._parse_results(results) # Use the parser
 
     @staticmethod
     def get_stats_by_id(pokemon_id):

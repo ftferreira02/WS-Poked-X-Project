@@ -7,7 +7,7 @@ from app.views.geral_view import pokemon_stats
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('pokemon/search/', search_pokemon, name='search_pokemon'),
-    path('pokemon/stats/<int:pokemon_id>/', pokemon_stats),
+    path('pokemon/stats/<int:pokemon_id>/', pokemon_stats, name='pokemon_stats'),
 ]
 
 
