@@ -68,7 +68,7 @@ DATABASES = {
 # Static files
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "static"
+    BASE_DIR / "app/static"
 ]
 
 # SPARQL endpoint para GraphDB

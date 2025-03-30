@@ -32,3 +32,13 @@ local_settings.py
 # dotenv
 *.env
 .env.*
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/jupyter-settings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/WS-Poked-X-Project.iml
+webproj/__pycache__/__init__.cpython-311.pyc
+webproj/__pycache__/__init__.cpython-311.pyc
+webproj/__pycache__/settings.cpython-311.pyc
+webproj/__pycache__/urls.cpython-311.pyc
