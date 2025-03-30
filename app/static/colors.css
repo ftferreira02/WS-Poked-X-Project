@@ -1,0 +1,19 @@
+
+body.type-normal   { --type-color: #A8A878; --primary: #A8A878; --primary-dark: #7a7a52; --secondary: #d0cfc3; }
+body.type-fire     { --type-color: #F08030; --primary: #F08030; --primary-dark: #a0521d; --secondary: #F8D030; }
+body.type-water    { --type-color: #6890F0; --primary: #6890F0; --primary-dark: #3b5ca3; --secondary: #98D8D8; }
+body.type-electric { --type-color: #F8D030; --primary: #F8D030; --primary-dark: #c7a110; --secondary: #A890F0; }
+body.type-grass    { --type-color: #78C850; --primary: #78C850; --primary-dark: #4d8c2f; --secondary: #A8B820; }
+body.type-ice      { --type-color: #98D8D8; --primary: #98D8D8; --primary-dark: #69a9a9; --secondary: #F8D030; }
+body.type-fighting { --type-color: #C03028; --primary: #C03028; --primary-dark: #8a1c1b; --secondary: #F85888; }
+body.type-poison   { --type-color: #A040A0; --primary: #A040A0; --primary-dark: #703070; --secondary: #C183C1; }
+body.type-ground   { --type-color: #E0C068; --primary: #E0C068; --primary-dark: #bba146; --secondary: #A890F0; }
+body.type-flying   { --type-color: #A890F0; --primary: #A890F0; --primary-dark: #7a6bc9; --secondary: #F8D030; }
+body.type-psychic  { --type-color: #F85888; --primary: #F85888; --primary-dark: #c03060; --secondary: #FFB6C1; }
+body.type-bug      { --type-color: #A8B820; --primary: #A8B820; --primary-dark: #7a8c18; --secondary: #C0D860; }
+body.type-rock     { --type-color: #B8A038; --primary: #B8A038; --primary-dark: #7a6e1f; --secondary: #E0C068; }
+body.type-ghost    { --type-color: #705898; --primary: #705898; --primary-dark: #4e3f6a; --secondary: #A890F0; }
+body.type-dragon   { --type-color: #7038F8; --primary: #7038F8; --primary-dark: #4a22a3; --secondary: #F8D030; }
+body.type-dark     { --type-color: #705848; --primary: #705848; --primary-dark: #4a3d2e; --secondary: #A8A878; }
+body.type-steel    { --type-color: #B8B8D0; --primary: #B8B8D0; --primary-dark: #8888a0; --secondary: #C0C0C0; }
+body.type-fairy    { --type-color: #EE99AC; --primary: #EE99AC; --primary-dark: #c06b83; --secondary: #F8D0E0; }

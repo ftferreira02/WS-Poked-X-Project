@@ -6,47 +6,43 @@ body {
     font-size: 18px;
     display: flex;
     justify-content: center;
-    align-items: center;
     min-height: 100vh;
     margin: 0;
-    padding: 20px;
-
-    --type-color: #A8A878;
     background-color: var(--type-color);
     color: white;
 }
 
 .container {
     display: flex;
-    justify-content: center;
-    align-items: stretch; /* altura igual entre colunas */
+    justify-content: flex-end;
+    align-items: stretch;
     gap: 40px;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
+    height: 100%;
 }
 
 /* Two main columns */
 .column {
     flex: 1;
+    padding-top: 2rem;
 }
 
-/* Coluna do card */
 .card-column {
-    flex: 0 1 500px;
+    flex: 0 1 600px;
     display: flex;
     flex-direction: column;
     justify-content: stretch;
-    align-items: center;
-    height: 100%;
+    align-items: stretch;
 }
 
-/* Coluna da direita */
 .data-column {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 30px;
-    max-width: 500px;
+    max-width: 600px;
+    justify-content: space-between;
 }
 
 .card {
@@ -88,19 +84,21 @@ body {
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
+#primary-type {
+    align-self: center;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    width: 5rem;
+}
+
 .image img {
-    width: 120px;
+    width: 180px;
     margin: 10px 0;
 }
 
 .pokeball {
     margin: 10px auto;
     display: block;
-}
-
-.info {
-    text-align: left;
-    font-size: 16px;
 }
 
 .highlight {
@@ -112,6 +110,33 @@ body {
     text-align: justify;
     margin: 25px 10px;
     color: #555;
+}
+
+.info-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 20px;
+    margin-bottom: 15px;
+    line-height: 1.8;
+}
+
+.info-grid > div {
+    flex: 1;
+    align-items: top;
+    justify-content: top;
+}
+
+.secondary-type {
+    text-align: left;
+    font-size: 16px;
+}
+
+.icon-img {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
 }
 
 .stat {
@@ -169,6 +194,13 @@ body {
     width: 100%;
     box-sizing: border-box;
 }
+.card,
+.chart-section,
+.type-matchups {
+    padding: 50px;
+    border-radius: 20px;
+    box-shadow: -3px 4px 0 #7e5813, 20px 20px 0 #69471fab;
+}
 
 .radar-chart-container {
     width: 100%;
@@ -209,30 +241,15 @@ h2 {
     padding-bottom: 10px;
 }
 
+.card-column h2 {
+    padding-top: 4px;
+    text-align: center;
+}
+
 h3 {
     font-size: 18px;
     margin: 0 0 10px 0;
 }
-
-/* ---------- CORES POR TIPO ---------- */
-body.type-normal   { --type-color: #A8A878; }
-body.type-fire     { --type-color: #F08030; }
-body.type-water    { --type-color: #6890F0; }
-body.type-electric { --type-color: #F8D030; }
-body.type-grass    { --type-color: #78C850; }
-body.type-ice      { --type-color: #98D8D8; }
-body.type-fighting { --type-color: #C03028; }
-body.type-poison   { --type-color: #A040A0; }
-body.type-ground   { --type-color: #E0C068; }
-body.type-flying   { --type-color: #A890F0; }
-body.type-psychic  { --type-color: #F85888; }
-body.type-bug      { --type-color: #A8B820; }
-body.type-rock     { --type-color: #B8A038; }
-body.type-ghost    { --type-color: #705898; }
-body.type-dragon   { --type-color: #7038F8; }
-body.type-dark     { --type-color: #705848; }
-body.type-steel    { --type-color: #B8B8D0; }
-body.type-fairy    { --type-color: #EE99AC; }
 
 .type.normal   { background-color: #A8A878; }
 .type.fire     { background-color: #F08030; }

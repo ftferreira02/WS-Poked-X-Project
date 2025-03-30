@@ -49,7 +49,7 @@ class PokemonManager:
 
         SELECT ?name ?attack ?defense ?hp ?spAttack ?spDefense ?speed ?totalPoints
                ?height ?weight ?isLegendary ?generation ?baseFriendship
-               ?primaryType ?secondaryType
+               ?primaryType ?secondaryType ?pokedexNumber
                ?againstType ?value
         WHERE {{
           <http://example.org/pokemon/Pokemon/{pokemon_id}> schema1:name ?name ;
@@ -67,6 +67,7 @@ class PokemonManager:
                                                            ns1:baseFriendship ?baseFriendship ;
                                                            ns1:primaryType ?primaryType ;
                                                            ns1:secondaryType ?secondaryType ;
+                                                           ns1:pokedexNumber ?pokedexNumber ;
                                                            ns1:effectiveness ?eff .
 
           ?eff ?againstType ?value .
@@ -98,7 +99,8 @@ class PokemonManager:
             "primaryType": "",
             "secondaryType": "",
             "strongAgainst": [],
-            "weakAgainst": []
+            "weakAgainst": [],
+            "pokedexNumber": 0,
         }
 
         for binding in bindings:
@@ -119,6 +121,7 @@ class PokemonManager:
                     "baseFriendship": int(binding["baseFriendship"]["value"]),
                     "primaryType": binding["primaryType"]["value"].split("/")[-1],
                     "secondaryType": binding["secondaryType"]["value"].split("/")[-1],
+                    "pokedexNumber": int(binding.get("pokedexNumber", {}).get("value", 0)),
                 })
 
             type_name = binding["againstType"]["value"].split("against")[-1].lower()
