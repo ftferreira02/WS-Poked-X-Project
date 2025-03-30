@@ -46,12 +46,6 @@ body {
     width: 320px;
   }
   
-  .opponent .pokemon {
-    position: absolute;
-    bottom: 70px;
-    right: 200px;
-    width: 150px;
-  }
   
   .player {
     position: relative;
@@ -60,17 +54,44 @@ body {
   
   .player .stats {
     position: absolute;
-    bottom: 290px;
+    bottom: 380px;
     left: 40px;
     width: 320px;
   }
-  
-  .player .pokemon {
-    position: absolute;
-    left: 50px;
-    bottom: 10px;
-    width: 350px;
+
+  .player-container,
+  .opponent-container {
+    position: absolute; /* <---- aqui controlas o local */
+    width: 100px; /* ou auto */
+    height: auto;
+    transform: translateX(-50%);
   }
+
+
+  .player-container {
+    left: 20%;   /* horizontal */
+    bottom: 5px;   /* colado ao fundo */
+  }
+  
+  .opponent-container {
+    left: 77%;
+    bottom: 65px;
+  }
+
+  
+  .player, .opponent {
+    position: relative;
+
+  }
+  
+  .pokemon {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+  }
+  
+
   
   .box {
     padding: 8px;
