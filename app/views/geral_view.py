@@ -60,6 +60,16 @@ def search_pokemon(request):
 
     return render(request, 'pokemon_search_form.html', context)
 
+def scale_visualization(request):
+    selected_ids = request.GET.getlist('pokemon_ids')  # list of numbers or IDs
+    selected_ids = [int(pid) for pid in selected_ids if pid.isdigit()][:5]  # limit to 5
+
+    pokemons = PokemonManager.get_pokemon_with_physical_info(selected_ids)
+
+    return render(request, 'scale_view.html', {
+        'pokemons': pokemons
+    })
+
 
 def pokemon_stats(request, pokemon_id):
     stats = PokemonManager.get_stats_by_id(pokemon_id)
