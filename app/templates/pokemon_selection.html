@@ -1,0 +1,193 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block title %}Select Pokémon{% endblock %} 
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'battle.css' %}" />
+<link rel="stylesheet" href="{% static 'pokemon_selection.css' %}" />
+{% endblock %} 
+
+{% block body_class %}selection-page{% endblock %} 
+
+{% block content %}
+<div class="spacer"></div>
+<!-- Pokémon Selection Page -->
+<div class="selection-container">
+  <h1 class="selection-title">Choose Your Pokemon</h1>
+  
+  <form method="post" action="{% url 'pokemon_selection' %}" id="pokemon-selection-form" autocomplete="off">
+    {% csrf_token %}
+    <div class="pokemon-selection-form">
+      <div class="selection-card">
+        <h2>First Pokemon</h2>
+        <div class="selection-input-container">
+          {{ form.pokemon1 }}
+          <div id="suggestions1" class="suggestions-container"></div>
+          <div id="selected-pokemon1" class="selected-pokemon"></div>
+        </div>
+        {{ form.pokemon1_id }}
+        <div class="pokemon-preview" id="preview1"></div>
+      </div>
+      
+      <div class="selection-card">
+        <h2>Second Pokemon</h2>
+        <div class="selection-input-container">
+          {{ form.pokemon2 }}
+          <div id="suggestions2" class="suggestions-container"></div>
+          <div id="selected-pokemon2" class="selected-pokemon"></div>
+        </div>
+        {{ form.pokemon2_id }}
+        <div class="pokemon-preview" id="preview2"></div>
+      </div>
+      
+      <button type="submit" class="battle-button" id="battle-button" disabled>
+        Start Battle!
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Pokemon data from the server
+    const pokemonData = {{ pokemon_data_json|safe }};
+    
+    // Elements
+    const input1 = document.querySelector('[name="pokemon1"]');
+    const input2 = document.querySelector('[name="pokemon2"]');
+    const hiddenInput1 = document.querySelector('[name="pokemon1_id"]');
+    const hiddenInput2 = document.querySelector('[name="pokemon2_id"]');
+    const suggestions1 = document.getElementById('suggestions1');
+    const suggestions2 = document.getElementById('suggestions2');
+    const selectedPokemon1 = document.getElementById('selected-pokemon1');
+    const selectedPokemon2 = document.getElementById('selected-pokemon2');
+    const preview1 = document.getElementById('preview1');
+    const preview2 = document.getElementById('preview2');
+    const battleButton = document.getElementById('battle-button');
+    
+    // Function to filter pokemon based on input
+    function filterPokemon(inputValue) {
+      if (inputValue.length < 2) return [];
+      
+      const lowerValue = inputValue.toLowerCase();
+      return pokemonData.filter(pokemon => 
+        pokemon.name.toLowerCase().includes(lowerValue)
+      ).slice(0, 10); // Limit to 10 results
+    }
+    
+    // Function to show suggestions
+    function showSuggestions(inputEl, suggestionsEl, filteredPokemon) {
+      suggestionsEl.innerHTML = '';
+      
+      if (filteredPokemon.length === 0) {
+        suggestionsEl.style.display = 'none';
+        return;
+      }
+      
+      filteredPokemon.forEach(pokemon => {
+        const item = document.createElement('div');
+        item.className = 'suggestion-item';
+        item.textContent = pokemon.name;
+        item.dataset.id = pokemon.id;
+        item.dataset.name = pokemon.name;
+        item.dataset.number = pokemon.number;
+        suggestionsEl.appendChild(item);
+      });
+      
+      suggestionsEl.style.display = 'block';
+    }
+    
+    // Function to update preview
+    function updatePreview(previewEl, pokemon) {
+      const staticPath = "{% static 'pokemon-images-index/' %}";
+      previewEl.innerHTML = `<img src="${staticPath}${pokemon.id}.png" alt="${pokemon.name}">`;
+    }
+    
+    // Function to set selected pokemon
+    function selectPokemon(inputEl, hiddenInputEl, selectedEl, previewEl, pokemon) {
+      inputEl.value = pokemon.name;
+      hiddenInputEl.value = pokemon.id;
+      selectedEl.textContent = `Selected: ${pokemon.name}`;
+      selectedEl.style.display = 'block';
+      updatePreview(previewEl, pokemon);
+      
+      // Check if both Pokemon are selected to enable battle button
+      if (hiddenInput1.value && hiddenInput2.value) {
+        battleButton.disabled = false;
+      }
+    }
+    
+    // Event listener for input1
+    input1.addEventListener('input', function() {
+      const filteredPokemon = filterPokemon(this.value);
+      showSuggestions(this, suggestions1, filteredPokemon);
+      
+      // Clear selected pokemon if input changes
+      if (this.value !== selectedPokemon1.textContent.replace('Selected: ', '')) {
+        hiddenInput1.value = '';
+        selectedPokemon1.style.display = 'none';
+        preview1.innerHTML = '';
+        battleButton.disabled = true;
+      }
+    });
+    
+    // Event listener for input2
+    input2.addEventListener('input', function() {
+      const filteredPokemon = filterPokemon(this.value);
+      showSuggestions(this, suggestions2, filteredPokemon);
+      
+      // Clear selected pokemon if input changes
+      if (this.value !== selectedPokemon2.textContent.replace('Selected: ', '')) {
+        hiddenInput2.value = '';
+        selectedPokemon2.style.display = 'none';
+        preview2.innerHTML = '';
+        battleButton.disabled = true;
+      }
+    });
+    
+    // Event delegation for suggestion1 clicks
+    suggestions1.addEventListener('click', function(e) {
+      if (e.target.classList.contains('suggestion-item')) {
+        const pokemon = {
+          id: e.target.dataset.id,
+          name: e.target.dataset.name,
+          number: e.target.dataset.number
+        };
+        selectPokemon(input1, hiddenInput1, selectedPokemon1, preview1, pokemon);
+        suggestions1.style.display = 'none';
+      }
+    });
+    
+    // Event delegation for suggestion2 clicks
+    suggestions2.addEventListener('click', function(e) {
+      if (e.target.classList.contains('suggestion-item')) {
+        const pokemon = {
+          id: e.target.dataset.id,
+          name: e.target.dataset.name,
+          number: e.target.dataset.number
+        };
+        selectPokemon(input2, hiddenInput2, selectedPokemon2, preview2, pokemon);
+        suggestions2.style.display = 'none';
+      }
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.selection-input-container')) {
+        suggestions1.style.display = 'none';
+        suggestions2.style.display = 'none';
+      }
+    });
+    
+    // Prevent form submission if Pokemon aren't selected
+    document.getElementById('pokemon-selection-form').addEventListener('submit', function(e) {
+      if (!hiddenInput1.value || !hiddenInput2.value) {
+        e.preventDefault();
+        alert('Please select both Pokémon from the suggestions');
+      }
+    });
+  });
+</script>
+{% endblock %}

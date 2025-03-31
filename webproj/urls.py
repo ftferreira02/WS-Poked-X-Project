@@ -6,13 +6,16 @@ from app.views.geral_view import pokemon_stats
 from app.views.geral_view import compare_and_select_pokemon
 from app.views.geral_view import ask_pokemon_question
 from app.views.fight.fight_view import pokemon_battle_view
+from app.views.fight.fight_view import pokemon_selection_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', search_pokemon, name='search_pokemon'),
     path('pokemon/stats/<int:pokemon_id>/', pokemon_stats, name='pokemon_stats'),
+    path('battle/', pokemon_selection_view, name='battle'),
+    path('battle/', pokemon_selection_view, name='pokemon_selection'),
+    path('battle/<str:pokemon1_id>/<str:pokemon2_id>/', pokemon_battle_view, name='pokemon_battle'),
     path('compare/', compare_and_select_pokemon, name='compare_pokemon'),
-    path('battle/', pokemon_battle_view, name='battle'),
     path("pokemon/ask/", ask_pokemon_question, name="ask_question"),
     path('pokemon/export/<int:number>/', export_pokemon_rdf, name='export_pokemon_rdf'),
 

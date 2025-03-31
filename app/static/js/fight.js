@@ -1,0 +1,123 @@
+// fight.js
+let battleLogs = window.battleLogs || [];
+let hpProgress = window.hpProgress || [];
+let winner = window.winner || "";
+let turn = 0;
+
+function nextTurn() {
+  const battleMessage = document.getElementById('battle-message');
+  const hp1 = document.getElementById('hp1');
+  const hp2 = document.getElementById('hp2');
+
+  if (turn < battleLogs.length) {
+    const message = battleLogs[turn];
+    typeText(battleMessage, message);
+
+    const index = Math.floor(turn / 2);
+    if (hpProgress[index]) {
+      hp1.textContent = hpProgress[index].hp1;
+      hp2.textContent = hpProgress[index].hp2;
+    }
+    turn++;
+  } else {
+    const last = hpProgress[hpProgress.length - 1];
+    hp1.textContent = last ? last.hp1 : hp1.textContent;
+    hp2.textContent = last ? last.hp2 : hp2.textContent;
+
+    battleMessage.textContent = "🏆 " + winner + " won the battle!";
+    document.getElementById("next-btn").disabled = true;
+  }
+}
+
+function typeText(element, text, speed = 10, callback = null) {
+  element.textContent = "";
+  let i = 0;
+  const interval = setInterval(() => {
+    element.textContent += text.charAt(i);
+    i++;
+    if (i >= text.length) {
+      clearInterval(interval);
+      if (callback) callback();
+    }
+  }, speed);
+}
+
+function typeColor(type) {
+  const colors = {
+    fire: "#F08030", water: "#6890F0", grass: "#78C850", electric: "#F8D030",
+    flying: "#A890F0", normal: "#A8A878", fighting: "#C03028", ground: "#E0C068",
+    rock: "#B8A038", psychic: "#F85888", ghost: "#705898", dark: "#705848",
+    steel: "#B8B8D0", fairy: "#EE99AC", dragon: "#7038F8", ice: "#98D8D8",
+    bug: "#A8B820", poison: "#A040A0"
+  };
+  return colors[type.toLowerCase()] || "#444";
+}
+
+function initBattle() {
+  console.log("Battle initialized!");
+  
+  // Aplica cores aos tipos
+  document.querySelectorAll('[data-type]').forEach(button => {
+    const type = button.getAttribute('data-type');
+    button.style.backgroundColor = typeColor(type);
+  });
+
+  // Escala dos Pokémon
+  const playerImg = document.getElementById('player-img');
+  const opponentImg = document.getElementById('opponent-img');
+  
+  const height1 = parseFloat(playerImg.dataset.height || "1");
+  const height2 = parseFloat(opponentImg.dataset.height || "1");
+
+  const averageHeight = (height1 + height2) / 2;
+  let maxVisualHeight = 400;
+
+  if (averageHeight < 1.0) {
+    maxVisualHeight = 280;
+  } else if (averageHeight < 1.5) {
+    maxVisualHeight = 340;
+  }
+
+  const playerRatio = height1 / Math.max(height1, height2);
+  const opponentRatio = height2 / Math.max(height1, height2);
+
+  const scale1 = playerRatio * maxVisualHeight;
+  const scale2 = opponentRatio * maxVisualHeight * 0.85;
+
+  if (playerImg) {
+    animatePokemonEntry(playerImg, scale1);
+  }
+  if (opponentImg) {
+    animatePokemonEntry(opponentImg, scale2);
+  }
+
+  // Reset turn counter and start with first message
+  turn = 0;
+  nextTurn();
+  
+  // Make sure the button is enabled
+  document.getElementById("next-btn").disabled = false;
+}
+
+function animatePokemonEntry(pokemonImg, targetHeight) {
+  pokemonImg.style.height = '0px';
+  pokemonImg.style.opacity = '0';
+
+  pokemonImg.style.setProperty('--target-height', `${targetHeight}px`);
+
+  // Adiciona a classe animada um pouco depois (força reflow)
+  setTimeout(() => {
+    pokemonImg.style.animation = 'growIn 1.5s forwards';
+  }, 100); // pequeno delay para garantir renderização inicial
+}
+
+// Keep the DOM ready event for direct page loads
+document.addEventListener('DOMContentLoaded', function() {
+  // Only initialize if not coming from pokemon selection
+  if (document.getElementById('pokemon-selection-overlay').style.display !== 'none') {
+    initBattle();
+  }
+});
+
+// Make initBattle available globally
+window.initBattle = initBattle;
