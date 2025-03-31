@@ -1,6 +1,9 @@
-{% extends 'base.html' %} {% load static %} {% block title %} Pokémon Battle {% endblock %} {% block extra_css %}
+{% extends 'base.html' %} {% load static %} {% block title %} Pokémon Battle {% endblock %} 
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'battle1.css' %}" />
-{% endblock %} {% block body_class %}fight-page{% endblock %} 
+<link rel="stylesheet" href="{% static 'historic1.css' %}" />
+{% endblock %} 
+{% block body_class %}fight-page{% endblock %} 
 
 {% block content %}
 
@@ -58,6 +61,13 @@
 <!-- Conteúdo original da página Pokémon -->
 <div>
   <div class="space"></div>
+  <!-- Adicione este código abaixo da div .game e antes da div .status -->
+  <div class="battle-history-container">
+    <div class="battle-history-title">Histórico de Batalha</div>
+    <div class="battle-log-container" id="battle-log-container">
+      <!-- Os logs serão inseridos aqui dinamicamente via JavaScript -->
+    </div>
+  </div>
   <div class="game">
     <div class="round-text">
       <span id="battle-message" class="round-message"></span>
@@ -190,5 +200,5 @@
     window.hpProgress = {{ hp_progress_json|safe }};
     window.winner = "{{ winner }}";
   </script>
-  <script src="{% static 'js/fight1.js' %}"></script>
+  <script src="{% static 'js/fight.js' %}"></script>
 {% endblock %}

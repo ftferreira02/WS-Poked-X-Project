@@ -12,7 +12,7 @@ function nextTurn() {
   if (turn < battleLogs.length) {
     const message = battleLogs[turn];
     typeText(battleMessage, message);
-    
+
     const index = Math.floor(turn / 2);
     if (hpProgress[index]) {
       hp1.textContent = hpProgress[index].hp1;
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (opponentImg) {
     animatePokemonEntry(opponentImg, scale2);
   }
-  
+
 
 
   function animatePokemonEntry(pokemonImg, targetHeight) {
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }, 100); // pequeno delay para garantir renderização inicial
 }
 
-  
+
 
   // Começa com a primeira mensagem
   nextTurn();
