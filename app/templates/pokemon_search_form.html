@@ -32,6 +32,18 @@
                 {% endif %}
                 <button type="submit" class="btn btn-primary">Pesquisar</button>
                 <a href="{% url 'search_pokemon' %}" class="btn btn-secondary">Limpar</a>
+                <div class="mb-3">
+                    <label for="sort" class="form-label">Ordenar por:</label>
+                    <select name="sort" id="sort" class="form-select" onchange="this.form.submit()">
+                      <option value="">-- Padrão --</option>
+                      <option value="name_asc" {% if sort_option == "name_asc" %}selected{% endif %}>Nome (A → Z)</option>
+                      <option value="name_desc" {% if sort_option == "name_desc" %}selected{% endif %}>Nome (Z → A)</option>
+                      <option value="id_asc" {% if sort_option == "id_asc" %}selected{% endif %}>ID (↑)</option>
+                      <option value="id_desc" {% if sort_option == "id_desc" %}selected{% endif %}>ID (↓)</option>
+                      <option value="exp_desc" {% if sort_option == "exp_desc" %}selected{% endif %}>EXP / Total Points (↓)</option>
+                      <option value="exp_asc" {% if sort_option == "exp_asc" %}selected{% endif %}>EXP / Total Points (↑)</option>
+                    </select>
+                  </div>
             </form>
             <p class="text-light mt-2">Use this input to search for any Pokémon. In an instant.</p>
         </div>
@@ -65,8 +77,9 @@
                         {% if pokemon.secondary_type %}
                           <span class="type {{ pokemon.secondary_type }}">{{ pokemon.secondary_type|title }}</span>
                         {% endif %}
-                    </div>                      
+                    </div>                       
                 </div>
+                <a href="{% url 'pokemon_stats' pokemon.id %}" class="btn btn-sm btn-outline-dark mt-2">Ver Detalhes</a>
             </div>
         </div>
         {% empty %}
@@ -75,6 +88,61 @@
         </div>
         {% endfor %}
     </div>
+
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link"
+                href="?page={{ page_obj.previous_page_number }}{% if name_filter %}&name={{ name_filter }}{% endif %}{% if active_type %}&type={{ active_type }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}
+                ">
+                Anterior
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if num == 1 %}
+                    <li class="page-item">
+                    <a class="page-link" href="?page=1{% if name_filter %}&name={{ name_filter }}{% endif %}{% if active_type %}&type={{ active_type }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}
+                    ">1</a>
+                    </li>
+                
+                {% elif num == page_obj.number %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                
+                {% elif num == page_obj.paginator.num_pages %}
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if name_filter %}&name={{ name_filter }}{% endif %}{% if active_type %}&type={{ active_type }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}
+                    ">{{ num }}</a>
+                    </li>
+                
+                {% elif num == page_obj.number|add:'-1' or num == page_obj.number|add:'1' %}
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if name_filter %}&name={{ name_filter }}{% endif %}{% if active_type %}&type={{ active_type }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}
+                    ">{{ num }}</a>
+                    </li>
+                
+                {% elif num == 2 or num == page_obj.paginator.num_pages|add:'-1' %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                href="?page={{ page_obj.next_page_number }}{% if name_filter %}&name={{ name_filter }}{% endif %}{% if active_type %}&type={{ active_type }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}
+                ">
+                Próxima
+                </a>
+            </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+    {% endif %}
 </div>
 
 </body>

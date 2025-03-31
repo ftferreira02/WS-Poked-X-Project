@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.core.paginator import Paginator
 from app.forms import PokemonSearchForm
 from app.sparql_client import run_query
 from app.models.geral_model import PokemonManager
@@ -14,6 +15,7 @@ def search_pokemon(request):
     form = PokemonSearchForm(request.GET or None)
     name_filter = request.GET.get("name", "").strip()
     type_filter = request.GET.get("type", "").strip().lower()
+    sort_option = request.GET.get("sort", "")
     pokemons = []
 
     if form.is_valid():
@@ -28,11 +30,31 @@ def search_pokemon(request):
     else:
         pokemons = PokemonManager.get_all_pokemons()
 
+    if sort_option == "name_asc":
+        pokemons.sort(key=lambda p: p.name.lower())
+    elif sort_option == "name_desc":
+        pokemons.sort(key=lambda p: p.name.lower(), reverse=True)
+    elif sort_option == "id_asc":
+        pokemons.sort(key=lambda p: p.number)
+    elif sort_option == "id_desc":
+        pokemons.sort(key=lambda p: p.number, reverse=True)
+    elif sort_option == "exp_asc":
+        pokemons.sort(key=lambda p: p.exp if p.exp is not None else 0)
+    elif sort_option == "exp_desc":
+        pokemons.sort(key=lambda p: p.exp if p.exp is not None else 0, reverse=True)
+
+    # 👉 PAGINATION
+    paginator = Paginator(pokemons, 40)  # 20 Pokémon per page
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     context = {
         'form': form,
-        'pokemons': pokemons,
+        'pokemons': page_obj,
+        'page_obj': page_obj,
         'name_filter': name_filter,
         'active_type': type_filter, 
+        'sort_option': sort_option,
         'pokemon_types': POKEMON_TYPES,
     }
 

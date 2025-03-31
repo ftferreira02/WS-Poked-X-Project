@@ -1,8 +1,6 @@
 # app/models.py
 from app.sparql_client import run_query
 import re
-import unicodedata
-
 
 class Pokemon:
 
@@ -16,19 +14,9 @@ class Pokemon:
         self.exp = exp
         self.is_mega = is_mega
 
-        normalized_name = unicodedata.normalize("NFKD", self.name).encode("ascii", "ignore").decode().strip().lower()
-        # Split words for reliable parsing
-        name_parts = normalized_name.split()
-
-        if number == 6:
-            # DEBUG 🔍
-            print(f"[DEBUG] Original name: '{self.name}'")
-            print(f"[DEBUG] Normalized: '{normalized_name}'")
-            print(f"[DEBUG] Name parts: {name_parts}")
-
+        name_parts = self.name.strip().lower().split()
         if number:
             if is_mega:
-               print(f"[DEBUG] Mega Pokémon detected: {self.name}")
                print(name_parts[-1])
                if name_parts[-1] == "x":
                 suffix = "-mega-x"
