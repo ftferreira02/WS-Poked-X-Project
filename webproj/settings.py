@@ -57,7 +57,6 @@ MIDDLEWARE = [
 # Para o admin funcionar
 WSGI_APPLICATION = 'webproj.wsgi.application'
 
-# ⚠️ Base de dados mínima (mesmo que não uses)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
