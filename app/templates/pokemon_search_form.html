@@ -1,33 +1,183 @@
-<!-- app/templates/pokemon_search_form.html -->
+<!-- templates/pokemon_search_form.html -->
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'search.css' %}">
+{% endblock %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon Search</title>
+    <title>Pokédex Search</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h1 class="mt-5">Pesquise Pokémon</h1>
 
-        <!-- Formulário -->
-        <form method="GET" action="/pokemon/search/">
-            {{ form.as_p }}  <!-- Renderiza o formulário -->
-            <button type="submit" class="btn btn-primary">Pesquisar</button>
-        </form>
 
-        <!-- Exibir Pokémon -->
-        <h2 class="mt-4">Pokémon Encontrados</h2>
-        <ul class="list-group mt-3">
-            {% for pokemon in pokemons %}
-                <li class="list-group-item">{{ pokemon }}</li>
-            {% empty %}
-                <li class="list-group-item">Nenhum Pokémon encontrado.</li>
-            {% endfor %}
-        </ul>
+    <form method="GET" action="{% url 'search_pokemon' %}" class="search-container">
+        <input type="hidden" name="type" value="{{ active_type|default:'' }}">
+        <input type="hidden" name="sort" value="{{ sort_option|default:'id_asc' }}">
+
+        <input type="text" id="poke-search" name="name" 
+        placeholder="Search Pokémon by name..." value="{{ name_filter|default:'' }}" aria-label="Search Pokémon">     
+
+        <button type="submit" class="pokeball-button" title="Search">
+            <img src="https://raw.githubusercontent.com/replyre/poke-info/main/search.png" alt="Search">
+        </button>
+    </form>
+
+
+<div class="container mt-4">
+
+    {# --- Filter and Sort Section --- #}
+    <div class="row mb-4 align-items-center filter-sort-section">
+        {# Type Filters - Left/Top #}
+        <div class="col-lg-9 col-md-8 type-filters">
+            <h5 class="filter-title me-3">Filter by type:</h5>
+             <div class="type-list">
+                 {# "All Types" Button - Active when no type is selected #}
+                 <a href="{% url 'search_pokemon' %}?name={{ name_filter|urlencode }}&sort={{ sort_option }}"
+                    class="type all-types {% if not active_type %}active{% endif %}">
+                     All
+                 </a>
+                 {# Buttons for each specific type #}
+                 {% for t in pokemon_types %}
+                     <a href="?type={{ t|urlencode }}{% if name_filter %}&name={{ name_filter|urlencode }}{% endif %}&sort={{ sort_option }}"
+                        class="type {{ t }} {% if t == active_type %}active{% endif %}">
+                         {{ t|title }}
+                     </a>
+                 {% endfor %}
+             </div>
+        </div>
+
+        {# Sort Dropdown - Right/Bottom #}
+        <div class="col-lg-3 col-md-4 sort-selector">
+            <form method="GET" action="{% url 'search_pokemon' %}" class="d-flex align-items-center justify-content-md-end">
+                {# Hidden inputs to preserve filters when changing sort #}
+                <input type="hidden" name="name" value="{{ name_filter|default:'' }}">
+                <input type="hidden" name="type" value="{{ active_type|default:'' }}">
+
+                <label for="sort" class="form-label me-2 mb-0 fw-bold">Sort by:</label>
+                <select name="sort" id="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                  <option value="id_asc" {% if sort_option == "id_asc" %}selected{% endif %}>ID Asc</option>
+                  <option value="id_desc" {% if sort_option == "id_desc" %}selected{% endif %}>ID Desc</option>
+                  <option value="name_asc" {% if sort_option == "name_asc" %}selected{% endif %}>Name A-Z</option>
+                  <option value="name_desc" {% if sort_option == "name_desc" %}selected{% endif %}>Name Z-A</option>
+                  <option value="exp_desc" {% if sort_option == "exp_desc" %}selected{% endif %}>EXP Desc</option> {# Assuming exp maps to totalPoints #}
+                  <option value="exp_asc" {% if sort_option == "exp_asc" %}selected{% endif %}>EXP Asc</option>
+                </select>
+            </form>
+        </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+    {# --- Pokémon Results Grid --- #}
+    <div class="row pokemon-grid">
+        {% for pokemon in pokemons %}
+        {# Revert column classes for the previous size/spacing #}
+        <div class="col-md-2 col-sm-4 col-6 text-center mb-4">
+            <div class="card pokemon-card h-100">
+                {# Link wraps the top part ONLY #}
+                <a href="{% url 'pokemon_stats' pokemon.id %}" class="pokemon-card-clickable-area">
+                    <div class="pokemon-card-img-container">
+                        <img src="{{ pokemon.image_url }}" class="card-img-top" alt="{{ pokemon.name }}" loading="lazy">
+                    </div>
+                    <div class="pokemon-card-info">
+                        <p class="pokemon-number">#{{ pokemon.number|stringformat:"03d" }}</p>
+                        <h5 class="pokemon-name">{{ pokemon.name }}</h5>
+                        <p class="pokemon-exp">EXP: {{ pokemon.exp }}</p>
+                    </div>
+                </a>
+                {# Type badges section #}
+                <div class="pokemon-card-types-section">
+                     <div class="type-badges ">
+                        <span class="type {{ pokemon.primary_type }}">{{ pokemon.primary_type|title }}</span>
+                        {% if pokemon.secondary_type and pokemon.secondary_type|lower != 'nan' %}
+                            <span class="type {{ pokemon.secondary_type }}">{{ pokemon.secondary_type|title }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div> {# End card #}
+        </div> {# End column #}
+        {% empty %}
+        <div class="col-12 text-center mt-5 mb-5">
+            <h4>No Pokémon found matching your criteria.</h4>
+            <p><a href="{% url 'search_pokemon' %}" class="btn btn-link">Clear filters and search</a></p>
+        </div>
+        {% endfor %}
+    </div> {# End pokemon-grid #}
+
+    {# --- Pagination --- #}
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-4 mb-5">
+         <ul class="pagination justify-content-center flex-wrap"> {# Added flex-wrap for smaller screens #}
+
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" aria-label="Previous"
+                href="?page={{ page_obj.previous_page_number }}{% if name_filter %}&name={{ name_filter|urlencode }}{% endif %}{% if active_type %}&type={{ active_type|urlencode }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}"
+                >
+                « <span class="d-none d-sm-inline">Prev</span> {# Hide text on extra small screens #}
+                </a>
+            </li>
+            {% else %}
+             <li class="page-item disabled">
+                 <span class="page-link">« <span class="d-none d-sm-inline">Prev</span></span>
+             </li>
+            {% endif %}
+
+            {# Condensed Pagination Logic #}
+            {% for num in page_obj.paginator.get_elided_page_range %}
+                {% if num == page_obj.paginator.ELLIPSIS %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% elif num == page_obj.number %}
+                    <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span></li>
+                {% else %}
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if name_filter %}&name={{ name_filter|urlencode }}{% endif %}{% if active_type %}&type={{ active_type|urlencode }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}"
+                    >{{ num }}</a>
+                    </li>
+                {% endif %}
+             {% endfor %}
+
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" aria-label="Next"
+                href="?page={{ page_obj.next_page_number }}{% if name_filter %}&name={{ name_filter|urlencode }}{% endif %}{% if active_type %}&type={{ active_type|urlencode }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}"
+                >
+                 <span class="d-none d-sm-inline">Next</span> »
+                </a>
+            </li>
+            {% else %}
+             <li class="page-item disabled">
+                 <span class="page-link"><span class="d-none d-sm-inline">Next</span> »</span>
+             </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    let timer;
+    document.getElementById('searchInput').addEventListener('input', function () {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            const name = this.value.trim();
+            const params = new URLSearchParams(window.location.search);
+            if (name) {
+                params.set('name', name);
+            } else {
+                params.delete('name');
+            }
+            window.location.search = params.toString();
+        }, 500); // 500ms debounce
+    });
+</script>
+    
 </body>
 </html>
