@@ -29,7 +29,7 @@ function nextTurn() {
   }
 }
 
-function typeText(element, text, speed = 50, callback = null) {
+function typeText(element, text, speed = 20, callback = null) {
   element.textContent = "";
   let i = 0;
   const interval = setInterval(() => {

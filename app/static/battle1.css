@@ -225,7 +225,7 @@ body {
    .swords-container {
     position: fixed;
     top: 50%;
-    left: 52%;
+    left: 55%;
     transform: translate(-50%, -50%);
     width: 300px;
     height: 300px;
