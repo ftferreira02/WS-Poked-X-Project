@@ -85,21 +85,22 @@
 .type {
     padding: 0.3em 0.8em;
     color: white !important; /* Ensure text is white */
-    border-radius: 15px; /* More rounded */
+    border-radius: 10px; /* More rounded */
     font-weight: 500;
     font-size: 0.8rem;
     text-decoration: none !important; /* Remove underline from links */
     margin: 0; /* Remove extra margin */
     display: inline-block;
     text-align: center;
-    border: 2px solid transparent; /* Base border */
+    border: none; /* remove border to match image */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* Add subtle shadow */
     transition: transform 0.1s ease-in-out, border-color 0.2s ease;
     text-transform: capitalize;
 }
 
 .type:hover {
     transform: translateY(-2px);
-    filter: brightness(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
 }
 
 .type.active {
@@ -137,14 +138,14 @@
     border: 1px solid #e9ecef;
     border-radius: 0.5rem;
     text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     /* Card itself is not flex-column anymore, content structure dictates layout */
     transition: box-shadow 0.2s ease-out;
     overflow: hidden; /* Prevent content spillover if needed */
 }
 
 .pokemon-card:hover {
-     box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
 }
 
 /* Style the clickable link area */
