@@ -1,6 +1,9 @@
-{% extends 'base.html' %} {% load static %} {% block title %} Pokémon Battle {% endblock %} {% block extra_css %}
-<link rel="stylesheet" href="{% static 'battle1.css' %}" />
-{% endblock %} {% block body_class %}fight-page{% endblock %} 
+{% extends 'base.html' %} {% load static %} {% block title %} Pokémon Battle {% endblock %} 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'battle.css' %}" />
+<link rel="stylesheet" href="{% static 'historic.css' %}" />
+{% endblock %} 
+{% block body_class %}fight-page{% endblock %} 
 
 {% block content %}
 
@@ -58,6 +61,21 @@
 <!-- Conteúdo original da página Pokémon -->
 <div>
   <div class="space"></div>
+  <!-- Adicione este código abaixo da div .game e antes da div .status -->
+  <div class="battle-history-container">
+    <div class="battle-history-title">Battle Historic</div>
+    {% for battle in battle_history %}
+    <div class="battle-log-entry">
+      <span class="battle-date">{{ battle.date|date:"Y-m-d H:i" }}</span><br>
+      <span class="battle-info">
+        ⚔️ {{ battle.pokemon1_name }} vs {{ battle.pokemon2_name }}<br>
+        🏆 Vencedor: <strong>{{ battle.winner_name }}</strong>
+      </span>
+    </div>
+  {% empty %}
+    <p style="padding: 10px;">No previous battles.</p>
+  {% endfor %}
+  </div>
   <div class="game">
     <div class="round-text">
       <span id="battle-message" class="round-message"></span>

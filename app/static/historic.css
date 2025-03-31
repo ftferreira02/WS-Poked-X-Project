@@ -1,0 +1,135 @@
+/* Estilos para a caixa de histórico de batalhas */
+.battle-history-container {
+  position: absolute;
+  right: 10px;
+  width: 255px;
+  max-height: 820px;
+  background-color: rgba(17, 17, 17, 0.9);
+  border: 3px solid #000;
+  border-radius: 8px;
+  color: white;
+  padding: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  font-family: monospace;
+}
+
+.battle-history-title {
+  text-align: center;
+  font-size: 17.5px;
+  font-weight: bold;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #444;
+  margin-bottom: 10px;
+}
+
+.battle-log-container {
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.battle-log-entry {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #444;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.battle-log-entry:last-child {
+  border-bottom: none;
+}
+
+.battle-log-entry.new-entry {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.battle-log-turn {
+  font-weight: bold;
+  color: #f39c12;
+  margin-bottom: 3px;
+}
+
+.battle-log-attack {
+  color: #e74c3c;
+}
+
+.battle-log-damage {
+  color: #3498db;
+}
+
+.battle-log-critical {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.battle-log-miss {
+  color: #95a5a6;
+  font-style: italic;
+}
+
+.battle-log-effect {
+  color: #2ecc71;
+}
+
+/* Scrollbar personalizada */
+.battle-log-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.battle-log-container::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+
+.battle-log-container::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+.battle-log-container::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+/* Ícone de pokébola ao lado do título */
+.battle-history-title::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url('http://bit.ly/pokeballimg');
+  background-size: 100% 100%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Animação para novos logs */
+@keyframes highlightNew {
+  0% {
+    background-color: rgba(255, 255, 0, 0.3);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.battle-log-entry.new-entry {
+  animation: highlightNew 1.5s ease-out;
+}
+
+
+.battle-date {
+  font-size: 12px;
+  color: #bbb;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.battle-info {
+  font-size: 14px;
+  color: #fff;
+  line-height: 1.4;
+}
