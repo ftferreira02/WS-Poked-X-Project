@@ -11,7 +11,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', search_pokemon, name='search_pokemon'),
     path('pokemon/stats/<int:pokemon_id>/', pokemon_stats, name='pokemon_stats'),
-    path('pokemon/compare/', compare_and_select_pokemon, name='compare_pokemon'),
+    path('compare/', compare_and_select_pokemon, name='compare_pokemon'),
     path('battle/', pokemon_battle_view, name='battle'),
     path("pokemon/ask/", ask_pokemon_question, name="ask_question"),
 
