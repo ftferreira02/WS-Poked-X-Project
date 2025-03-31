@@ -1,41 +1,39 @@
-
 <div class="sidebar">
-    <div class="sidebar-header">
-      <div class="pixel-logo" id="pixel-logo"></div>
-      <h1>POKED-X</h1>
-      <p>POKEMON DATABASE</p>
-    </div>
-  
-    <ul class="nav">
-      <li class="nav-item">
-        <a class="nav-link" data-page="home">
-          <div class="pixel-icon" id="home-icon"></div>
-          HOME
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-page="articles">
-          <div class="pixel-icon" id="articles-icon"></div>
-          SEARCH
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-page="games">
-          <div class="pixel-icon" id="games-icon"></div>
-          FIGHT
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-page="about">
-          <div class="pixel-icon" id="about-icon"></div>
-          ABOUT US
-        </a>
-      </li>
-    </ul>
-  
-    <div class="sidebar-footer">
-      <p>Poked-X</p>
-      <p>All you need to know about pokemons!</p>
-    </div>
+  <div class="sidebar-header">
+    <div class="pixel-logo" id="pixel-logo"></div>
+    <h1>POKED-X</h1>
+    <p>POKEMON DATABASE</p>
   </div>
   
+  <ul class="nav">
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'search_pokemon' %}" data-page="search">
+        <div class="pixel-icon" id="articles-icon"></div>
+        SEARCH
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'battle' %}" data-page="battle">
+        <div class="pixel-icon" id="games-icon"></div>
+        FIGHT
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'ask_question' %}" data-page="ask">
+        <div class="pixel-icon" id="ask-icon"></div>
+        ASK
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-page="about">
+        <div class="pixel-icon" id="about-icon"></div>
+        ABOUT US
+      </a>
+    </li>
+  </ul>
+  
+  <div class="sidebar-footer">
+    <p>Poked-X</p>
+    <p>All you need to know about pokemons!</p>
+  </div>
+  </div>
