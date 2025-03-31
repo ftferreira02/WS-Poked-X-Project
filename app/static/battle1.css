@@ -243,11 +243,11 @@ body {
   }
   
   .sword-left {
-    animation: appearLeft 1.5s forwards;
+    animation: appearLeft 1s forwards;
   }
   
   .sword-right {
-    animation: appearRight 1.5s forwards;
+    animation: appearRight 1s forwards;
   }
   
   @keyframes appearLeft {
@@ -288,8 +288,8 @@ body {
   }
   
   .swords-container.fade-out {
-    animation: fadeOut 1s forwards;
-    animation-delay: 4s; /* Aumentado para dar tempo ao texto FIGHT */
+    animation: fadeOut 0.5s forwards;
+    animation-delay: 2s; /* Aumentado para dar tempo ao texto FIGHT */
   }
   
   /* Estilo para o texto FIGHT */
@@ -305,7 +305,7 @@ body {
     text-shadow: 3px 3px 0 #000, -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000;
     z-index: 1000;
     animation: fightAppear 0.5s forwards;
-    animation-delay: 1.8s; /* Aparece depois das espadas se cruzarem */
+    animation-delay: 1s; /* Aparece depois das espadas se cruzarem */
   }
   
   @keyframes fightAppear {
@@ -411,4 +411,19 @@ body {
 
 }
 
+@keyframes growIn {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  100% {
+    height: var(--target-height, 150px);
+    opacity: 1;
+  }
+}
 
+.pokemon {
+  height: auto;
+  opacity: 0; /* começa invisível */
+  transition: none;
+}

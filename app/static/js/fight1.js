@@ -12,23 +12,24 @@ function nextTurn() {
   if (turn < battleLogs.length) {
     const message = battleLogs[turn];
     typeText(battleMessage, message);
-    turn++;
+    
     const index = Math.floor(turn / 2);
     if (hpProgress[index]) {
       hp1.textContent = hpProgress[index].hp1;
       hp2.textContent = hpProgress[index].hp2;
     }
+    turn++;
   } else {
     const last = hpProgress[hpProgress.length - 1];
     hp1.textContent = last.hp1;
     hp2.textContent = last.hp2;
-    
+
     battleMessage.textContent = "🏆 " + winner + " won the battle!";
     document.getElementById("next-btn").disabled = true;
   }
 }
 
-function typeText(element, text, speed = 30, callback = null) {
+function typeText(element, text, speed = 50, callback = null) {
   element.textContent = "";
   let i = 0;
   const interval = setInterval(() => {
@@ -82,17 +83,40 @@ document.addEventListener('DOMContentLoaded', function () {
   const opponentImg = document.getElementById('opponent-img');
 
   if (playerImg) {
-    playerImg.style.height = `${scale1}px`;
-    playerImg.style.maxHeight = "none";
-    playerImg.style.width = "auto";
+    animatePokemonEntry(playerImg, scale1);
   }
-
   if (opponentImg) {
-    opponentImg.style.height = `${scale2}px`;
-    opponentImg.style.maxHeight = "none";
-    opponentImg.style.width = "auto";
+    animatePokemonEntry(opponentImg, scale2);
   }
+  
+
+
+  function animatePokemonEntry(pokemonImg, targetHeight) {
+  pokemonImg.style.height = '0px';
+  pokemonImg.style.opacity = '0';
+
+  pokemonImg.style.setProperty('--target-height', `${targetHeight}px`);
+
+  // Adiciona a classe animada um pouco depois (força reflow)
+  setTimeout(() => {
+    pokemonImg.style.animation = 'growIn 1.5s forwards';
+  }, 100); // pequeno delay para garantir renderização inicial
+}
+
+  
 
   // Começa com a primeira mensagem
   nextTurn();
 });
+
+function animatePokemonEntry(pokemonImg, targetHeight) {
+  pokemonImg.style.height = '0px';
+  pokemonImg.style.opacity = '0';
+
+  pokemonImg.style.setProperty('--target-height', `${targetHeight}px`);
+
+  // Adiciona a classe animada um pouco depois (força reflow)
+  setTimeout(() => {
+    pokemonImg.style.animation = 'growIn 1.5s forwards';
+  }, 100); // pequeno delay para garantir renderização inicial
+}
