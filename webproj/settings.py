@@ -57,7 +57,6 @@ MIDDLEWARE = [
 # Para o admin funcionar
 WSGI_APPLICATION = 'webproj.wsgi.application'
 
-# ⚠️ Base de dados mínima (mesmo que não uses)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -73,4 +72,6 @@ STATICFILES_DIRS = [
 
 # SPARQL endpoint para GraphDB
 GRAPHDB_ENDPOINT = "http://graphdb:7200/repositories/Poked-X"
+SPARQL_UPDATE_ENDPOINT = "http://graphdb:7200/repositories/Poked-X/statements"
+
 

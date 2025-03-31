@@ -1,4 +1,3 @@
-# app/models.py
 from app.sparql_client import run_query
 import re
 
@@ -208,7 +207,6 @@ class PokemonManager:
         query = f"""
         PREFIX ns1: <http://example.org/pokemon/>
         PREFIX schema1: <http://schema.org/>
-
         SELECT ?name ?attack ?defense ?hp ?spAttack ?spDefense ?speed ?totalPoints
                ?height ?weight ?isLegendary ?generation ?baseFriendship
                ?primaryType ?secondaryType ?pokedexNumber
@@ -231,15 +229,12 @@ class PokemonManager:
                                                            ns1:secondaryType ?secondaryType ;
                                                            ns1:pokedexNumber ?pokedexNumber ;
                                                            ns1:effectiveness ?eff .
-
           ?eff ?againstType ?value .
           FILTER STRSTARTS(STR(?againstType), STR(ns1:against))
         }}
         """
-
         results = run_query(query)
         bindings = results["results"]["bindings"]
-
         if not bindings:
             return None
 
@@ -278,7 +273,7 @@ class PokemonManager:
                     "totalPoints": int(binding["totalPoints"]["value"]),
                     "height": float(binding["height"]["value"]),
                     "weight": float(binding["weight"]["value"]),
-                    "isLegendary": binding["isLegendary"]["value"] == "true",
+                    "isLegendary": (binding["isLegendary"]["value"] == "true"),
                     "generation": int(binding["generation"]["value"]),
                     "baseFriendship": int(binding["baseFriendship"]["value"]),
                     "primaryType": binding["primaryType"]["value"].split("/")[-1],
@@ -287,14 +282,113 @@ class PokemonManager:
                 })
 
             type_name = binding["againstType"]["value"].split("against")[-1].lower()
-            value = float(binding["value"]["value"])
-
-            if value > 1.0:
+            val = float(binding["value"]["value"])
+            if val > 1.0:
                 stats["strongAgainst"].append(type_name)
-            elif 0.0 < value < 1.0:
+            elif 0.0 < val < 1.0:
                 stats["weakAgainst"].append(type_name)
-                
+
             stats["strongAgainst"] = list(dict.fromkeys(stats["strongAgainst"]))
             stats["weakAgainst"] = list(dict.fromkeys(stats["weakAgainst"]))
 
         return stats
+
+    @staticmethod
+    def ask_question_about_pokemon(pokemon_name, property_uri, value_uri):
+        n = pokemon_name.replace('"', '\\"')
+        if property_uri.endswith("generation"):
+            query = f"""
+            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            ASK {{
+              ?pokemon a ex:Pokemon ;
+                       sc:name "{n}" ;
+                       ex:generation {value_uri} .
+            }}
+            """
+        elif property_uri.endswith("isLegendary"):
+            query = f"""
+            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            ASK {{
+              ?pokemon a ex:Pokemon ;
+                       sc:name "{n}" ;
+                       ex:isLegendary {value_uri} .
+            }}
+            """
+        elif property_uri.endswith("type"):
+            query = f"""
+            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            ASK {{
+              ?pokemon a ex:Pokemon ;
+                       sc:name "{n}" .
+              {{
+                FILTER EXISTS {{
+                  ?pokemon ex:primaryType <{value_uri}> .
+                }}
+              }}
+              UNION
+              {{
+                FILTER EXISTS {{
+                  ?pokemon ex:secondaryType <{value_uri}> .
+                }}
+              }}
+            }}
+            """
+        elif property_uri.endswith("ability"):
+            query = f"""
+            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            ASK {{
+              ?pokemon a ex:Pokemon ;
+                       sc:name "{n}" .
+              {{
+                FILTER EXISTS {{
+                  ?pokemon ex:ability1 <{value_uri}> .
+                }}
+              }}
+              UNION
+              {{
+                FILTER EXISTS {{
+                  ?pokemon ex:ability2 <{value_uri}> .
+                }}
+              }}
+            }}
+            """
+        elif property_uri.endswith("habitat"):
+            query = f"""
+            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            ASK {{
+              ?pokemon a ex:Pokemon ;
+                       sc:name "{n}" ;
+                       ex:habitat <{value_uri}> .
+            }}
+            """
+        elif property_uri.endswith("weakAgainst"):
+            t = value_uri.rsplit('/', 1)[-1]
+            p = f"against{t.capitalize()}"
+            query = f"""
+            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            ASK {{
+              ?pokemon a ex:Pokemon ;
+                       sc:name "{n}" ;
+                       ex:effectiveness ?eff .
+              ?eff ex:{p} ?val .
+              FILTER(?val > 1.0)
+            }}
+            """
+        else:
+            query = f"""
+            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            ASK {{
+              ?pokemon a ex:Pokemon ;
+                       sc:name "{n}" ;
+                       <{property_uri}> <{value_uri}> .
+            }}
+            """
+        result = run_query(query)
+        return result.get("boolean", False)
