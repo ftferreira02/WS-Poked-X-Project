@@ -1,10 +1,11 @@
 /* static/search.css */
 
-body {
+.content {
+    margin-left: 250px;  /* Adjust based on sidebar width */
+    padding: 1.5rem;
+    transition: margin 0.3s ease;
     font-family: 'Courier New', monospace; 
-    background-color: #f8f9fa;
-
-}
+  }
 
 .search-container {
     display: flex;

@@ -1,19 +1,15 @@
 <!-- templates/pokemon_search_form.html -->
+{% extends 'base.html' %}
 {% load static %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'search.css' %}">
+<link rel="stylesheet" href="{% static 'search.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
 {% endblock %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Pokédex Search</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
 
+
+{% block content %}
 
     <form method="GET" action="{% url 'search_pokemon' %}" class="search-container">
         <input type="hidden" name="type" value="{{ active_type|default:'' }}">
@@ -160,11 +156,10 @@
     {% endif %}
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
-
+{% block extra_scripts %}
 <script>
     let timer;
-    document.getElementById('searchInput').addEventListener('input', function () {
+    document.getElementById('poke-search').addEventListener('input', function () {
         clearTimeout(timer);
         timer = setTimeout(() => {
             const name = this.value.trim();
@@ -175,9 +170,9 @@
                 params.delete('name');
             }
             window.location.search = params.toString();
-        }, 500); // 500ms debounce
+        }, 500);
     });
 </script>
+{% endblock %}
     
-</body>
-</html>
+{% endblock %}
