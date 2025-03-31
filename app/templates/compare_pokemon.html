@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'compare.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="content">
+  <h1>Compare Pokémon Sizes</h1>
+
+<form method="post" style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+  {% csrf_token %}
+  <input type="text" id="pokemon-search" placeholder="Search Pokémon..." autocomplete="off">
+  <input type="hidden" name="pokemons" id="selected-pokemons">
+  <button type="submit" class="compare-btn">Compare</button>
+</form>
+
+<div id="suggestions"></div>
+
+<div id="selected-list" class="selected-pokeballs">
+  {% for p in selected_pokemons %}
+  <div class="pokeball-wrapper" data-id="{{ p.number }}" title="{{ p.name }}">
+      <button type="button" class="pokeball-button">
+        <img src="https://raw.githubusercontent.com/replyre/poke-info/main/search.png" alt="Pokéball">
+      </button>
+      <img src="{{ p.image_url }}" class="pokemon-inside" alt="{{ p.name }}">
+    </div>
+  {% endfor %}
+</div>
+
+  {% if pokemons %}
+    <hr>
+    <h2>Size Comparison</h2>
+    <div class="comparison-wrapper" style="position: relative; height: {{ max_display_height }}px;">
+      <div class="ruler-grid">
+        {% for tick in tick_data %}
+          <div class="ruler-line" style="top: {{ tick.top_px|floatformat:0 }}px;">
+            <span>{{ tick.label }} m</span>
+          </div>
+        {% endfor %}
+      </div>
+    
+      <div class="comparison-container">
+        {% for p in pokemons %}
+          <div style="text-align: center;">
+            <img src="{{ p.image_url }}" alt="{{ p.name }}" style="height: {{ p.scaled_height }};">
+            <div style="margin-top: 10px;">
+                <strong>#{{ p.number }} {{ p.name }}</strong><br>
+                Height: {{ p.height }} m<br>
+                Weight: {{ p.weight }} kg
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const allPokemons = [
+    {% for p in form.fields.pokemons.choices %}
+      { 
+        number: "{{ p.0 }}", 
+        name: "{{ p.1|escapejs }}", 
+        image_url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ p.0 }}.png"
+      },
+    {% endfor %}
+  ];
+  </script>
+
+<script>
+  const searchInput = document.getElementById('pokemon-search');
+  const suggestionsDiv = document.getElementById('suggestions');
+  const selectedList = document.getElementById('selected-list');
+  const hiddenInput = document.getElementById('selected-pokemons');
+  
+  let selectedPokemons = [];
+  
+  searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+      suggestionsDiv.innerHTML = "";
+  
+      if (!query) return;
+  
+      const matches = allPokemons.filter(p => p.name.toLowerCase().includes(query) && !selectedPokemons.includes(p.number)).slice(0, 5);
+
+      console.log("🔎 Query:", query);
+      console.log("🎯 Matches:", matches);
+      
+      matches.forEach(pokemon => {
+        const div = document.createElement('div');
+        div.classList.add('suggestion');
+        div.innerHTML = `
+          <img src="${pokemon.image_url}"
+              alt="${pokemon.name}"
+              style="height: 20px; vertical-align: middle; margin-right: 8px;">
+          ${pokemon.name}`;
+        div.onclick = () => addPokemon(pokemon);
+        suggestionsDiv.appendChild(div);
+      });
+  });
+  
+  function addPokemon(pokemon) {
+      if (selectedPokemons.length >= 5) return;
+      if (selectedPokemons.includes(pokemon.number)) return;
+
+      selectedPokemons.push(pokemon.number);
+  
+      const wrapper = document.createElement('div');
+      wrapper.classList.add('pokeball-wrapper');
+      wrapper.title = pokemon.name;
+
+      const button = document.createElement('button');
+      button.type = "button";
+      button.classList.add('pokeball-button');
+
+      const backgroundImg = document.createElement('img');
+      backgroundImg.src = "https://raw.githubusercontent.com/replyre/poke-info/main/search.png";
+      backgroundImg.alt = "Pokéball";
+
+      const spriteImg = document.createElement('img');
+      spriteImg.src = pokemon.image_url;
+      spriteImg.alt = pokemon.name;
+      spriteImg.classList.add('pokemon-inside');
+
+      button.appendChild(backgroundImg);
+      wrapper.appendChild(button);
+      wrapper.appendChild(spriteImg);
+
+      wrapper.onclick = () => {
+          selectedPokemons = selectedPokemons.filter(n => n !== pokemon.number);
+          wrapper.remove();
+          hiddenInput.value = selectedPokemons.join(',');
+      };
+
+      selectedList.appendChild(wrapper);
+      hiddenInput.value = selectedPokemons.join(',');
+    
+      searchInput.value = '';
+      suggestionsDiv.innerHTML = '';
+  }
+
+  // Attach click handlers to server-rendered Pokéballs on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    // Rebuild selectedPokemons list from rendered pokeballs
+    document.querySelectorAll('.pokeball-wrapper').forEach(wrapper => {
+      const name = wrapper.getAttribute('title');
+      const sprite = wrapper.querySelector('.pokemon-inside');
+      const number = wrapper.dataset.id;
+      
+      if (number && !selectedPokemons.includes(number)) {
+        selectedPokemons.push(number);
+        wrapper.addEventListener('click', () => {
+          selectedPokemons = selectedPokemons.filter(n => n !== number);
+          wrapper.remove();
+          hiddenInput.value = selectedPokemons.join(',');
+        });
+      }
+    });
+
+    // Set hidden input value
+    hiddenInput.value = selectedPokemons.join(',');
+  });
+
+  // Helper to extract ID from sprite URL
+  function extractPokemonId(url) {
+    const match = url.match(/\/(\d+)\.png$/);
+    return match ? match[1] : null;
+  }
+
+  </script>
+{% endblock %}

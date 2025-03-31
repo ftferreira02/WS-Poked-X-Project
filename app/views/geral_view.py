@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from app.forms import PokemonSearchForm
+from app.forms import ComparePokemonForm
 from app.sparql_client import run_query
 from app.models.geral_model import PokemonManager
+import math
 from django.views.decorators.csrf import csrf_exempt
+
 
 # Lista de tipos para o dropdown de filtros.
 POKEMON_TYPES = [
@@ -64,6 +67,53 @@ def search_pokemon(request):
 
     return render(request, 'pokemon_search_form.html', context)
 
+def compare_and_select_pokemon(request):
+    form = ComparePokemonForm()
+    selected_ids = []
+
+    if request.method == "POST":
+        selected_str = request.POST.get("pokemons", "")
+        selected_ids = selected_str.split(",") if selected_str else []
+        selected_ids = [int(pid) for pid in selected_ids if pid.isdigit()]
+        print("🧪 Selected IDs:", selected_ids)
+
+    pokemons = []
+    if selected_ids:
+        pokemons = PokemonManager.get_pokemon_with_physical_info(selected_ids)
+
+    max_height = max([p.height for p in pokemons if p.height], default=1.0)
+
+    MAX_DISPLAY_HEIGHT_PX = 400  # max height in pixels for tallest Pokémon
+
+    for p in pokemons:
+        if p.height:
+            scale = MAX_DISPLAY_HEIGHT_PX / max_height
+            p.scaled_height = f"{int(p.height * scale)}px"
+        else:
+            p.scaled_height = "100px"
+
+    
+    # Round up to nearest multiple of 5 for cleaner ruler
+    rounded_max = math.ceil(max_height / 5.0) * 5
+    tick_interval = rounded_max // 5  # 5 ticks total
+    ticks = list(range(0, rounded_max + 1, tick_interval))
+
+    tick_height_px = lambda value: (value / max_height) * MAX_DISPLAY_HEIGHT_PX
+
+    tick_data = [{
+        "label": tick,
+        "top_px": MAX_DISPLAY_HEIGHT_PX - tick_height_px(tick)
+    } for tick in ticks]
+
+    return render(request, 'compare_pokemon.html', {
+        'form': form,
+        'pokemons': pokemons,
+        'tick_data': tick_data,
+        'max_display_height': MAX_DISPLAY_HEIGHT_PX,
+        'max_pokemon_height': max_height,
+        'selected_pokemons': pokemons
+    })
+  
 def pokemon_stats(request, pokemon_id):
     stats = PokemonManager.get_stats_by_id(pokemon_id)
     if stats is None:
