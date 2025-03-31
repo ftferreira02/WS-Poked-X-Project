@@ -10,33 +10,50 @@
 <div class="content">
   <h1>Compare Pokémon Sizes</h1>
 
+<form method="post" style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+  {% csrf_token %}
   <input type="text" id="pokemon-search" placeholder="Search Pokémon..." autocomplete="off">
-  <div id="suggestions"></div>
+  <input type="hidden" name="pokemons" id="selected-pokemons">
+  <button type="submit" class="compare-btn">Compare</button>
+</form>
 
-  <div id="selected-list" style="margin-top: 1em;">
-      <!-- Selected Pokémon will appear here -->
-  </div>
+<div id="suggestions"></div>
 
-  <form method="post">
-    {% csrf_token %}
-    <input type="hidden" name="pokemons" id="selected-pokemons">
-    <button type="submit">Compare</button>
-  </form>
+<div id="selected-list" class="selected-pokeballs">
+  {% for p in selected_pokemons %}
+    <div class="pokeball-wrapper" title="{{ p.name }}">
+      <button type="button" class="pokeball-button">
+        <img src="https://raw.githubusercontent.com/replyre/poke-info/main/search.png" alt="Pokéball">
+      </button>
+      <img src="{{ p.image_url }}" class="pokemon-inside" alt="{{ p.name }}">
+    </div>
+  {% endfor %}
+</div>
 
   {% if pokemons %}
     <hr>
     <h2>Size Comparison</h2>
-    <div class="comparison-container">
-      {% for p in pokemons %}
+    <div class="comparison-wrapper" style="position: relative; height: {{ max_display_height }}px;">
+      <div class="ruler-grid">
+        {% for tick in tick_data %}
+          <div class="ruler-line" style="top: {{ tick.top_px|floatformat:0 }}px;">
+            <span>{{ tick.label }} m</span>
+          </div>
+        {% endfor %}
+      </div>
+    
+      <div class="comparison-container">
+        {% for p in pokemons %}
           <div style="text-align: center;">
             <img src="{{ p.image_url }}" alt="{{ p.name }}" style="height: {{ p.scaled_height }};">
-              <div style="margin-top: 10px;">
-                  <strong>#{{ p.number }} {{ p.name }}</strong><br>
-                  Height: {{ p.height }} m<br>
-                  Weight: {{ p.weight }} kg
-              </div>
+            <div style="margin-top: 10px;">
+                <strong>#{{ p.number }} {{ p.name }}</strong><br>
+                Height: {{ p.height }} m<br>
+                Weight: {{ p.weight }} kg
+            </div>
           </div>
-      {% endfor %}
+        {% endfor %}
+      </div>
     </div>
   {% endif %}
 </div>

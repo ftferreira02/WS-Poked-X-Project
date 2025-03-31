@@ -4,6 +4,8 @@ from app.forms import PokemonSearchForm
 from app.forms import ComparePokemonForm
 from app.sparql_client import run_query
 from app.models.geral_model import PokemonManager
+import math
+
 
 
 POKEMON_TYPES = [
@@ -61,34 +63,6 @@ def search_pokemon(request):
 
     return render(request, 'pokemon_search_form.html', context)
 
-# def select_pokemon(request):
-#     all_pokemons = PokemonManager.get_all_pokemons()
-#     choices = [(str(p.number), f"#{p.number} - {p.name}") for p in all_pokemons]
-
-#     if request.method == "POST":
-#         form = ComparePokemonForm(request.POST)
-#         form.fields['pokemons'].choices = choices
-
-#         if form.is_valid():
-#             selected_ids = form.cleaned_data['pokemons']
-#             return compare_pokemon(request, selected_ids)  # call directly or redirect with params
-#     else:
-#         form = ComparePokemonForm()
-#         form.fields['pokemons'].choices = choices
-
-#     return render(request, 'select_pokemon_form.html', {'form': form})
-
-# def compare_pokemon(request, selected_ids=None):
-#     if not selected_ids:
-#         selected_ids = request.GET.getlist('pokemon_ids')
-#     selected_ids = [int(pid) for pid in selected_ids if str(pid).isdigit()][:5]
-
-#     pokemons = PokemonManager.get_pokemon_with_physical_info(selected_ids)
-
-#     return render(request, 'compare_pokemon.html', {
-#         'pokemons': pokemons
-#     })
-
 def compare_and_select_pokemon(request):
     form = ComparePokemonForm()
     selected_ids = []
@@ -103,19 +77,37 @@ def compare_and_select_pokemon(request):
     if selected_ids:
         pokemons = PokemonManager.get_pokemon_with_physical_info(selected_ids)
 
-    # Apply height scaling
-    SCALE = 100  # 1 meter = 100px
-    print("SCALE:", SCALE)
+    max_height = max([p.height for p in pokemons if p.height], default=1.0)
+
+    MAX_DISPLAY_HEIGHT_PX = 400  # max height in pixels for tallest Pokémon
+
     for p in pokemons:
-        try:
-            p.scaled_height = f"{int(float(p.height) * SCALE)}px" if p.height is not None else "100px"
-        except Exception as e:
-            print(f"⚠️ Error scaling {p.name} height ({p.height}):", e)
-            p.scaled_height = "200px"
+        if p.height:
+            scale = MAX_DISPLAY_HEIGHT_PX / max_height
+            p.scaled_height = f"{int(p.height * scale)}px"
+        else:
+            p.scaled_height = "100px"
+
+    
+    # Round up to nearest multiple of 5 for cleaner ruler
+    rounded_max = math.ceil(max_height / 5.0) * 5
+    tick_interval = rounded_max // 5  # 5 ticks total
+    ticks = list(range(0, rounded_max + 1, tick_interval))
+
+    tick_height_px = lambda value: (value / max_height) * MAX_DISPLAY_HEIGHT_PX
+
+    tick_data = [{
+        "label": tick,
+        "top_px": MAX_DISPLAY_HEIGHT_PX - tick_height_px(tick)
+    } for tick in ticks]
 
     return render(request, 'compare_pokemon.html', {
         'form': form,
-        'pokemons': pokemons
+        'pokemons': pokemons,
+        'tick_data': tick_data,
+        'max_display_height': MAX_DISPLAY_HEIGHT_PX,
+        'max_pokemon_height': max_height,
+        'selected_pokemons': pokemons
     })
 
 def pokemon_stats(request, pokemon_id):
