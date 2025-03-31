@@ -1,43 +1,262 @@
-.type {
-    padding: 5px 10px;
-    color: white;
-    border-radius: 8px;
-    font-weight: bold;
-    text-decoration: none;
-    margin: 5px;
-    display: inline-block;
-    min-width: 80px;
-    text-align: center;
-    transition: transform 0.1s ease-in-out;
-  }
-  
-  .type:hover {
-    transform: scale(1.05);
-  }
-  
-  .type.normal   { background-color: #A8A878; }
-  .type.fire     { background-color: #F08030; }
-  .type.water    { background-color: #6890F0; }
-  .type.electric { background-color: #F8D030; }
-  .type.grass    { background-color: #78C850; }
-  .type.ice      { background-color: #98D8D8; }
-  .type.fighting { background-color: #C03028; }
-  .type.poison   { background-color: #A040A0; }
-  .type.ground   { background-color: #E0C068; }
-  .type.flying   { background-color: #A890F0; }
-  .type.psychic  { background-color: #F85888; }
-  .type.bug      { background-color: #A8B820; }
-  .type.rock     { background-color: #B8A038; }
-  .type.ghost    { background-color: #705898; }
-  .type.dragon   { background-color: #7038F8; }
-  .type.dark     { background-color: #705848; }
-  .type.steel    { background-color: #B8B8D0; }
-  .type.fairy    { background-color: #EE99AC; }
+/* static/search.css */
 
-  .type-badges {
+body {
+    font-family: 'Courier New', monospace; 
+    background-color: #f8f9fa;
+
+}
+
+/* --- Header --- */
+.main-header {
+    background-color: #343a40; /* Dark background */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 0.5rem 0;
+}
+
+.main-header .logo img {
+    vertical-align: middle;
+}
+
+.search-container .form-control {
+    border-radius: 0.25rem 0 0 0.25rem; /* Adjust rounding if needed */
+}
+.search-container .btn-danger { /* Or btn-primary */
+     border-radius: 0 0.25rem 0.25rem 0;
+}
+.search-container .btn-outline-secondary {
+    white-space: nowrap; /* Prevent 'Clear' button from wrapping */
+}
+
+
+/* --- Filter & Sort Section --- */
+.filter-sort-section {
+    background-color: #ffffff;
+    padding: 1rem 1.5rem;
+    border-radius: 0.3rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.type-filters .filter-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: inline-block; /* Align with buttons */
+}
+
+.type-list {
+    display: inline-flex; /* Make the container inline */
+    flex-wrap: wrap; /* Allow wrapping */
+    gap: 6px; /* Spacing between buttons */
+    vertical-align: middle; /* Align vertically with title */
+}
+
+.sort-selector label {
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+.sort-selector .form-select-sm {
+    font-size: 0.9rem;
+    max-width: 150px; /* Limit width */
+}
+
+/* --- Type Buttons/Badges --- */
+.type {
+    padding: 0.3em 0.8em;
+    color: white !important; /* Ensure text is white */
+    border-radius: 15px; /* More rounded */
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-decoration: none !important; /* Remove underline from links */
+    margin: 0; /* Remove extra margin */
+    display: inline-block;
+    text-align: center;
+    border: 2px solid transparent; /* Base border */
+    transition: transform 0.1s ease-in-out, border-color 0.2s ease;
+    text-transform: capitalize;
+}
+
+.type:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.type.active {
+    border-color: #343a40; /* Dark border for active type */
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+.type.all-types { /* Specific style for the 'All' button */
+    background-color: #6c757d; /* Grey background */
+}
+
+/* Keep your existing type background colors */
+.type.normal   { background-color: #A8A878; }
+.type.fire     { background-color: #F08030; }
+.type.water    { background-color: #6890F0; }
+.type.electric { background-color: #F8D030; color: #333 !important; } /* Darker text for yellow */
+.type.grass    { background-color: #78C850; }
+.type.ice      { background-color: #98D8D8; color: #333 !important; } /* Darker text for light blue */
+.type.fighting { background-color: #C03028; }
+.type.poison   { background-color: #A040A0; }
+.type.ground   { background-color: #E0C068; color: #333 !important; } /* Darker text */
+.type.flying   { background-color: #A890F0; }
+.type.psychic  { background-color: #F85888; }
+.type.bug      { background-color: #A8B820; }
+.type.rock     { background-color: #B8A038; }
+.type.ghost    { background-color: #705898; }
+.type.dragon   { background-color: #7038F8; }
+.type.dark     { background-color: #705848; }
+.type.steel    { background-color: #B8B8D0; color: #333 !important; } /* Darker text */
+.type.fairy    { background-color: #EE99AC; }
+
+
+.pokemon-card {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    /* Card itself is not flex-column anymore, content structure dictates layout */
+    transition: box-shadow 0.2s ease-out;
+    overflow: hidden; /* Prevent content spillover if needed */
+}
+
+.pokemon-card:hover {
+     box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+/* Style the clickable link area */
+.pokemon-card-clickable-area {
+    display: block; /* Make it take up width */
+    text-decoration: none; /* No underline */
+    color: inherit; /* Inherit text color from parent */
+    padding: 1rem 0.8rem 0.5rem 0.8rem; /* Padding for image and info */
+    transition: background-color 0.15s ease-in-out;
+}
+.pokemon-card-clickable-area:hover {
+    background-color: #f8f9fa; /* Slight background change on hover */
+}
+
+
+.pokemon-card-img-container {
+    /* padding handled by clickable area now */
+    margin-bottom: 0.5rem; /* Space below image */
+}
+
+.pokemon-card .card-img-top {
+    max-width: 100px;
+    height: auto;
+    max-height: 100px;
+    margin: 0 auto;
+}
+
+/* Wrapper for Number, Name, EXP */
+.pokemon-card-info {
+    /* Styles for content inside the link are below */
+}
+
+
+.pokemon-number {
+    font-size: 0.8em;
+    color: #6c757d;
+    margin-bottom: 0.2rem;
+}
+
+.pokemon-name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: #343a40 !important; /* Ensure name color isn't link blue */
+    text-transform: capitalize;
+}
+
+.pokemon-exp {
+    font-size: 0.75em;
+    color: #888;
+    margin-bottom: 0; /* No space needed below EXP inside link */
+}
+
+
+/* New section wrapper for the type badges below the link */
+.pokemon-card-types-section {
+    padding: 0.5rem 0.8rem 1rem 0.8rem; /* Padding below the link, around badges */
+    border-top: 1px solid #f0f2f5; /* Subtle separator line */
+    margin-top: 0.5rem; /* Space above the separator/badges */
+}
+
+.type-badges {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    align-items: center;
+    width: 100%;     /* ⬅️ Make it span the card */
+    gap: 5px;
     flex-wrap: wrap;
-    margin-top: 5px;
-  }
+    
+}
+
+.type-badges .type {
+    display: inline-flex;      /* ⬅️ Ensures proper alignment */
+    justify-content: center;
+    align-items: center;
+    font-size: 0.7rem;
+    padding: 0.2em 0.6em;
+    min-width: 60px;           /* Optional: to keep visual balance */
+    text-align: center;
+}
+
+
+
+
+/* --- Pagination --- */
+.pagination .page-link {
+    color: #dc3545; /* Use theme color */
+}
+.pagination .page-item.active .page-link {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+}
+
+/* --- Footer --- */
+footer {
+    border-top: 1px solid #e9ecef;
+}
+
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 767.98px) {
+    .filter-sort-section {
+        text-align: center; /* Center filters/sort on smaller screens */
+    }
+    .type-filters .filter-title {
+        display: block; /* Stack title above buttons */
+        margin-bottom: 0.8rem;
+    }
+    .sort-selector {
+        margin-top: 1rem;
+        justify-content: center !important; /* Center sort dropdown */
+    }
+    .sort-selector label {
+         margin-bottom: 0.3rem; /* Add space below label */
+    }
+    .main-header .search-container {
+        padding-left: 1rem; /* Reduce padding */
+        padding-right: 1rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+     .pokemon-card-link:hover {
+         transform: none; /* Disable hover lift on very small screens if desired */
+         box-shadow: none;
+     }
+     .pokemon-card {
+         padding: 0.5rem;
+     }
+     .pokemon-name {
+         font-size: 0.9rem;
+     }
+}
