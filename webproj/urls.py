@@ -3,14 +3,19 @@ from django.contrib import admin
 from django.urls import path
 from app.views.geral_view import search_pokemon
 from app.views.geral_view import pokemon_stats
+from app.views.fight.fight_view import pokemon_battle_view
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('pokemon/search/', search_pokemon, name='search_pokemon'),
-    path('pokemon/stats/<int:pokemon_id>/', pokemon_stats, name='pokemon_stats'),
+    path('pokemon/stats/<int:pokemon_id>/', pokemon_stats),
+    path('battle/', pokemon_battle_view, name='battle'),
 ]
 
 
+
+#ola
 
 ### codigo lia
 # # Mapping/routing das URLs para este projeto.
