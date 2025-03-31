@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'compare.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="content">
+  <h1>Compare Pokémon Sizes</h1>
+
+  <input type="text" id="pokemon-search" placeholder="Search Pokémon..." autocomplete="off">
+  <div id="suggestions"></div>
+
+  <div id="selected-list" style="margin-top: 1em;">
+      <!-- Selected Pokémon will appear here -->
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="pokemons" id="selected-pokemons">
+    <button type="submit">Compare</button>
+  </form>
+
+  {% if pokemons %}
+    <hr>
+    <h2>Size Comparison</h2>
+    <div class="comparison-container">
+      {% for p in pokemons %}
+          <div style="text-align: center;">
+            <img src="{{ p.image_url }}" alt="{{ p.name }}" style="height: {{ p.scaled_height }};">
+              <div style="margin-top: 10px;">
+                  <strong>#{{ p.number }} {{ p.name }}</strong><br>
+                  Height: {{ p.height }} m<br>
+                  Weight: {{ p.weight }} kg
+              </div>
+          </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const allPokemons = [
+    {% for p in form.fields.pokemons.choices %}
+      { 
+        number: "{{ p.0 }}", 
+        name: "{{ p.1|escapejs }}", 
+        image_url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ p.0 }}.png"
+      },
+    {% endfor %}
+  ];
+  </script>
+
+<script>
+  const searchInput = document.getElementById('pokemon-search');
+  const suggestionsDiv = document.getElementById('suggestions');
+  const selectedList = document.getElementById('selected-list');
+  const hiddenInput = document.getElementById('selected-pokemons');
+  
+  let selectedPokemons = [];
+  
+  searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+      suggestionsDiv.innerHTML = "";
+  
+      if (!query) return;
+  
+      const matches = allPokemons.filter(p => p.name.toLowerCase().includes(query) && !selectedPokemons.includes(p.number)).slice(0, 5);
+
+      console.log("🔎 Query:", query);
+      console.log("🎯 Matches:", matches);
+      
+      matches.forEach(pokemon => {
+        const div = document.createElement('div');
+        div.classList.add('suggestion');
+        div.innerHTML = `
+          <img src="${pokemon.image_url}"
+              alt="${pokemon.name}"
+              style="height: 20px; vertical-align: middle; margin-right: 8px;">
+          ${pokemon.name}`;
+        div.onclick = () => addPokemon(pokemon);
+        suggestionsDiv.appendChild(div);
+      });
+  });
+  
+  function addPokemon(pokemon) {
+      if (selectedPokemons.length >= 5) return;
+      if (selectedPokemons.includes(pokemon.number)) return;
+
+      selectedPokemons.push(pokemon.number);
+  
+      const ball = document.createElement('div');
+      ball.classList.add('pokeball');
+
+      const img = document.createElement('img');
+      img.src = pokemon.image_url;
+      img.alt = pokemon.name;
+      img.title = pokemon.name;
+      img.style.height = '32px';
+
+      ball.appendChild(img);
+
+      ball.onclick = () => {
+          selectedPokemons = selectedPokemons.filter(n => n !== pokemon.number);
+          ball.remove();
+          hiddenInput.value = selectedPokemons.join(',');
+      };
+
+      selectedList.appendChild(ball);
+      hiddenInput.value = selectedPokemons.join(',');
+  
+      searchInput.value = '';
+      suggestionsDiv.innerHTML = '';
+  }
+  </script>
+{% endblock %}

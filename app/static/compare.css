@@ -1,0 +1,81 @@
+.content {
+    margin-left: 250px;  /* Adjust based on sidebar width */
+    padding: 1.5rem;
+    transition: margin 0.3s ease;
+    font-family: 'Courier New', monospace; 
+  }
+
+  h1, h2 {
+    font-size: 24px;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+
+  #pokemon-search {
+    width: 300px;
+    padding: 10px;
+    font-size: 14px;
+    border: 2px solid #555;
+    border-radius: 5px;
+    background-color: #fefefe;
+    font-family: 'Courier New', monospace;
+  }
+
+  #suggestions {
+    background: #fff;
+    border: 1px solid #888;
+    width: 300px;
+    position: absolute;
+    z-index: 10;
+    font-family: 'Courier New', monospace;
+  }
+
+  .suggestion {
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+
+  .suggestion:hover {
+    background-color: #eee;
+  }
+
+  .chip {
+    display: inline-block;
+    background: crimson;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 12px;
+    margin: 4px 4px 0 0;
+    font-size: 13px;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+  }
+
+  button[type="submit"] {
+    background: #222;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    font-family: 'Courier New', monospace;
+    margin-top: 12px;
+  }
+
+  .comparison-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 40px;
+    padding: 60px 0;
+    position: relative;
+  }
+
+  .comparison-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    background: repeating-linear-gradient(to right, #ccc, #ccc 10px, transparent 10px, transparent 20px);
+    opacity: 0.3;
+  }

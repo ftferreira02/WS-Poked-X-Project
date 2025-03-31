@@ -19,7 +19,6 @@ class Pokemon:
         name_parts = self.name.strip().lower().split()
         if number:
             if is_mega:
-               print(name_parts[-1])
                if name_parts[-1] == "x":
                 suffix = "-mega-x"
                elif name_parts[-1] == "y":
@@ -192,11 +191,13 @@ class PokemonManager:
                 uri = binding.get("pokemon", {}).get("value")
                 name = binding.get("name", {}).get("value")
                 number = int(binding["number"]["value"])
-                height = float(binding.get("height", {}).get("value", 0))
-                weight = float(binding.get("weight", {}).get("value", 0))
+                height = float(binding["height"]["value"]) if "height" in binding else None
+                print("height", height)
+                weight = float(binding["weight"]["value"]) if "weight" in binding else None
+                print("weight", weight)
                 is_mega = "megaOf" in binding
 
-                pokemon_obj = Pokemon(uri, name, number,is_mega, height, weight)
+                pokemon_obj = Pokemon( uri=uri, name=name, number=number, is_mega=is_mega, height=height, weight= weight)
                 if pokemon_obj.id is not None:
                     pokemons.append(pokemon_obj)
 
