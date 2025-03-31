@@ -50,40 +50,54 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        // Tipo visual
+        // Aplica cor aos botões de tipo
         document.querySelectorAll('[data-type]').forEach(btn => {
           const type = btn.getAttribute('data-type');
           btn.style.backgroundColor = typeColor(type);
         });
-
+      
         // Altura real (em metros)
         const height1 = {{ pokemon1.height|default:1 }};
         const height2 = {{ pokemon2.height|default:1 }};
-
-        const maxVisualHeight = 400;  // Tamanho máximo do maior Pokémon
+      
+        // 🧠 Altura média
+        const averageHeight = (height1 + height2) / 2;
+      
+        // 🎯 Ajuste do "zoom" global
+        let maxVisualHeight = 400;
+        if (averageHeight < 1.0) {
+          maxVisualHeight = 280;
+        } else if (averageHeight < 1.5) {
+          maxVisualHeight = 340;
+        }
+      
+        // Escala proporcional
         const playerRatio = height1 / Math.max(height1, height2);
         const opponentRatio = height2 / Math.max(height1, height2);
-
-        const scale1 = playerRatio * maxVisualHeight;  // jogador mais pequeno
-        const scale2 = opponentRatio * maxVisualHeight* 0.85;
-
-        console.log("Escala real →", "player:", scale1.toFixed(1), "px", "opponent:", scale2.toFixed(1), "px");
-
+      
+        const scale1 = playerRatio * maxVisualHeight;
+        const scale2 = opponentRatio * maxVisualHeight * 0.85;
+      
+        console.log("Altura média:", averageHeight.toFixed(2), "→ escala máx:", maxVisualHeight);
+        console.log("Escala real → player:", scale1.toFixed(1), "px | opponent:", scale2.toFixed(1), "px");
+      
+        // Aplicar escalas às imagens
         const playerImg = document.getElementById('player-img');
         const opponentImg = document.getElementById('opponent-img');
-
+      
         if (playerImg) {
           playerImg.style.height = `${scale1}px`;
           playerImg.style.maxHeight = "none";
           playerImg.style.width = "auto";
         }
-
+      
         if (opponentImg) {
           opponentImg.style.height = `${scale2}px`;
           opponentImg.style.maxHeight = "none";
           opponentImg.style.width = "auto";
         }
       });
+      
     </script>
 
 
