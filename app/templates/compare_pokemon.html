@@ -21,7 +21,7 @@
 
 <div id="selected-list" class="selected-pokeballs">
   {% for p in selected_pokemons %}
-    <div class="pokeball-wrapper" title="{{ p.name }}">
+  <div class="pokeball-wrapper" data-id="{{ p.number }}" title="{{ p.name }}">
       <button type="button" class="pokeball-button">
         <img src="https://raw.githubusercontent.com/replyre/poke-info/main/search.png" alt="Pokéball">
       </button>
@@ -143,5 +143,34 @@
       searchInput.value = '';
       suggestionsDiv.innerHTML = '';
   }
+
+  // Attach click handlers to server-rendered Pokéballs on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    // Rebuild selectedPokemons list from rendered pokeballs
+    document.querySelectorAll('.pokeball-wrapper').forEach(wrapper => {
+      const name = wrapper.getAttribute('title');
+      const sprite = wrapper.querySelector('.pokemon-inside');
+      const number = wrapper.dataset.id;
+      
+      if (number && !selectedPokemons.includes(number)) {
+        selectedPokemons.push(number);
+        wrapper.addEventListener('click', () => {
+          selectedPokemons = selectedPokemons.filter(n => n !== number);
+          wrapper.remove();
+          hiddenInput.value = selectedPokemons.join(',');
+        });
+      }
+    });
+
+    // Set hidden input value
+    hiddenInput.value = selectedPokemons.join(',');
+  });
+
+  // Helper to extract ID from sprite URL
+  function extractPokemonId(url) {
+    const match = url.match(/\/(\d+)\.png$/);
+    return match ? match[1] : null;
+  }
+
   </script>
 {% endblock %}
