@@ -5,7 +5,7 @@ import json
 
 def pokemon_battle_view(request):
     # Pokémon padrão (Charizard vs Charmander)
-    fight = PokemonFight("4", "6")
+    fight = PokemonFight("0", "1")
 
     battle_logs = []
     hp_progress = []
@@ -28,11 +28,11 @@ def pokemon_battle_view(request):
         "hp2": fight.pokemon2["hp"]
     })
 
+    battle_history = get_battle_history()
+
     # Guardar resultado final
     save_battle_result(fight.pokemon1, fight.pokemon2, fight.winner)
 
-    # Buscar histórico
-    battle_history = get_battle_history()
 
     # Contexto do template
     context = {

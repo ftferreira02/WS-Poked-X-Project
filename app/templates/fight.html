@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% load static %} {% block title %} Pokémon Battle {% endblock %} 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'battle1.css' %}" />
-<link rel="stylesheet" href="{% static 'historic1.css' %}" />
+<link rel="stylesheet" href="{% static 'historic.css' %}" />
 {% endblock %} 
 {% block body_class %}fight-page{% endblock %} 
 
@@ -63,10 +63,18 @@
   <div class="space"></div>
   <!-- Adicione este código abaixo da div .game e antes da div .status -->
   <div class="battle-history-container">
-    <div class="battle-history-title">Histórico de Batalha</div>
-    <div class="battle-log-container" id="battle-log-container">
-      <!-- Os logs serão inseridos aqui dinamicamente via JavaScript -->
+    <div class="battle-history-title">Battle Historic</div>
+    {% for battle in battle_history %}
+    <div class="battle-log-entry">
+      <span class="battle-date">{{ battle.date|date:"Y-m-d H:i" }}</span><br>
+      <span class="battle-info">
+        ⚔️ {{ battle.pokemon1_name }} vs {{ battle.pokemon2_name }}<br>
+        🏆 Vencedor: <strong>{{ battle.winner_name }}</strong>
+      </span>
     </div>
+  {% empty %}
+    <p style="padding: 10px;">No previous battles.</p>
+  {% endfor %}
   </div>
   <div class="game">
     <div class="round-text">

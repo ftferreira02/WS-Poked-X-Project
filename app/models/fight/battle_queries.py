@@ -1,4 +1,3 @@
-
 from app.sparql_client import run_query, run_update
 from datetime import datetime
 
@@ -6,7 +5,10 @@ def save_battle_result(pokemon1, pokemon2, winner):
     """Salva o resultado da batalha no banco de dados RDF usando SPARQL INSERT."""
     battle_id = f"battle_{datetime.now().strftime('%Y%m%d%H%M%S')}"
     battle_uri = f"http://example.org/pokemon/Battle/{battle_id}"
-
+    
+    # Debug print
+    print(f"Saving battle: {pokemon1['name']} vs {pokemon2['name']}, Winner: {winner['name']}")
+    
     insert_query = f"""
     PREFIX poke: <http://example.org/pokemon/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -25,14 +27,17 @@ def save_battle_result(pokemon1, pokemon2, winner):
     """
 
     try:
-        run_update(insert_query)
+        result = run_update(insert_query)
+        print(f"Insert result: {result}")
         return True
     except Exception as e:
-        print(f"Erro ao salvar o resultado da batalha: {e}")
+        print(f"Error saving battle result: {e}")
         return False
 
 def get_battle_history(limit=10):
     """Recupera o histórico de batalhas do banco de dados RDF usando SPARQL."""
+    print("Fetching battle history...")
+    
     query = f"""
     PREFIX poke: <http://example.org/pokemon/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -51,18 +56,40 @@ def get_battle_history(limit=10):
 
     try:
         results = run_query(query)
+        print("Battle query results:", results)
+        
         battle_history = []
 
         for result in results.get('results', {}).get('bindings', []):
-            battle_history.append({
+            # Get the date string from the result
+            date_str = result.get('date', {}).get('value', '')
+            
+            # Try to parse the date string into a datetime object
+            try:
+                # Try parsing ISO format date
+                date_obj = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+            except ValueError:
+                try:
+                    # Fallback to a more flexible parser if needed
+                    date_obj = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
+                except ValueError:
+                    # If all parsing fails, use the current date as a fallback
+                    print(f"Could not parse date: {date_str}")
+                    date_obj = datetime.now()
+            
+            entry = {
                 'battle_id': result.get('battle', {}).get('value', '').split('/')[-1],
-                'date': result.get('date', {}).get('value', ''),
+                'date': date_obj,  # Now a datetime object
                 'pokemon1_name': result.get('pokemon1Name', {}).get('value', ''),
                 'pokemon2_name': result.get('pokemon2Name', {}).get('value', ''),
                 'winner_name': result.get('winnerName', {}).get('value', '')
-            })
+            }
+            battle_history.append(entry)
 
+        print(f"Returning {len(battle_history)} battles")
         return battle_history
     except Exception as e:
-        print(f"Erro ao recuperar o histórico de batalhas: {e}")
+        print(f"Error retrieving battle history: {e}")
+        import traceback
+        traceback.print_exc()
         return []

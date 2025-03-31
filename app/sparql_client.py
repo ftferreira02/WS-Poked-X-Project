@@ -15,11 +15,10 @@ def run_query_describe(query):
     sparql.setReturnFormat('n3')  # ou 'nt' para N-Triples
     return sparql.query().convert().decode("utf-8")
 
-def run_update(update_query):
-    """Executa uma SPARQL UPDATE (INSERT, DELETE etc.)."""
-    sparql = SPARQLWrapper(settings.GRAPHDB_ENDPOINT)
-    sparql.setQuery(update_query)
-    sparql.setMethod(POST)
+def run_update(update_string):
+    """Execute a SPARQL UPDATE query."""
+    sparql = SPARQLWrapper(settings.SPARQL_UPDATE_ENDPOINT)
+    sparql.setQuery(update_string)
+    sparql.setMethod(POST)  # Use POST instead of URLENCODED
     sparql.setReturnFormat(JSON)
-    sparql.setRequestMethod(SPARQLWrapper.URLENCODED)
-    return sparql.query()
+    return sparql.query().convert()
