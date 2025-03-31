@@ -6,119 +6,16 @@
     <title>Pokemon</title>
     <link rel="stylesheet" href="{% static 'battle.css' %}" />
     <script>
-          let battleLogs = {{ logs_json|safe }};
-      let hpProgress = {{ hp_progress_json|safe }};
-      let winner = "{{ winner }}";
-      let turn = 0;
-
-      function nextTurn() {
-        const battleMessage = document.getElementById('battle-message');
-        const hp1 = document.getElementById('hp1');
-        const hp2 = document.getElementById('hp2');
-
-        if (turn < battleLogs.length) {
-          const message = battleLogs[turn];
-          typeText(battleMessage, message);
-          hp1.textContent = hpProgress[Math.floor(turn/2)].hp1;
-          hp2.textContent = hpProgress[Math.floor(turn/2)].hp2;
-          turn++;
-        } else {
-          battleMessage.textContent = "🏆 " + winner + " won the battle!";
-          document.getElementById("next-btn").disabled = true;
-        }
-      }
-
-      function typeColor(type) {
-        const colors = {
-          fire: "#F08030", water: "#6890F0", grass: "#78C850", electric: "#F8D030",
-          flying: "#A890F0", normal: "#A8A878", fighting: "#C03028", ground: "#E0C068",
-          rock: "#B8A038", psychic: "#F85888", ghost: "#705898", dark: "#705848",
-          steel: "#B8B8D0", fairy: "#EE99AC", dragon: "#7038F8", ice: "#98D8D8",
-          bug: "#A8B820", poison: "#A040A0"
-        };
-        return colors[type.toLowerCase()] || "#444";
-      }
-
-      document.addEventListener('DOMContentLoaded', function() {
-        const typeButtons = document.querySelectorAll('[data-type]');
-        typeButtons.forEach(button => {
-          const type = button.getAttribute('data-type');
-          button.style.backgroundColor = typeColor(type);
-        });
-      });
+      window.battleLogs = {{ logs_json|safe }};
+      window.hpProgress = {{ hp_progress_json|safe }};
+      window.winner = "{{ winner }}";
     </script>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        // Aplica cor aos botões de tipo
-        document.querySelectorAll('[data-type]').forEach(btn => {
-          const type = btn.getAttribute('data-type');
-          btn.style.backgroundColor = typeColor(type);
-        });
-      
-        // Altura real (em metros)
-        const height1 = {{ pokemon1.height|default:1 }};
-        const height2 = {{ pokemon2.height|default:1 }};
-      
-        // 🧠 Altura média
-        const averageHeight = (height1 + height2) / 2;
-      
-        // 🎯 Ajuste do "zoom" global
-        let maxVisualHeight = 400;
-        if (averageHeight < 1.0) {
-          maxVisualHeight = 280;
-        } else if (averageHeight < 1.5) {
-          maxVisualHeight = 340;
-        }
-      
-        // Escala proporcional
-        const playerRatio = height1 / Math.max(height1, height2);
-        const opponentRatio = height2 / Math.max(height1, height2);
-      
-        const scale1 = playerRatio * maxVisualHeight;
-        const scale2 = opponentRatio * maxVisualHeight * 0.85;
-      
-        console.log("Altura média:", averageHeight.toFixed(2), "→ escala máx:", maxVisualHeight);
-        console.log("Escala real → player:", scale1.toFixed(1), "px | opponent:", scale2.toFixed(1), "px");
-      
-        // Aplicar escalas às imagens
-        const playerImg = document.getElementById('player-img');
-        const opponentImg = document.getElementById('opponent-img');
-      
-        if (playerImg) {
-          playerImg.style.height = `${scale1}px`;
-          playerImg.style.maxHeight = "none";
-          playerImg.style.width = "auto";
-        }
-      
-        if (opponentImg) {
-          opponentImg.style.height = `${scale2}px`;
-          opponentImg.style.maxHeight = "none";
-          opponentImg.style.width = "auto";
-        }
-      });
-      
-    </script>
-
-
-    <script>
-      function typeText(element, text, speed = 30, callback = null) {
-        element.textContent = "";
-        let i = 0;
-        const interval = setInterval(() => {
-          element.textContent += text.charAt(i);
-          i++;
-          if (i >= text.length) {
-            clearInterval(interval);
-            if (callback) callback();
-          }
-        }, speed);
-      }
-      
-    </script>
+    
+    <script src="{% static 'js/fight.js' %}"></script>
+    
   </head>
 
-  <body onload="nextTurn()">
+  <body >
     <!-- Contêiner das espadas -->
     <div class="swords-container fade-out">
       <div class="sword sword-left">
@@ -216,6 +113,7 @@
               class="pokemon"
               src="http://img.pokemondb.net/sprites/black-white/anim/normal/{{ pokemon2.name|lower }}.gif"
               alt="A sprite"
+              data-height="{{ pokemon2.height }}"
             />
           </div>
         </div>
@@ -241,6 +139,7 @@
               class="pokemon"
               src="http://img.pokemondb.net/sprites/black-white/anim/back-normal/{{ pokemon1.name|lower }}.gif"
               alt="A gif from blastoises back sprite"
+              data-height="{{ pokemon1.height }}"
             />
           </div>
         </div>
