@@ -155,6 +155,11 @@ body {
     gap: 20px;
 }
 
+.column-stats {
+    margin-top: 4rem;
+    
+}
+
 .bar {
     width: 150px;
     height: 10px;
@@ -230,6 +235,11 @@ body {
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 10px;
+}
+
+.secondary-type {
+    justify-self: center !important;
+    align-self: center !important;
 }
 
 h2 {

@@ -3,7 +3,7 @@ import re
 
 class Pokemon:
 
-    def __init__(self, uri, name, number=None, primary_type=None, secondary_type=None, exp=None,is_mega=False):
+    def __init__(self, uri, name, number=None, primary_type=None, secondary_type=None, exp=None,is_mega=False, height=None, weight=None):
         self.uri = uri
         self.name = name
         self.number = number  # Pokedex number
@@ -12,11 +12,12 @@ class Pokemon:
         self.secondary_type = secondary_type
         self.exp = exp
         self.is_mega = is_mega
+        self.height = height
+        self.weight = weight
 
         name_parts = self.name.strip().lower().split()
         if number:
             if is_mega:
-               print(name_parts[-1])
                if name_parts[-1] == "x":
                 suffix = "-mega-x"
                elif name_parts[-1] == "y":
@@ -159,6 +160,47 @@ class PokemonManager:
         """
         results = run_query(query)
         return PokemonManager._parse_results(results)
+    
+    @staticmethod
+    def get_pokemon_with_physical_info(pokemon_ids):
+        if not pokemon_ids:
+            return []
+
+        filter_conditions = " || ".join(f"?number = {pid}" for pid in pokemon_ids)
+
+        query = f"""
+        PREFIX ex: <http://example.org/pokemon/>
+        PREFIX sc: <http://schema.org/>
+
+        SELECT ?pokemon ?name ?number ?height ?weight ?megaOf WHERE {{
+            ?pokemon a ex:Pokemon ;
+                    sc:name ?name ;
+                    ex:pokedexNumber ?number ;
+                    ex:height ?height ;
+                    ex:weight ?weight .
+            OPTIONAL {{ ?pokemon ex:megaEvolutionOf ?megaOf }}
+            FILTER ({filter_conditions})
+        }}
+        """
+
+        results = run_query(query)
+        pokemons = []
+        if results and "results" in results and "bindings" in results["results"]:
+            for binding in results["results"]["bindings"]:
+                uri = binding.get("pokemon", {}).get("value")
+                name = binding.get("name", {}).get("value")
+                number = int(binding["number"]["value"])
+                height = float(binding["height"]["value"]) if "height" in binding else None
+                print("height", height)
+                weight = float(binding["weight"]["value"]) if "weight" in binding else None
+                print("weight", weight)
+                is_mega = "megaOf" in binding
+
+                pokemon_obj = Pokemon( uri=uri, name=name, number=number, is_mega=is_mega, height=height, weight= weight)
+                if pokemon_obj.id is not None:
+                    pokemons.append(pokemon_obj)
+
+        return pokemons
 
     @staticmethod
     def get_stats_by_id(pokemon_id):

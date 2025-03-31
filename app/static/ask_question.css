@@ -25,7 +25,6 @@ body {
   display: flex;
 }
 
-/* Sidebar (opcional, se tiveres) */
 .sidebar {
   background-color: var(--sidebar-background);
   width: 350px;
