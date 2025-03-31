@@ -15,6 +15,8 @@ urlpatterns = [
 
 
 
+#ola
+
 ### codigo lia
 # # Mapping/routing das URLs para este projeto.
 # from django.http import HttpResponse
