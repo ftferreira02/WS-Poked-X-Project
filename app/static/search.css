@@ -1,10 +1,18 @@
 .type {
-    padding: 4px 8px;
+    padding: 5px 10px;
     color: white;
-    border-radius: 5px;
+    border-radius: 8px;
     font-weight: bold;
+    text-decoration: none;
+    margin: 5px;
     display: inline-block;
-    margin: 2px;
+    min-width: 80px;
+    text-align: center;
+    transition: transform 0.1s ease-in-out;
+  }
+  
+  .type:hover {
+    transform: scale(1.05);
   }
   
   .type.normal   { background-color: #A8A878; }
@@ -25,3 +33,11 @@
   .type.dark     { background-color: #705848; }
   .type.steel    { background-color: #B8B8D0; }
   .type.fairy    { background-color: #EE99AC; }
+
+  .type-badges {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+  }

@@ -1,5 +1,4 @@
 <!-- templates/pokemon_search_form.html -->
-
 {% load static %}
 
 {% block extra_css %}
@@ -27,7 +26,12 @@
         <img src="https://raw.githubusercontent.com/PokeAPI/media/master/logo/pokeapi_256.png" alt="Logo" height="80">
         <div class="search-bar mt-3">
             <form method="GET" action="{% url 'search_pokemon' %}">
-                <input type="text" name="name" class="form-control" placeholder="Search Pokemon" value="{{ name_filter }}">
+                {{ form.as_p }}
+                {% if active_type %}
+                    <input type="hidden" name="type" value="{{ active_type }}">
+                {% endif %}
+                <button type="submit" class="btn btn-primary">Pesquisar</button>
+                <a href="{% url 'search_pokemon' %}" class="btn btn-secondary">Limpar</a>
             </form>
             <p class="text-light mt-2">Use this input to search for any Pokémon. In an instant.</p>
         </div>
@@ -37,10 +41,15 @@
 
     <div class="text-center">
         <h5>Filter by type:</h5>
-        {% for t, color in type_colors.items %}
-            <button class="type-button" style="background-color: {{ color }}">{{ t|title }}</button>
-        {% endfor %}
-        <button class="btn btn-dark btn-sm">Reset</button>
+        <div class="type-list d-flex flex-wrap justify-content-center">
+            {% for t in pokemon_types %}
+                <a href="?type={{ t }}{% if name_filter %}&name={{ name_filter }}{% endif %}"
+                class="type {{ t }} {% if t == active_type %}border border-dark{% endif %}">
+                    {{ t|title }}
+                </a>
+            {% endfor %}
+            <a href="{% url 'search_pokemon' %}" class="btn btn-secondary btn-sm ms-2">Reset</a>
+        </div>
     </div>
 
     <div class="row mt-4">
@@ -51,10 +60,12 @@
                 <div class="mt-2">
                     <small>#{{ pokemon.number|stringformat:"03d" }} - EXP: {{ pokemon.exp }}</small>
                     <h6>{{ pokemon.name }}</h6>
-                    <span class="type {{ pokemon.primary_type }}">{{ pokemon.primary_type|title }}</span>
-                    {% if pokemon.secondary_type%}
-                        <span class="type {{ pokemon.secondary_type }}">{{ pokemon.secondary_type|title }}</span>
-                    {% endif %}
+                    <div class="type-badges">
+                        <span class="type {{ pokemon.primary_type }}">{{ pokemon.primary_type|title }}</span>
+                        {% if pokemon.secondary_type %}
+                          <span class="type {{ pokemon.secondary_type }}">{{ pokemon.secondary_type|title }}</span>
+                        {% endif %}
+                    </div>                      
                 </div>
             </div>
         </div>

@@ -1,10 +1,12 @@
 # app/models.py
 from app.sparql_client import run_query
 import re
+import unicodedata
+
 
 class Pokemon:
 
-    def __init__(self, uri, name, number, primary_type, secondary_type=None, exp=None):
+    def __init__(self, uri, name, number=None, primary_type=None, secondary_type=None, exp=None,is_mega=False):
         self.uri = uri
         self.name = name
         self.number = number  # Pokedex number
@@ -12,8 +14,31 @@ class Pokemon:
         self.primary_type = primary_type
         self.secondary_type = secondary_type
         self.exp = exp
-        self.image_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{self.number}.png"
+        self.is_mega = is_mega
 
+        normalized_name = unicodedata.normalize("NFKD", self.name).encode("ascii", "ignore").decode().strip().lower()
+        # Split words for reliable parsing
+        name_parts = normalized_name.split()
+
+        if number == 6:
+            # DEBUG 🔍
+            print(f"[DEBUG] Original name: '{self.name}'")
+            print(f"[DEBUG] Normalized: '{normalized_name}'")
+            print(f"[DEBUG] Name parts: {name_parts}")
+
+        if number:
+            if is_mega:
+               print(f"[DEBUG] Mega Pokémon detected: {self.name}")
+               print(name_parts[-1])
+               if name_parts[-1] == "x":
+                suffix = "-mega-x"
+               elif name_parts[-1] == "y":
+                suffix = "-mega-y"
+               else:
+                    suffix = "-mega"
+               self.image_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/52427d467f3e3b22af3c9cefc807a7452196ccd7/sprites/pokemon/{self.number}{suffix}.png"
+            else:
+                self.image_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/52427d467f3e3b22af3c9cefc807a7452196ccd7/sprites/pokemon/{self.number}.png"
 
     def _extract_id_from_uri(self, uri):
         """Helper method to extract numeric ID from Pokémon URI."""
@@ -38,10 +63,14 @@ class PokemonManager:
                 secondary_type = binding.get("secondaryType", {}).get("value")
                 if secondary_type:
                     secondary_type = secondary_type.split("/")[-1]
-                    exp = int(binding.get("totalPoints", {}).get("value", 0))
+                    
+                exp = int(binding.get("totalPoints", {}).get("value", 0))
+                
+                is_mega = "megaOf" in binding
+
 
                 if uri and name: # Ensure we have the essential data
-                    pokemon_obj = Pokemon(uri, name,number, primary_type, secondary_type, exp)
+                    pokemon_obj = Pokemon(uri, name,number, primary_type, secondary_type, exp,is_mega)
                     # Add the Pokémon object to the list
                     if pokemon_obj.id is not None: # Only add if ID extraction was successful
                        pokemons.append(pokemon_obj)
@@ -53,13 +82,15 @@ class PokemonManager:
         PREFIX ex: <http://example.org/pokemon/>
         PREFIX sc: <http://schema.org/>
 
-        SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints WHERE {
+        SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf  WHERE {
         ?pokemon a ex:Pokemon ;
                 sc:name ?name ;
                 ex:pokedexNumber ?number ;
                 ex:primaryType ?primaryType ;
                 ex:totalPoints ?totalPoints .
-        OPTIONAL { ?pokemon ex:secondaryType ?secondaryType }
+          OPTIONAL { ?pokemon ex:secondaryType ?secondaryType }
+          OPTIONAL { ?pokemon ex:megaEvolutionOf ?megaOf }
+
         }
         ORDER BY ?number
         """
@@ -68,22 +99,79 @@ class PokemonManager:
 
     @staticmethod
     def search_by_name(name_filter):
-        # Basic escaping for the filter string (replace double quotes)
-        # More robust escaping might be needed depending on allowed characters
         escaped_filter = name_filter.replace('"', '\\"')
 
         query = f"""
         PREFIX ex: <http://example.org/pokemon/>
         PREFIX sc: <http://schema.org/>
 
-        SELECT ?pokemon ?name WHERE {{
-          ?pokemon a ex:Pokemon .
-          ?pokemon sc:name ?name .
-          FILTER CONTAINS(LCASE(?name), LCASE("{escaped_filter}"))
-        }} ORDER BY ?name # Optional: Order results
+        SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf  WHERE {{
+            ?pokemon a ex:Pokemon ;
+                    sc:name ?name ;
+                    ex:pokedexNumber ?number ;
+                    ex:primaryType ?primaryType ;
+                    ex:totalPoints ?totalPoints .
+            OPTIONAL {{ ?pokemon ex:secondaryType ?secondaryType }}
+            OPTIONAL {{ ?pokemon ex:megaEvolutionOf ?megaOf }}
+
+            FILTER CONTAINS(LCASE(?name), LCASE("{escaped_filter}"))
+        }} ORDER BY ?name
         """
         results = run_query(query)
-        return PokemonManager._parse_results(results) # Use the parser
+        return PokemonManager._parse_results(results)
+    
+    @staticmethod
+    def search_by_type(type_filter):
+        query = f"""
+        PREFIX ex: <http://example.org/pokemon/>
+        PREFIX sc: <http://schema.org/>
+
+        SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf  WHERE {{
+            ?pokemon a ex:Pokemon ;
+                    sc:name ?name ;
+                    ex:pokedexNumber ?number ;
+                    ex:primaryType ?primaryType ;
+                    ex:totalPoints ?totalPoints .
+            OPTIONAL {{ ?pokemon ex:secondaryType ?secondaryType }}
+            OPTIONAL {{ ?pokemon ex:megaEvolutionOf ?megaOf }}
+
+            FILTER (
+                LCASE(STR(?primaryType)) = "http://example.org/pokemon/type/{type_filter}" ||
+                LCASE(STR(?secondaryType)) = "http://example.org/pokemon/type/{type_filter}"
+            )
+        }} ORDER BY ?number
+        """
+        results = run_query(query)
+        return PokemonManager._parse_results(results)
+    
+    @staticmethod
+    def search_by_name_and_type(name_filter, type_filter):
+        escaped_name = name_filter.replace('"', '\\"')
+
+        query = f"""
+        PREFIX ex: <http://example.org/pokemon/>
+        PREFIX sc: <http://schema.org/>
+
+        SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf  WHERE {{
+            ?pokemon a ex:Pokemon ;
+                    sc:name ?name ;
+                    ex:pokedexNumber ?number ;
+                    ex:primaryType ?primaryType ;
+                    ex:totalPoints ?totalPoints .
+            OPTIONAL {{ ?pokemon ex:secondaryType ?secondaryType }}
+            OPTIONAL {{ ?pokemon ex:megaEvolutionOf ?megaOf }}
+
+            FILTER (
+                CONTAINS(LCASE(?name), LCASE("{escaped_name}")) &&
+                (
+                    LCASE(STR(?primaryType)) = "http://example.org/pokemon/type/{type_filter}" ||
+                    LCASE(STR(?secondaryType)) = "http://example.org/pokemon/type/{type_filter}"
+                )
+            )
+        }} ORDER BY ?number
+        """
+        results = run_query(query)
+        return PokemonManager._parse_results(results)
 
     @staticmethod
     def get_stats_by_id(pokemon_id):
