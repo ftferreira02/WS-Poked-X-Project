@@ -1,112 +1,114 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>{{ stats.name }} Card</title>
-  <link rel="shortcut icon" href="{% static 'favicon/favicon-16x16.png' %}" type="image/x-icon">
+
+{% block title %}
+  {{ stats.name }} Card
+{% endblock %}
+
+{% block extra_css %}
   <link rel="stylesheet" href="{% static 'stats.css' %}">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+{% endblock %}
 
-<body class="type-{{ stats.primaryType|lower }}">
-  <div class="container">
-    <!-- First column: Existing Pokemon card -->
-    <div class="column card-column">
-      <div class="card">
-        <h1>{{ stats.name }}</h1>
+{% block body_class %}type-{{ stats.primaryType|lower }}{% endblock %}
 
-        <div class="image">
-          <img src="{% static 'pokemon-images/' %}{{ stats.id|add:'1' }}.png?v={{ stats.id }}" alt="{{ stats.name }}">
+{% block content %}
+<div class="container no-sidebar">
+  <div class="column card-column">
+    <div class="card">
+      <h1>{{ stats.name }}</h1>
+      <h2>{{ stats.pokedexNumber }}</h2>
+
+      <div class="image">
+        <img src="{% static 'pokemon-images-index/' %}{{ stats.id }}.png?v={{ stats.id }}" alt="{{ stats.name }}">
+      </div>
+
+      <div class="type {{ stats.primaryType|lower }}" id="primary-type">
+        {{ stats.primaryType|title }}
+      </div>
+      <div class="info-grid">
+        <div>
+          <p><img class="icon-img" src="{% static 'icons/height.svg' %}" alt="height">
+             <span class="highlight">Height:</span> {{ stats.height }} m</p>
+          <p><img class="icon-img" src="{% static 'icons/generation.svg' %}" alt="generation">
+             <span class="highlight">Generation:</span> {{ stats.generation }}</p>
+        </div>
+        <div>
+          <p><img class="icon-img" src="{% static 'icons/weight.svg' %}" alt="weight">
+             <span class="highlight">Weight:</span> {{ stats.weight }} kg</p>
+          <p><img class="icon-img" src="{% static 'icons/crown.svg' %}" alt="legendary">
+             <span class="highlight">Legendary:</span> {{ stats.isLegendary|yesno:"Yes,No" }}</p>
+        </div>
+      </div>
+      
+      {% if stats.secondaryType != "nan" and stats.secondaryType %}
+        <p class="secondary-type">
+          <img class="icon-img" src="{% static 'icons/type.svg' %}" alt="secondary type">
+          <span class="highlight">Secondary Type:</span> {{ stats.secondaryType|title }}
+        </p>
+      {% endif %}
+      
+      
+
+      <div class="stats">
+        <div class="column">
+          <div class="stat"><span>HP</span><div class="bar"><div class="fill" style="width: {{ stats.hp|floatformat:0 }}%;"></div></div></div>
+          <div class="stat"><span>Attack</span><div class="bar"><div class="fill" style="width: {{ stats.attack|floatformat:0 }}%;"></div></div></div>
+          <div class="stat"><span>Defense</span><div class="bar"><div class="fill" style="width: {{ stats.defense|floatformat:0 }}%;"></div></div></div>
         </div>
 
-        <div class="info">
-          <p><span class="highlight">Height:</span> {{ stats.height }} m</p>
-          <p><span class="highlight">Weight:</span> {{ stats.weight }} kg</p>
-          <p><span class="highlight">Generation:</span> {{ stats.generation }}</p>
-          {% if stats.secondaryType != "nan" and stats.secondaryType %}
-            <p><span class="highlight">Secondary Type:</span> {{ stats.secondaryType|title }}</p>
-          {% endif %}
-          <p><span class="highlight">Legendary:</span> {{ stats.isLegendary|yesno:"Yes,No" }}</p>
+        <div class="column">
+          <div class="stat"><span>Sp. Attack</span><div class="bar"><div class="fill" style="width: {{ stats.spAttack|floatformat:0 }}%;"></div></div></div>
+          <div class="stat"><span>Sp. Defense</span><div class="bar"><div class="fill" style="width: {{ stats.spDefense|floatformat:0 }}%;"></div></div></div>
+          <div class="stat"><span>Speed</span><div class="bar"><div class="fill" style="width: {{ stats.speed|floatformat:0 }}%;"></div></div></div>
         </div>
+      </div>
 
-        <div class="stats">
-          <div class="column">
-            <div class="stat">
-              <span>HP</span>
-              <div class="bar"><div class="fill" style="width: {{ stats.hp|floatformat:0 }}%;"></div></div>
-            </div>
-            <div class="stat">
-              <span>Attack</span>
-              <div class="bar"><div class="fill" style="width: {{ stats.attack|floatformat:0 }}%;"></div></div>
-            </div>
-            <div class="stat">
-              <span>Defense</span>
-              <div class="bar"><div class="fill" style="width: {{ stats.defense|floatformat:0 }}%;"></div></div>
-            </div>
-          </div>
+      <div class="card-footer">
+        <img class="pokeball" src="https://png.pngtree.com/png-vector/20220723/ourmid/pngtree-pokeball-icon-vector-isolated-black-design-isolated-vector-png-image_22496306.png" alt="pokeball" width="70">
+        <a class="back-link" href="{% url 'search_pokemon' %}">← Back to Search</a>
+      </div>
+    </div>
+  </div>
 
-          <div class="column">
-            <div class="stat">
-              <span>Sp. Attack</span>
-              <div class="bar"><div class="fill" style="width: {{ stats.spAttack|floatformat:0 }}%;"></div></div>
-            </div>
-            <div class="stat">
-              <span>Sp. Defense</span>
-              <div class="bar"><div class="fill" style="width: {{ stats.spDefense|floatformat:0 }}%;"></div></div>
-            </div>
-            <div class="stat">
-              <span>Speed</span>
-              <div class="bar"><div class="fill" style="width: {{ stats.speed|floatformat:0 }}%;"></div></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card-footer">
-          <img class="pokeball" src="https://png.pngtree.com/png-vector/20220723/ourmid/pngtree-pokeball-icon-vector-isolated-black-design-isolated-vector-png-image_22496306.png" alt="pokeball" width="70">
-          <a class="back-link" href="{% url 'search_pokemon' %}">← Back to Search</a>
-        </div>
+  <div class="column data-column">
+    <div class="chart-section">
+      <h2>Stats Radar</h2>
+      <div class="radar-chart-container">
+        <canvas id="statsRadarChart"></canvas>
       </div>
     </div>
 
-    <!-- Second column: Radar chart and Type matchups -->
-    <div class="column data-column">
-      <div class="chart-section">
-        <h2>Stats Radar</h2>
-        <div class="radar-chart-container">
-          <canvas id="statsRadarChart"></canvas>
-        </div>
-      </div>
-
-      <div class="type-matchups">
-        <h2>Type Matchups</h2>
-        <div class="matchup-container">
-          <div class="weak-against">
-            <h3>Weak Against</h3>
-            <div class="type-list">
-              {% for type in stats.weakAgainst %}
-                <span class="type {{ type }}">{{ type|title }}</span>
-              {% empty %}
-                <span>No weaknesses</span>
-              {% endfor %}
-            </div>
+    <div class="type-matchups">
+      <h2>Type Matchups</h2>
+      <div class="matchup-container">
+        <div class="weak-against">
+          <h3>Weak Against</h3>
+          <div class="type-list">
+            {% for type in stats.strongAgainst %}
+              <span class="type {{ type }}">{{ type|title }}</span>
+            {% empty %}
+              <span>No weaknesses</span>
+            {% endfor %}
           </div>
-          <div class="strong-against">
-            <h3>Strong Against</h3>
-            <div class="type-list">
-              {% for type in stats.strongAgainst %}
-                <span class="type {{ type }}">{{ type|title }}</span>
-              {% empty %}
-                <span>No strengths</span>
-              {% endfor %}
-            </div>
+        </div>
+        <div class="strong-against">
+          <h3>Strong Against</h3>
+          <div class="type-list">
+            {% for type in stats.weakAgainst %}
+              <span class="type {{ type }}">{{ type|title }}</span>
+            {% empty %}
+              <span>No strengths</span>
+            {% endfor %}
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
+{% endblock %}
 
+{% block extra_scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const ctx = document.getElementById('statsRadarChart').getContext('2d');
@@ -128,9 +130,7 @@
         options: {
           scales: {
             r: {
-              angleLines: {
-                display: true
-              },
+              angleLines: { display: true },
               suggestedMin: 0,
               suggestedMax: 100
             }
@@ -139,5 +139,4 @@
       });
     });
   </script>
-</body>
-</html>
+{% endblock %}

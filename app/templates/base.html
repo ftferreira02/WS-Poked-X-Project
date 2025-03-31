@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Poked-X{% endblock %}</title>
+
+  <link rel="stylesheet" href="{% static 'colors.css' %}">
+  <link rel="stylesheet" href="{% static 'base.css' %}" />
+  <link rel="stylesheet" href="{% static 'sidebar.css' %}" />
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <div class="container">
+
+    {% include 'sidebar.html' %}
+
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+
+    <div class="scanlines"></div>
+    <div class="noise"></div>
+    <div class="crt-flicker"></div>
+    <div id="stars-container"></div>
+  </div>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

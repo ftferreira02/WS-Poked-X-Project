@@ -4359,6 +4359,7 @@
     ns1:height "2.3"^^xsd:float ;
     ns1:hp 106 ;
     ns1:isLegendary true ;
+    ns1:megaEvolutionOf <http://example.org/pokemon/Pokemon/188> ;
     ns1:pokedexNumber 150 ;
     ns1:primaryType <http://example.org/pokemon/Type/psychic> ;
     ns1:secondaryType <http://example.org/pokemon/Type/fighting> ;
@@ -4434,6 +4435,7 @@
     ns1:height "1.5"^^xsd:float ;
     ns1:hp 106 ;
     ns1:isLegendary true ;
+    ns1:megaEvolutionOf <http://example.org/pokemon/Pokemon/188> ;
     ns1:pokedexNumber 150 ;
     ns1:primaryType <http://example.org/pokemon/Type/psychic> ;
     ns1:secondaryType <http://example.org/pokemon/Type/nan> ;
@@ -23868,6 +23870,7 @@
     ns1:height "1.7"^^xsd:float ;
     ns1:hp 78 ;
     ns1:isLegendary false ;
+    ns1:megaEvolutionOf <http://example.org/pokemon/Pokemon/6> ;
     ns1:pokedexNumber 6 ;
     ns1:primaryType <http://example.org/pokemon/Type/fire> ;
     ns1:secondaryType <http://example.org/pokemon/Type/dragon> ;
@@ -27842,6 +27845,7 @@
     ns1:height "1.7"^^xsd:float ;
     ns1:hp 78 ;
     ns1:isLegendary false ;
+    ns1:megaEvolutionOf <http://example.org/pokemon/Pokemon/6> ;
     ns1:pokedexNumber 6 ;
     ns1:primaryType <http://example.org/pokemon/Type/fire> ;
     ns1:secondaryType <http://example.org/pokemon/Type/flying> ;
