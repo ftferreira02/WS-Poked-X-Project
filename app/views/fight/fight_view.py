@@ -3,6 +3,7 @@ from app.models.fight.fight_model import PokemonFight
 from app.models.fight.battle_queries import save_battle_result, get_battle_history
 import json
 from app.forms import PokemonSelectionForm
+from app.models.geral_model import PokemonManager
 
 def pokemon_selection_view(request):
     """View for selecting Pokémon to battle"""
@@ -11,14 +12,21 @@ def pokemon_selection_view(request):
     if request.method == 'POST':
         form = PokemonSelectionForm(request.POST)
         if form.is_valid():
-            # Get the selected Pokémon IDs
-            pokemon1_id = form.cleaned_data['pokemon1']
-            pokemon2_id = form.cleaned_data['pokemon2']
+            # Get the selected Pokémon IDs from hidden fields
+            pokemon1_id = form.cleaned_data['pokemon1_id']
+            pokemon2_id = form.cleaned_data['pokemon2_id']
             
             # Redirect to the battle view with the selected Pokémon
             return redirect('pokemon_battle', pokemon1_id=pokemon1_id, pokemon2_id=pokemon2_id)
     
-    return render(request, 'pokemon_selection.html', {'form': form})
+    # Get all Pokémon for JavaScript
+    all_pokemons = PokemonManager.get_all_pokemons()
+    pokemon_data = [{'id': p.id, 'name': p.name, 'number': p.number} for p in all_pokemons]
+    
+    return render(request, 'pokemon_selection.html', {
+        'form': form,
+        'pokemon_data_json': json.dumps(pokemon_data)
+    })
 
 def pokemon_battle_view(request, pokemon1_id="0", pokemon2_id="1"):
     """View for the actual battle simulation"""

@@ -8,24 +8,20 @@ class PokemonSearchForm(forms.Form):
 
 
 class PokemonSelectionForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-        # Get all Pokémon for the dropdown options
-        pokemons = PokemonManager.get_all_pokemons()
-        pokemon_choices = [(pokemon.id, pokemon.name) for pokemon in pokemons]
-        
-        # Create the selection fields
-        self.fields['pokemon1'] = forms.ChoiceField(
-            label='Select first Pokémon',
-            choices=pokemon_choices,
-            required=True,
-            widget=forms.Select(attrs={'class': 'pokemon-select'})
-        )
-        
-        self.fields['pokemon2'] = forms.ChoiceField(
-            label='Select second Pokémon',
-            choices=pokemon_choices,
-            required=True,
-            widget=forms.Select(attrs={'class': 'pokemon-select'})
-        )
+    pokemon1 = forms.CharField(
+        label='Enter first Pokémon name', 
+        max_length=100, 
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'pokemon-input', 'placeholder': 'Type to search...'})
+    )
+    
+    pokemon2 = forms.CharField(
+        label='Enter second Pokémon name', 
+        max_length=100, 
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'pokemon-input', 'placeholder': 'Type to search...'})
+    )
+    
+    # Hidden fields to store the selected Pokemon IDs
+    pokemon1_id = forms.CharField(widget=forms.HiddenInput(), required=True)
+    pokemon2_id = forms.CharField(widget=forms.HiddenInput(), required=True)

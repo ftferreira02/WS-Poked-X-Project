@@ -68,3 +68,89 @@
   .pokemon-preview img {
     max-height: 100%;
   }
+
+
+  .suggestions-container {
+    position: absolute;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    z-index: 1000;
+    display: none;
+  }
+  
+  .suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  
+  .suggestion-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .selection-input-container {
+    position: relative;
+    margin-bottom: 15px;
+  }
+  
+  .selected-pokemon {
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    display: none;
+  }
+
+  /* Estilização do campo de texto */
+  .selection-input-container input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  /* Remover sugestões automáticas do navegador */
+  .selection-input-container input[type="text"] {
+    autocomplete: off;
+  }
+  .selection-input-container input[type="text"]::-webkit-autofill,
+  .selection-input-container input[type="text"]::-webkit-autofill:hover,
+  .selection-input-container input[type="text"]::-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+    box-shadow: 0 0 0px 1000px white inset !important;
+    -webkit-text-fill-color: #000 !important;
+  }
+
+  /* Adicionar transição suave para hover nos itens de sugestão */
+  .suggestion-item {
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  /* Estilizar o botão de batalha quando habilitado */
+  .battle-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .battle-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .battle-button:hover:not(:disabled) {
+    background-color: #0056b3;
+  }
+
+
+  
