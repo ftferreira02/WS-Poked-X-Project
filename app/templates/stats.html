@@ -42,21 +42,20 @@
       
       {% if stats.secondaryType != "nan" and stats.secondaryType %}
         <p class="secondary-type">
-          <img class="icon-img" src="{% static 'icons/type.svg' %}" alt="secondary type">
-          <span class="highlight">Secondary Type:</span> {{ stats.secondaryType|title }}
+          <span class="highlight" id="secondary-type">Secondary Type:</span> {{ stats.secondaryType|title }}
         </p>
       {% endif %}
       
       
 
       <div class="stats">
-        <div class="column">
+        <div class="column-stats">
           <div class="stat"><span>HP</span><div class="bar"><div class="fill" style="width: {{ stats.hp|floatformat:0 }}%;"></div></div></div>
           <div class="stat"><span>Attack</span><div class="bar"><div class="fill" style="width: {{ stats.attack|floatformat:0 }}%;"></div></div></div>
           <div class="stat"><span>Defense</span><div class="bar"><div class="fill" style="width: {{ stats.defense|floatformat:0 }}%;"></div></div></div>
         </div>
 
-        <div class="column">
+        <div class="column-stats">
           <div class="stat"><span>Sp. Attack</span><div class="bar"><div class="fill" style="width: {{ stats.spAttack|floatformat:0 }}%;"></div></div></div>
           <div class="stat"><span>Sp. Defense</span><div class="bar"><div class="fill" style="width: {{ stats.spDefense|floatformat:0 }}%;"></div></div></div>
           <div class="stat"><span>Speed</span><div class="bar"><div class="fill" style="width: {{ stats.speed|floatformat:0 }}%;"></div></div></div>
