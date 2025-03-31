@@ -8,7 +8,6 @@ body {
     background-position: center;
     padding-top: 0.5%;
     padding-left: 18%;
-
 }
 
     .status .box {
@@ -333,7 +332,6 @@ body {
 
 .round-text {
   background-color: #eeeeeed3;
-  font-size: 1vw;
   text-align: justify;
   text-justify: inter-word;
   line-height: 1.3;
@@ -398,10 +396,14 @@ body {
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 8px;
   margin-bottom: 10px;
-  font-size: 18px;
+  font-size: 16px;
   text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
+.round-message{
+  font-size: 16px;
+
+}

@@ -4,7 +4,7 @@
 <html lang="pt-br">
   <head>
     <title>Pokemon</title>
-    <link rel="stylesheet" href="{% static 'fight.css' %}" />
+    <link rel="stylesheet" href="{% static 'battle.css' %}" />
     <script>
           let battleLogs = {{ logs_json|safe }};
       let hpProgress = {{ hp_progress_json|safe }};
@@ -160,7 +160,7 @@
     <div>
       <div class="game">
         <div class="round-text">
-          <span id="battle-message"></span>
+          <span id="battle-message" class="round-message"></span>
           <div class="battle-controls">
             <button id="next-btn" onclick="nextTurn()" class="next-button">
               <svg
