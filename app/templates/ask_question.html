@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Pokémon Knowledge Query
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'ask_question.css' %}">
+  <style>
+    .autocomplete-container {
+      position: relative;
+    }
+    .autocomplete-items {
+      position: absolute;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background: #fff;
+      z-index: 99;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .autocomplete-item {
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+    .autocomplete-item:hover {
+      background-color: #f2f2f2;
+    }
+    #query-description {
+      /* Alinhamento à esquerda da frase */
+      text-align: left !important;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="container">
+    <!-- Coluna da esquerda -->
+    <div class="column">
+      <div class="card">
+        <h1>Pokémon Knowledge Query</h1>
+        <img class="pokeball"
+             src="https://png.pngtree.com/png-vector/20220723/ourmid/pngtree-pokeball-icon-vector-isolated-black-design-isolated-vector-png-image_22496306.png"
+             alt="pokeball" style="width: 80px; height: 80px;">
+
+        <form id="pokemon-query-form" method="post" action="{% url 'ask_question' %}">
+          {% csrf_token %}
+          <div class="form-group autocomplete-container">
+            <label for="pokemon">Pokémon Name:</label>
+            <input type="text" id="pokemon" name="pokemon"
+                   placeholder="e.g. Bulbasaur" autocomplete="off" required
+                   value="{{ pokemon|default_if_none:'' }}">
+            <div id="autocomplete-list" class="autocomplete-items" style="display: none;"></div>
+          </div>
+
+          <h2>Select a property to query:</h2>
+          <div class="property-list">
+            <div class="property-item" data-uri="http://example.org/pokemon/type">
+              <span class="icon-wrapper type-icon">T</span> Type
+            </div>
+            <div class="property-item" data-uri="http://example.org/pokemon/generation">
+              <span class="icon-wrapper generation-icon">G</span> Generation
+            </div>
+            <div class="property-item" data-uri="http://example.org/pokemon/isLegendary">
+              <span class="icon-wrapper legendary-icon">L</span> Legendary Status
+            </div>
+            <div class="property-item" data-uri="http://example.org/pokemon/habitat">
+              <span class="icon-wrapper habitat-icon">H</span> Habitat
+            </div>
+            <div class="property-item" data-uri="http://example.org/pokemon/ability">
+              <span class="icon-wrapper ability-icon">A</span> Ability
+            </div>
+            <div class="property-item" data-uri="http://example.org/pokemon/weakAgainst">
+              <span class="icon-wrapper weakness-icon">W</span> Weakness
+            </div>
+          </div>
+
+          <input type="hidden" id="property" name="property" value="{{ property_uri }}">
+
+          <div class="form-group" id="value-container" style="display: none;">
+            <label for="value">Value:</label>
+            <select id="value" name="value" required>
+              <option value="">Select a value</option>
+            </select>
+          </div>
+
+          <button type="submit">Ask Question</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Coluna da direita -->
+    <div class="column">
+      <div class="card">
+        <h2>Query Result</h2>
+        <div id="query-description">
+          Is it true that 
+          <strong>{{ pokemon|default_if_none:'...' }}</strong>'s 
+          <strong id="property-label">...</strong>
+          is <strong id="value-label">...</strong>?
+        </div>
+        <div id="result-display" class="result-box">
+          {% if result_text %}
+            <div class="{{ color_class }}">{{ result_text }}</div>
+          {% else %}
+            Please enter a Pokémon and select a property to ask a question.
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script>
+    const allPokemonNames = {{ all_pokemon_names|safe }};
+  </script>
+  <script src="{% static 'ask_question.js' %}"></script>
+{% endblock %}
