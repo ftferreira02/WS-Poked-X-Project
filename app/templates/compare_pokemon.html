@@ -93,26 +93,36 @@
 
       selectedPokemons.push(pokemon.number);
   
-      const ball = document.createElement('div');
-      ball.classList.add('pokeball');
+      const wrapper = document.createElement('div');
+      wrapper.classList.add('pokeball-wrapper');
+      wrapper.title = pokemon.name;
 
-      const img = document.createElement('img');
-      img.src = pokemon.image_url;
-      img.alt = pokemon.name;
-      img.title = pokemon.name;
-      img.style.height = '32px';
+      const button = document.createElement('button');
+      button.type = "button";
+      button.classList.add('pokeball-button');
 
-      ball.appendChild(img);
+      const backgroundImg = document.createElement('img');
+      backgroundImg.src = "https://raw.githubusercontent.com/replyre/poke-info/main/search.png";
+      backgroundImg.alt = "Pokéball";
 
-      ball.onclick = () => {
+      const spriteImg = document.createElement('img');
+      spriteImg.src = pokemon.image_url;
+      spriteImg.alt = pokemon.name;
+      spriteImg.classList.add('pokemon-inside');
+
+      button.appendChild(backgroundImg);
+      wrapper.appendChild(button);
+      wrapper.appendChild(spriteImg);
+
+      wrapper.onclick = () => {
           selectedPokemons = selectedPokemons.filter(n => n !== pokemon.number);
-          ball.remove();
+          wrapper.remove();
           hiddenInput.value = selectedPokemons.join(',');
       };
 
-      selectedList.appendChild(ball);
+      selectedList.appendChild(wrapper);
       hiddenInput.value = selectedPokemons.join(',');
-  
+    
       searchInput.value = '';
       suggestionsDiv.innerHTML = '';
   }
