@@ -20,14 +20,23 @@
 <div id="suggestions"></div>
 
 <div id="selected-list" class="selected-pokeballs">
-  {% for p in selected_pokemons %}
-  <div class="pokeball-wrapper" data-id="{{ p.number }}" title="{{ p.name }}">
-      <button type="button" class="pokeball-button">
-        <img src="https://raw.githubusercontent.com/replyre/poke-info/main/search.png" alt="Pokéball">
-      </button>
-      <img src="{{ p.image_url }}" class="pokemon-inside" alt="{{ p.name }}">
+  {% if selected_pokemons %}
+    {% for p in selected_pokemons %}
+      <div class="pokeball-wrapper" data-id="{{ p.number }}" title="{{ p.name }}">
+        <button type="button" class="pokeball-button">
+          <img src="https://raw.githubusercontent.com/replyre/poke-info/main/search.png" alt="Pokéball">
+        </button>
+        <img src="{{ p.image_url }}" class="pokemon-inside" alt="{{ p.name }}">
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-message">
+      <img src="https://raw.githubusercontent.com/replyre/poke-info/main/search.png" alt="Pokéball" style="height: 40px; vertical-align: middle;">
+      <span style="margin-left: 10px; font-family: 'Courier New', monospace;">
+        Select Pokémon above to compare their sizes!
+      </span>
     </div>
-  {% endfor %}
+  {% endif %}
 </div>
 
   {% if pokemons %}

@@ -14,6 +14,8 @@ urlpatterns = [
     path('compare/', compare_and_select_pokemon, name='compare_pokemon'),
     path('battle/', pokemon_battle_view, name='battle'),
     path("pokemon/ask/", ask_pokemon_question, name="ask_question"),
+    path('pokemon/export/<int:number>/', export_pokemon_rdf, name='export_pokemon_rdf'),
+
 
 ]
 
