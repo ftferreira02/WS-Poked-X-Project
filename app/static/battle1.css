@@ -1,13 +1,12 @@
 body {
     font-family: monospace;
     font-size: 20px;
-    background-image: url("https://lh3.googleusercontent.com/proxy/QpoAUgA50wMSn2tSe3dSveJm-viz3LahzYqNWJ3Vh75M5NHPYJe9vLqJkhL3V8BAXIhurZefht_8oKISBhszkzSkDC9LZBQ");
+    background-color: rgb(156, 235, 235);
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center;
-    padding-top: 0.5%;
-    padding-left: 18%;
+    padding-left: 21%;
 }
 
     .status .box {
@@ -20,6 +19,10 @@ body {
         width: 80%;
         border: #111 solid 3px;
     }
+
+  .space {
+    height: 30px;
+  }
 
   
   .game {
@@ -100,14 +103,14 @@ body {
     border-radius: 0 0 8px 8px;
     color: #fff;
     height: 120px;
-    width: calc(50% - 30px);
+    width: calc(50% - 7px);
   }
   
   .box .message {
     padding-top: 0.2%;
     position: relative;
     float: left;
-    font-size: 24px;
+    font-size: 20px;
     width: 50%;
   }
 
@@ -407,3 +410,5 @@ body {
   font-size: 16px;
 
 }
+
+

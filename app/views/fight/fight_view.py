@@ -3,7 +3,7 @@ from app.models.fight.fight_model import PokemonFight
 import json
 
 def pokemon_battle_view(request):
-    fight = PokemonFight("4", "0")  # Charizard vs Charmander
+    fight = PokemonFight("4", "9")  # Charizard vs Charmander
     battle_logs = []
     hp_progress = []
 
