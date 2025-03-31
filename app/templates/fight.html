@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% load static %} {% block title %} Pokémon Battle {% endblock %} 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'battle1.css' %}" />
+<link rel="stylesheet" href="{% static 'battle.css' %}" />
 <link rel="stylesheet" href="{% static 'historic.css' %}" />
 {% endblock %} 
 {% block body_class %}fight-page{% endblock %} 
@@ -208,5 +208,5 @@
     window.hpProgress = {{ hp_progress_json|safe }};
     window.winner = "{{ winner }}";
   </script>
-  <script src="{% static 'js/fight.js' %}"></script>
+  <script src="{% static 'js/fight1.js' %}"></script>
 {% endblock %}
