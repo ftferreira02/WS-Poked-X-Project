@@ -1,0 +1,140 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block title %}Select Pokémon{% endblock %} 
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'battle.css' %}" />
+<style>
+  .selection-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .selection-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+    font-size: 2rem;
+  }
+  
+  .pokemon-select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: white;
+    margin-bottom: 1rem;
+  }
+  
+  .pokemon-selection-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  
+  .selection-card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .battle-button {
+    grid-column: span 2;
+    background-color: #ff5722;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+  }
+  
+  .battle-button:hover {
+    background-color: #e64a19;
+  }
+  
+  .pokemon-preview {
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+  }
+  
+  .pokemon-preview img {
+    max-height: 100%;
+  }
+</style>
+{% endblock %} 
+
+{% block body_class %}selection-page{% endblock %} 
+
+{% block content %}
+<div class="selection-container">
+  <h1 class="selection-title">Choose Your Pokémon</h1>
+  
+  <form method="post" action="{% url 'pokemon_selection' %}">
+    {% csrf_token %}
+    <div class="pokemon-selection-form">
+      <div class="selection-card">
+        <h2>First Pokémon</h2>
+        {{ form.pokemon1 }}
+        <div class="pokemon-preview" id="preview1"></div>
+      </div>
+      
+      <div class="selection-card">
+        <h2>Second Pokémon</h2>
+        {{ form.pokemon2 }}
+        <div class="pokemon-preview" id="preview2"></div>
+      </div>
+      
+      <button type="submit" class="battle-button">
+        Start Battle!
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Function to update preview images
+    function updatePreview(selectElement, previewId) {
+      const selectedOption = selectElement.options[selectElement.selectedIndex];
+      const pokemonId = selectElement.value;
+      const pokemonName = selectedOption.text.toLowerCase();
+      
+      const previewElement = document.getElementById(previewId);
+      previewElement.innerHTML = `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png" alt="${pokemonName}">`;
+    }
+    
+    // Get select elements
+    const select1 = document.querySelector('[name="pokemon1"]');
+    const select2 = document.querySelector('[name="pokemon2"]');
+    
+    // Set initial previews
+    if (select1) {
+      updatePreview(select1, 'preview1');
+      select1.addEventListener('change', function() {
+        updatePreview(this, 'preview1');
+      });
+    }
+    
+    if (select2) {
+      updatePreview(select2, 'preview2');
+      select2.addEventListener('change', function() {
+        updatePreview(this, 'preview2');
+      });
+    }
+  });
+</script>
+{% endblock %}
