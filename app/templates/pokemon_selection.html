@@ -114,7 +114,8 @@
       const pokemonName = selectedOption.text.toLowerCase();
       
       const previewElement = document.getElementById(previewId);
-      previewElement.innerHTML = `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png" alt="${pokemonName}">`;
+      const staticPath = "{% static 'pokemon-images-index/' %}";
+      previewElement.innerHTML = `<img src="${staticPath}${pokemonId}.png" alt="${pokemonName}">`;
     }
     
     // Get select elements
