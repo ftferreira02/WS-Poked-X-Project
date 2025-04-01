@@ -400,18 +400,20 @@ class PokemonManager:
         PREFIX ex: <http://example.org/pokemon/>
         PREFIX sc: <http://schema.org/>
 
-        SELECT ?pokemon ?name ?number ?evolvesTo WHERE {
+        SELECT ?pokemon ?name ?number ?evolvesTo ?primaryType WHERE {
         {
             ?pokemon a ex:Pokemon ;
                     sc:name ?name ;
                     ex:pokedexNumber ?number ;
+                    ex:primaryType ?primaryType ;
                     ex:evolvesTo ?evolvesTo .
         }
         UNION
         {
             ?pokemon a ex:Pokemon ;
                     sc:name ?name ;
-                    ex:pokedexNumber ?number .
+                    ex:pokedexNumber ?number ;
+                    ex:primaryType ?primaryType .
             ?other ex:evolvesTo ?pokemon .
             OPTIONAL { ?pokemon ex:evolvesTo ?evolvesTo }
         }
@@ -427,7 +429,15 @@ class PokemonManager:
             evolves_to = binding.get("evolvesTo", {}).get("value")
             id = int(uri.split("/")[-1])
             
-            chains.setdefault(uri, {"id": id, "name": name, "number": number, "evolves_to": evolves_to})
+            primary_type = binding.get("primaryType", {}).get("value", "").split("/")[-1]
+
+            chains.setdefault(uri, {
+                "id": id,
+                "name": name,
+                "number": number,
+                "evolves_to": evolves_to,
+                "primary_type": primary_type
+            })
 
         # Build chain sequences
         visited = set()

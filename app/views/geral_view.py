@@ -122,31 +122,45 @@ def export_pokemon_rdf(request, pokemon_id):
     rdf_data = run_construct_query(query)
     return HttpResponse(rdf_data, content_type="text/turtle")
 
+TYPE_COLORS = {
+    "normal": "#A8A878", "fire": "#F08030", "water": "#6890F0", "electric": "#F8D030",
+    "grass": "#78C850", "ice": "#98D8D8", "fighting": "#C03028", "poison": "#A040A0",
+    "ground": "#E0C068", "flying": "#A890F0", "psychic": "#F85888", "bug": "#A8B820",
+    "rock": "#B8A038", "ghost": "#705898", "dragon": "#7038F8", "dark": "#705848",
+    "steel": "#B8B8D0", "fairy": "#EE99AC"
+}
+
 def all_evolution_chains(request):
     chains = PokemonManager.get_all_evolution_chains()
     
-    nodes_dict = {}  # use dict to prevent duplicate node IDs
+    nodes = []
     edges = []
 
     for chain in chains:
         for p in chain:
-            if p["id"] not in nodes_dict:
-                nodes_dict[p["id"]] = {
-                    "id": p["id"],
-                    "label": f"#{p['number']} {p['name']}",
-                    "shape": "image",
-                    "image": f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{p['number']}.png"
+            color = TYPE_COLORS.get(p['primary_type'], '#ccc')
+            nodes.append({
+                "id": p["id"],
+                "label": f"#{p['number']} {p['name']}",
+                "shape": "image",
+                "image": f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{p['number']}.png",
+                "title": f"{p['name']} {p['primary_type'].capitalize()}",
+                "color": {
+                    "border": color,
+                    "background": "white",
+                    "highlight": {"border": color, "background": "#f8f8f8"}
                 }
+            })
 
         for i in range(len(chain) - 1):
             edges.append({
                 "from": chain[i]["id"],
                 "to": chain[i+1]["id"]
             })
-    print("🧪 Nodes:", nodes_dict)
+    print("🧪 Nodes:", nodes)
     context = {
         
-        "nodes_json": json.dumps(list(nodes_dict.values())),
+        "nodes_json": json.dumps(list(nodes)),
         "edges_json": json.dumps(edges)
         
     }
