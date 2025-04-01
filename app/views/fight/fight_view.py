@@ -4,6 +4,11 @@ from app.models.fight.battle_queries import save_battle_result, get_battle_histo
 import json
 from app.forms import PokemonSelectionForm
 from app.models.geral_model import PokemonManager
+from app.models.fight.battle_queries import delete_battle
+from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse
+from django.utils.http import urlencode
+
 
 def pokemon_selection_view(request):
     """View for selecting Pokémon to battle"""
@@ -28,8 +33,12 @@ def pokemon_selection_view(request):
         'pokemon_data_json': json.dumps(pokemon_data)
     })
 
-def pokemon_battle_view(request, pokemon1_id="0", pokemon2_id="1"):
+def pokemon_battle_view(request, pokemon1_id="0", pokemon2_id="1", simulate="true"):
     """View for the actual battle simulation"""
+
+    simulate = request.GET.get("simulate", "true").lower() == "true"
+
+
     # Create fight with selected Pokémon
     fight = PokemonFight(pokemon1_id, pokemon2_id)
 
@@ -57,7 +66,9 @@ def pokemon_battle_view(request, pokemon1_id="0", pokemon2_id="1"):
     battle_history = get_battle_history()
 
     # Save the final result
-    save_battle_result(fight.pokemon1, fight.pokemon2, fight.winner)
+    if simulate:
+        # Save battle result in the RDF database
+        save_battle_result(fight.pokemon1, fight.pokemon2, fight.winner)
 
     # Template context
     context = {
@@ -72,3 +83,20 @@ def pokemon_battle_view(request, pokemon1_id="0", pokemon2_id="1"):
     }
 
     return render(request, "fight.html", context)
+
+@csrf_exempt
+def delete_battle_view(request, battle_id):
+    pokemon1_id = request.GET.get('pokemon1_id')
+    pokemon2_id = request.GET.get('pokemon2_id')
+
+    if request.method == "POST":
+        delete_battle(battle_id)
+
+
+    if pokemon1_id and pokemon2_id:
+        base_url = reverse('pokemon_battle', kwargs={'pokemon1_id': pokemon1_id, 'pokemon2_id': pokemon2_id})
+        query_string = urlencode({'simulate': 'false'})
+        url = f"{base_url}?{query_string}"
+        return redirect(url)
+    else:
+        return redirect('pokemon_selection')
