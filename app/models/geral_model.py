@@ -392,3 +392,12 @@ class PokemonManager:
             """
         result = run_query(query)
         return result.get("boolean", False)
+    
+    @staticmethod
+    def get_pokemon_by_id(pokemon_id):
+        try:
+            all_pokemons = PokemonManager.get_all_pokemons()
+            return next((p for p in all_pokemons if str(p.id) == str(pokemon_id)), None)
+        except Exception as e:
+            print(f"Erro ao obter Pokémon com id {pokemon_id}: {e}")
+            return None

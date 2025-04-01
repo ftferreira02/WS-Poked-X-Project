@@ -1,11 +1,7 @@
-{% extends 'base.html' %} {% load static %} {% block title %} Pokémon Battle {% endblock %} 
-{% block extra_css %}
+{% extends 'base.html' %} {% load static %} {% block title %} Pokémon Battle {%endblock %} {% block extra_css %}
 <link rel="stylesheet" href="{% static 'battle.css' %}" />
 <link rel="stylesheet" href="{% static 'historic.css' %}" />
-{% endblock %} 
-{% block body_class %}fight-page{% endblock %} 
-
-{% block content %}
+{% endblock %} {% block body_class %}fight-page{% endblock %} {% block content%}
 
 <!-- Contêiner das espadas -->
 <div class="swords-container fade-out">
@@ -66,15 +62,21 @@
     <div class="battle-history-title">Battle Historic</div>
     {% for battle in battle_history %}
     <div class="battle-log-entry">
-      <span class="battle-date">{{ battle.date|date:"Y-m-d H:i" }}</span><br>
+      <span class="battle-date">{{ battle.date|date:"Y-m-d H:i" }}</span><br />
       <span class="battle-info">
-        ⚔️ {{ battle.pokemon1_name }} vs {{ battle.pokemon2_name }}<br>
+        ⚔️ {{ battle.pokemon1_name }} vs {{ battle.pokemon2_name }}<br />
         🏆 Vencedor: <strong>{{ battle.winner_name }}</strong>
       </span>
+      <form method="post" action="{% url 'delete_battle' battle.battle_id %}?pokemon1_id={{ pokemon1.id }}&pokemon2_id={{ pokemon2.id }}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" title="Remove Battle" class="remove-battle-button" style="background-color: transparent; border: none; cursor: pointer; color: red;">
+          <span>❌ Remove</span>
+        </button>
+      </form>
     </div>
-  {% empty %}
-    <p style="padding: 10px;">No previous battles.</p>
-  {% endfor %}
+    {% empty %}
+    <p style="padding: 10px">No previous battles.</p>
+    {% endfor %}
   </div>
   <div class="game">
     <div class="round-text">
@@ -200,13 +202,11 @@
     </div>
   </div>
 </div>
-{% endblock %} 
-
-{% block extra_scripts %}
-  <script>
-    window.battleLogs = {{ logs_json|safe }};
-    window.hpProgress = {{ hp_progress_json|safe }};
-    window.winner = "{{ winner }}";
-  </script>
-  <script src="{% static 'js/fight1.js' %}"></script>
+{% endblock %} {% block extra_scripts %}
+<script>
+  window.battleLogs = {{ logs_json|safe }};
+  window.hpProgress = {{ hp_progress_json|safe }};
+  window.winner = "{{ winner }}";
+</script>
+<script src="{% static 'js/fight1.js' %}"></script>
 {% endblock %}

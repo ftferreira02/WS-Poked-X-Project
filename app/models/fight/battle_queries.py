@@ -93,3 +93,24 @@ def get_battle_history(limit=10):
         import traceback
         traceback.print_exc()
         return []
+    
+def delete_battle(battle_id):
+    """Remove uma batalha específica do RDF."""
+    battle_uri = f"http://example.org/pokemon/Battle/{battle_id}"
+    
+    delete_query = f"""
+    PREFIX poke: <http://example.org/pokemon/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+    DELETE WHERE {{
+        <{battle_uri}> ?p ?o .
+    }}
+    """
+
+    try:
+        result = run_update(delete_query)
+        print(f"Deleted battle {battle_id}: {result}")
+        return True
+    except Exception as e:
+        print(f"Error deleting battle {battle_id}: {e}")
+        return False
