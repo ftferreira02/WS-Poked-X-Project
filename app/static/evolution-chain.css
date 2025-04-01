@@ -1,0 +1,7 @@
+.content {
+    margin-left: 250px;  /* Adjust based on sidebar width */
+    padding: 1.5rem;
+    transition: margin 0.3s ease;
+    font-family: 'Courier New', monospace; 
+  }
+  

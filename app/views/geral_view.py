@@ -8,6 +8,7 @@ import math
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from app.sparql_client import run_construct_query
+import json
 
 
 # Lista de tipos para o dropdown de filtros.
@@ -120,6 +121,38 @@ def export_pokemon_rdf(request, pokemon_id):
     query = PokemonManager.get_construct_rdf_query_by_id(pokemon_id)
     rdf_data = run_construct_query(query)
     return HttpResponse(rdf_data, content_type="text/turtle")
+
+def all_evolution_chains(request):
+    chains = PokemonManager.get_all_evolution_chains()
+    
+    nodes_dict = {}  # use dict to prevent duplicate node IDs
+    edges = []
+
+    for chain in chains:
+        for p in chain:
+            if p["id"] not in nodes_dict:
+                nodes_dict[p["id"]] = {
+                    "id": p["id"],
+                    "label": f"#{p['number']} {p['name']}",
+                    "shape": "image",
+                    "image": f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{p['number']}.png"
+                }
+
+        for i in range(len(chain) - 1):
+            edges.append({
+                "from": chain[i]["id"],
+                "to": chain[i+1]["id"]
+            })
+    print("🧪 Nodes:", nodes_dict)
+    context = {
+        
+        "nodes_json": json.dumps(list(nodes_dict.values())),
+        "edges_json": json.dumps(edges)
+        
+    }
+    return render(request, 'evolution_chain.html', context)
+
+
 
   
 def pokemon_stats(request, pokemon_id):

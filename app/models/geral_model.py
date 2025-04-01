@@ -391,6 +391,65 @@ class PokemonManager:
             stats["weakAgainst"] = list(dict.fromkeys(stats["weakAgainst"]))
 
         return stats
+    
+
+    
+    @staticmethod
+    def get_all_evolution_chains():
+        query = """
+        PREFIX ex: <http://example.org/pokemon/>
+        PREFIX sc: <http://schema.org/>
+
+        SELECT ?pokemon ?name ?number ?evolvesTo WHERE {
+        {
+            ?pokemon a ex:Pokemon ;
+                    sc:name ?name ;
+                    ex:pokedexNumber ?number ;
+                    ex:evolvesTo ?evolvesTo .
+        }
+        UNION
+        {
+            ?pokemon a ex:Pokemon ;
+                    sc:name ?name ;
+                    ex:pokedexNumber ?number .
+            ?other ex:evolvesTo ?pokemon .
+            OPTIONAL { ?pokemon ex:evolvesTo ?evolvesTo }
+        }
+        }
+        """
+        results = run_query(query)
+        
+        chains = {}
+        for binding in results["results"]["bindings"]:
+            uri = binding["pokemon"]["value"]
+            name = binding["name"]["value"]
+            number = int(binding["number"]["value"])
+            evolves_to = binding.get("evolvesTo", {}).get("value")
+            id = int(uri.split("/")[-1])
+            
+            chains.setdefault(uri, {"id": id, "name": name, "number": number, "evolves_to": evolves_to})
+
+        # Build chain sequences
+        visited = set()
+        evolution_chains = []
+
+        for uri, data in chains.items():
+            if uri in visited:
+                continue
+            chain = [data]
+            visited.add(uri)
+
+            next_uri = data["evolves_to"]
+            while next_uri and next_uri in chains:
+                next_data = chains[next_uri]
+                chain.append(next_data)
+                visited.add(next_uri)
+                next_uri = next_data["evolves_to"]
+
+            evolution_chains.append(chain)
+
+        return evolution_chains
+
 
     @staticmethod
     def ask_question_about_pokemon(pokemon_name, property_uri, value_uri):
