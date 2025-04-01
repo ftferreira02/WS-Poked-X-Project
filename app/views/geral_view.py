@@ -6,6 +6,8 @@ from app.sparql_client import run_query
 from app.models.geral_model import PokemonManager
 import math
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+from app.sparql_client import run_construct_query
 
 
 # Lista de tipos para o dropdown de filtros.
@@ -113,6 +115,12 @@ def compare_and_select_pokemon(request):
         'max_pokemon_height': max_height,
         'selected_pokemons': pokemons
     })
+
+def export_pokemon_rdf(request, pokemon_id):
+    query = PokemonManager.get_construct_rdf_query_by_id(pokemon_id)
+    rdf_data = run_construct_query(query)
+    return HttpResponse(rdf_data, content_type="text/turtle")
+
   
 def pokemon_stats(request, pokemon_id):
     stats = PokemonManager.get_stats_by_id(pokemon_id)

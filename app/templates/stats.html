@@ -63,6 +63,11 @@
       </div>
 
       <div class="card-footer">
+        <div class="export-rdf">
+          <a class="export-link" href="{% url 'export_pokemon_rdf_by_id' stats.id %}" target="_blank">
+            Export RDF
+          </a>
+        </div>
         <img class="pokeball" src="https://png.pngtree.com/png-vector/20220723/ourmid/pngtree-pokeball-icon-vector-isolated-black-design-isolated-vector-png-image_22496306.png" alt="pokeball" width="70">
         <a class="back-link" href="{% url 'search_pokemon' %}">← Back to Search</a>
       </div>

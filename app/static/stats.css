@@ -261,6 +261,33 @@ h3 {
     margin: 0 0 10px 0;
 }
 
+.export-rdf {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.export-link {
+  background-color: var(--type-color);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-family: 'Oxanium', cursive;
+  text-decoration: none;
+  font-size: 16px;
+  box-shadow: 2px 2px 0 #00000040;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.export-link:hover {
+  background-color: #fff;
+  color: var(--type-color);
+  transform: scale(1.05);
+  box-shadow: 2px 2px 0 var(--type-color);
+  border: 2px solid var(--type-color);
+}
+
 .type.normal   { background-color: #A8A878; }
 .type.fire     { background-color: #F08030; }
 .type.water    { background-color: #6890F0; }

@@ -201,6 +201,105 @@ class PokemonManager:
                     pokemons.append(pokemon_obj)
 
         return pokemons
+    
+    @staticmethod
+    def get_construct_rdf_query_by_id(pokemon_id):
+        uri = f"<http://example.org/pokemon/Pokemon/{pokemon_id}>"
+        return f"""
+        PREFIX ex: <http://example.org/pokemon/>
+        PREFIX sc: <http://schema.org/>
+
+        CONSTRUCT {{
+        {uri} a ex:Pokemon ;
+                sc:name ?name ;
+                ex:pokedexNumber ?number ;
+                ex:height ?height ;
+                ex:weight ?weight ;
+                ex:primaryType ?primaryType ;
+                ex:secondaryType ?secondaryType ;
+                ex:hp ?hp ;
+                ex:attack ?attack ;
+                ex:defense ?defense ;
+                ex:spAttack ?spAttack ;
+                ex:spDefense ?spDefense ;
+                ex:speed ?speed ;
+                ex:isLegendary ?isLegendary ;
+                ex:generation ?generation ;
+                ex:totalPoints ?totalPoints ;
+                ex:megaEvolutionOf ?megaOf ;
+                ex:ability1 ?ability1 ;
+                ex:ability2 ?ability2 ;
+                ex:abilityHidden ?abilityHidden ;
+                ex:effectiveness ?effNode .
+
+        ?effNode
+            ex:againstBug ?againstBug ;
+            ex:againstDark ?againstDark ;
+            ex:againstDragon ?againstDragon ;
+            ex:againstElectric ?againstElectric ;
+            ex:againstFairy ?againstFairy ;
+            ex:againstFight ?againstFight ;
+            ex:againstFire ?againstFire ;
+            ex:againstFlying ?againstFlying ;
+            ex:againstGhost ?againstGhost ;
+            ex:againstGrass ?againstGrass ;
+            ex:againstGround ?againstGround ;
+            ex:againstIce ?againstIce ;
+            ex:againstNormal ?againstNormal ;
+            ex:againstPoison ?againstPoison ;
+            ex:againstPsychic ?againstPsychic ;
+            ex:againstRock ?againstRock ;
+            ex:againstSteel ?againstSteel ;
+            ex:againstWater ?againstWater .
+        }}
+        WHERE {{
+        BIND ({uri} AS ?pokemon)
+        ?pokemon a ex:Pokemon ;
+                sc:name ?name ;
+                ex:pokedexNumber ?number ;
+                ex:height ?height ;
+                ex:weight ?weight ;
+                ex:primaryType ?primaryType .
+
+        OPTIONAL {{ ?pokemon ex:secondaryType ?secondaryType }}
+        OPTIONAL {{ ?pokemon ex:hp ?hp }}
+        OPTIONAL {{ ?pokemon ex:attack ?attack }}
+        OPTIONAL {{ ?pokemon ex:defense ?defense }}
+        OPTIONAL {{ ?pokemon ex:spAttack ?spAttack }}
+        OPTIONAL {{ ?pokemon ex:spDefense ?spDefense }}
+        OPTIONAL {{ ?pokemon ex:speed ?speed }}
+        OPTIONAL {{ ?pokemon ex:isLegendary ?isLegendary }}
+        OPTIONAL {{ ?pokemon ex:generation ?generation }}
+        OPTIONAL {{ ?pokemon ex:totalPoints ?totalPoints }}
+        OPTIONAL {{ ?pokemon ex:megaEvolutionOf ?megaOf }}
+        OPTIONAL {{ ?pokemon ex:ability1 ?ability1 }}
+        OPTIONAL {{ ?pokemon ex:ability2 ?ability2 }}
+        OPTIONAL {{ ?pokemon ex:abilityHidden ?abilityHidden }}
+
+        OPTIONAL {{
+            ?pokemon ex:effectiveness ?effNode .
+            OPTIONAL {{ ?effNode ex:againstBug ?againstBug }}
+            OPTIONAL {{ ?effNode ex:againstDark ?againstDark }}
+            OPTIONAL {{ ?effNode ex:againstDragon ?againstDragon }}
+            OPTIONAL {{ ?effNode ex:againstElectric ?againstElectric }}
+            OPTIONAL {{ ?effNode ex:againstFairy ?againstFairy }}
+            OPTIONAL {{ ?effNode ex:againstFight ?againstFight }}
+            OPTIONAL {{ ?effNode ex:againstFire ?againstFire }}
+            OPTIONAL {{ ?effNode ex:againstFlying ?againstFlying }}
+            OPTIONAL {{ ?effNode ex:againstGhost ?againstGhost }}
+            OPTIONAL {{ ?effNode ex:againstGrass ?againstGrass }}
+            OPTIONAL {{ ?effNode ex:againstGround ?againstGround }}
+            OPTIONAL {{ ?effNode ex:againstIce ?againstIce }}
+            OPTIONAL {{ ?effNode ex:againstNormal ?againstNormal }}
+            OPTIONAL {{ ?effNode ex:againstPoison ?againstPoison }}
+            OPTIONAL {{ ?effNode ex:againstPsychic ?againstPsychic }}
+            OPTIONAL {{ ?effNode ex:againstRock ?againstRock }}
+            OPTIONAL {{ ?effNode ex:againstSteel ?againstSteel }}
+            OPTIONAL {{ ?effNode ex:againstWater ?againstWater }}
+        }}
+        }}
+        """
+
 
     @staticmethod
     def get_stats_by_id(pokemon_id):
