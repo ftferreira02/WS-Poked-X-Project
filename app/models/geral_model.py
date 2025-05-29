@@ -1,4 +1,5 @@
 from app.sparql_client import run_query
+from app.sparql_client import get_description_from_dbpedia
 import re
 
 class Pokemon:
@@ -340,6 +341,7 @@ class PokemonManager:
         stats = {
             "id": int(pokemon_id),
             "name": None,
+            "description": "",
             "attack": 0,
             "defense": 0,
             "hp": 0,
@@ -360,6 +362,7 @@ class PokemonManager:
         }
 
         for binding in bindings:
+            name_value = binding["name"]["value"]
             if not stats["name"]:
                 stats.update({
                     "name": binding["name"]["value"],
@@ -378,6 +381,7 @@ class PokemonManager:
                     "primaryType": binding["primaryType"]["value"].split("/")[-1],
                     "secondaryType": binding["secondaryType"]["value"].split("/")[-1],
                     "pokedexNumber": int(binding.get("pokedexNumber", {}).get("value", 0)),
+                    "description": get_description_from_dbpedia(name_value),
                 })
 
             type_name = binding["againstType"]["value"].split("against")[-1].lower()
