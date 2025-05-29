@@ -381,7 +381,7 @@ class PokemonManager:
                     "primaryType": binding["primaryType"]["value"].split("/")[-1],
                     "secondaryType": binding["secondaryType"]["value"].split("/")[-1],
                     "pokedexNumber": int(binding.get("pokedexNumber", {}).get("value", 0)),
-                    "description": get_description_from_dbpedia(name_value),
+                    "description": get_description_from_dbpedia(name_value, lang="en"),
                 })
 
             type_name = binding["againstType"]["value"].split("against")[-1].lower()

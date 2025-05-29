@@ -48,7 +48,14 @@ def get_description_from_dbpedia(pokemon_name, lang="pt"):
     dbpedia_sparql.setReturnFormat(JSON)
     
     try:
-        results = dbpedia_sparql.query().convert()
-        return results["results"]["bindings"][0]["abstract"]["value"]
+            results = dbpedia_sparql.query().convert()
+            full_text = results["results"]["bindings"][0]["abstract"]["value"]
+            
+            if "\n\n" in full_text:
+                return full_text.split("\n\n")[0]
+            elif ". " in full_text:
+                return full_text.split(". ")[0] + "."
+            else:
+                return full_text
     except Exception:
-        return f"Description of {pokemon_name} not found :(."
+        return f"Description of {pokemon_name} not found on DBpedia."
