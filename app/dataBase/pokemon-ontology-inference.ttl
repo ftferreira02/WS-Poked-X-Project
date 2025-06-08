@@ -1,0 +1,149 @@
+@prefix : <http://example.org/pokemon#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+####################
+# Core Classes
+####################
+
+:Entity a owl:Class .
+
+:Being a owl:Class ;
+    rdfs:subClassOf :Entity .
+
+:Pokemon a owl:Class ;
+    rdfs:subClassOf :Being ;
+    owl:equivalentClass [
+        a owl:Class ;
+        owl:intersectionOf (
+            [ owl:onProperty :hp ; owl:someValuesFrom xsd:integer ]
+            [ owl:onProperty :generation ; owl:someValuesFrom xsd:integer ]
+            [ owl:onProperty :hasVulnerabilityProfile ; owl:someValuesFrom :VulnerabilityProfile ]
+        )
+    ] .
+
+:Type a owl:Class ;
+    rdfs:subClassOf :Entity .
+
+:Ability a owl:Class ;
+    rdfs:subClassOf :Entity .
+
+:Form a owl:Class ;
+    rdfs:subClassOf :Entity .
+
+:VulnerabilityProfile a owl:Class ;
+    rdfs:subClassOf :Entity .
+
+:StatBlock a owl:Class ;
+    rdfs:subClassOf :Entity .
+
+:Category a owl:Class ;
+    rdfs:subClassOf :Entity .
+
+:Battle a owl:Class ;
+    rdfs:subClassOf :Entity .
+
+:VisualAsset a owl:Class ;
+    rdfs:subClassOf :Entity .
+
+####################
+# Object Properties
+####################
+
+:hasType a owl:ObjectProperty ;
+    rdfs:domain :Pokemon ;
+    rdfs:range :Type .
+
+:hasAbility1 a owl:ObjectProperty ;
+    rdfs:domain :Pokemon ;
+    rdfs:range :Ability .
+
+:hasAbility2 a owl:ObjectProperty ;
+    rdfs:domain :Pokemon ;
+    rdfs:range :Ability .
+
+:evolvesTo a owl:ObjectProperty ;
+    rdfs:domain :Pokemon ;
+    rdfs:range :Pokemon ;
+    owl:inverseOf :evolvesFrom .
+
+:hasForm a owl:ObjectProperty ;
+    rdfs:domain :Pokemon ;
+    rdfs:range :Form .
+
+:hasVulnerabilityProfile a owl:ObjectProperty ;
+    rdfs:domain :Pokemon ;
+    rdfs:range :VulnerabilityProfile .
+
+:hasStatBlock a owl:ObjectProperty ;
+    rdfs:domain :Pokemon ;
+    rdfs:range :StatBlock .
+
+:hasCategory a owl:ObjectProperty ;
+    rdfs:domain :Pokemon ;
+    rdfs:range :Category .
+
+:hasVisual a owl:ObjectProperty ;
+    rdfs:domain :Pokemon ;
+    rdfs:range :VisualAsset .
+
+:foughtIn a owl:ObjectProperty ;
+    rdfs:domain :Pokemon ;
+    rdfs:range :Battle .
+
+:bestMatchAgainst a owl:ObjectProperty ;
+    rdfs:domain :Pokemon ;
+    rdfs:range :Pokemon ;
+    rdfs:label "Best Match Against" ;
+    rdfs:comment "Links a Pokémon to another that is a highly effective counter." .
+
+####################
+# Sub-properties for Vulnerability
+####################
+
+:vulnerableToFire rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToWater rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToGrass rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToElectric rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToNormal rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToIce rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToFight rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToPoison rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToGround rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToFlying rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToPsychic rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToBug rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToRock rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToGhost rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToDragon rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToDark rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToSteel rdfs:subPropertyOf :hasVulnerabilityValue .
+:vulnerableToFairy rdfs:subPropertyOf :hasVulnerabilityValue .
+
+:hasVulnerabilityValue a owl:DatatypeProperty ;
+    rdfs:domain :VulnerabilityProfile ;
+    rdfs:range xsd:float .
+
+####################
+# Datatype Properties
+####################
+
+:pokedexNumber a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:integer .
+:name a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:string .
+:generation a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:integer .
+:isLegendary a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:boolean .
+
+:height a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:float .
+:weight a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:float .
+
+:totalPoints a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:integer .
+:hp a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:integer .
+:attack a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:integer .
+:defense a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:integer .
+:spAttack a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:integer .
+:spDefense a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:integer .
+:speed a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:integer .
+
+:baseFriendship a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:integer .
+:hasImage a owl:DatatypeProperty ; rdfs:domain :Pokemon ; rdfs:range xsd:boolean .
