@@ -9,6 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from app.sparql_client import run_construct_query
 import json
+from django.http import JsonResponse
+from app.sparql_client import dbpedia_data_already_loaded
 
 
 # Lista de tipos para o dropdown de filtros.
@@ -211,3 +213,8 @@ def ask_pokemon_question(request):
         "property_uri": property_uri,
         "value_uri": value_uri
     })
+
+def check_dbpedia_status(request, name):
+    exists = dbpedia_data_already_loaded(name)
+    return JsonResponse({"name": name, "exists": exists})
+

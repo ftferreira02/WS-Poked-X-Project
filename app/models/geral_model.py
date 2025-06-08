@@ -1,4 +1,6 @@
-from app.sparql_client import run_query
+from SPARQLWrapper import SPARQLWrapper, JSON
+from app.sparql_client import run_query, get_dbpedia_info
+from app.sparql_client import get_full_dbpedia_info_turtle, insert_turtle_to_graphdb, dbpedia_data_already_loaded
 import re
 
 class Pokemon:
@@ -300,36 +302,35 @@ class PokemonManager:
         }}
         """
 
-
     @staticmethod
     def get_stats_by_id(pokemon_id):
         query = f"""
         PREFIX ns1: <http://example.org/pokemon/>
         PREFIX schema1: <http://schema.org/>
         SELECT ?name ?attack ?defense ?hp ?spAttack ?spDefense ?speed ?totalPoints
-               ?height ?weight ?isLegendary ?generation ?baseFriendship
-               ?primaryType ?secondaryType ?pokedexNumber
-               ?againstType ?value
+            ?height ?weight ?isLegendary ?generation ?baseFriendship
+            ?primaryType ?secondaryType ?pokedexNumber
+            ?againstType ?value
         WHERE {{
-          <http://example.org/pokemon/Pokemon/{pokemon_id}> schema1:name ?name ;
-                                                           ns1:attack ?attack ;
-                                                           ns1:defense ?defense ;
-                                                           ns1:hp ?hp ;
-                                                           ns1:spAttack ?spAttack ;
-                                                           ns1:spDefense ?spDefense ;
-                                                           ns1:speed ?speed ;
-                                                           ns1:totalPoints ?totalPoints ;
-                                                           ns1:height ?height ;
-                                                           ns1:weight ?weight ;
-                                                           ns1:isLegendary ?isLegendary ;
-                                                           ns1:generation ?generation ;
-                                                           ns1:baseFriendship ?baseFriendship ;
-                                                           ns1:primaryType ?primaryType ;
-                                                           ns1:secondaryType ?secondaryType ;
-                                                           ns1:pokedexNumber ?pokedexNumber ;
-                                                           ns1:effectiveness ?eff .
-          ?eff ?againstType ?value .
-          FILTER STRSTARTS(STR(?againstType), STR(ns1:against))
+        <http://example.org/pokemon/Pokemon/{pokemon_id}> schema1:name ?name ;
+                                                        ns1:attack ?attack ;
+                                                        ns1:defense ?defense ;
+                                                        ns1:hp ?hp ;
+                                                        ns1:spAttack ?spAttack ;
+                                                        ns1:spDefense ?spDefense ;
+                                                        ns1:speed ?speed ;
+                                                        ns1:totalPoints ?totalPoints ;
+                                                        ns1:height ?height ;
+                                                        ns1:weight ?weight ;
+                                                        ns1:isLegendary ?isLegendary ;
+                                                        ns1:generation ?generation ;
+                                                        ns1:baseFriendship ?baseFriendship ;
+                                                        ns1:primaryType ?primaryType ;
+                                                        ns1:secondaryType ?secondaryType ;
+                                                        ns1:pokedexNumber ?pokedexNumber ;
+                                                        ns1:effectiveness ?eff .
+        ?eff ?againstType ?value .
+        FILTER STRSTARTS(STR(?againstType), STR(ns1:against))
         }}
         """
         results = run_query(query)
@@ -340,6 +341,7 @@ class PokemonManager:
         stats = {
             "id": int(pokemon_id),
             "name": None,
+            "description": "",
             "attack": 0,
             "defense": 0,
             "hp": 0,
@@ -357,12 +359,25 @@ class PokemonManager:
             "strongAgainst": [],
             "weakAgainst": [],
             "pokedexNumber": 0,
+            "designer": "",
+            "firstAppearance": "",
         }
 
         for binding in bindings:
+            name_value = binding["name"]["value"]
             if not stats["name"]:
+                print(f"✅ Verificado DBpedia para {name_value} | Já existe? {dbpedia_data_already_loaded(name_value)}")
+                if not dbpedia_data_already_loaded(name_value):
+                    full_info = get_full_dbpedia_info_turtle(name_value)
+                    if full_info:
+                        insert_turtle_to_graphdb(full_info)
+
+
+                # 2. Extrai os campos visíveis (como antes)
+                dbpedia_data = get_dbpedia_info(name_value, lang="en")
+
                 stats.update({
-                    "name": binding["name"]["value"],
+                    "name": name_value,
                     "attack": int(binding["attack"]["value"]),
                     "defense": int(binding["defense"]["value"]),
                     "hp": int(binding["hp"]["value"]),
@@ -378,6 +393,9 @@ class PokemonManager:
                     "primaryType": binding["primaryType"]["value"].split("/")[-1],
                     "secondaryType": binding["secondaryType"]["value"].split("/")[-1],
                     "pokedexNumber": int(binding.get("pokedexNumber", {}).get("value", 0)),
+                    "description": dbpedia_data["description"],
+                    "designer": dbpedia_data["designer"],
+                    "firstAppearance": dbpedia_data["firstAppearance"],
                 })
 
             type_name = binding["againstType"]["value"].split("against")[-1].lower()
@@ -387,11 +405,10 @@ class PokemonManager:
             elif 0.0 < val < 1.0:
                 stats["weakAgainst"].append(type_name)
 
-            stats["strongAgainst"] = list(dict.fromkeys(stats["strongAgainst"]))
-            stats["weakAgainst"] = list(dict.fromkeys(stats["weakAgainst"]))
+        stats["strongAgainst"] = list(dict.fromkeys(stats["strongAgainst"]))
+        stats["weakAgainst"] = list(dict.fromkeys(stats["weakAgainst"]))
 
         return stats
-    
 
     
     @staticmethod
