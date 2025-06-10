@@ -102,6 +102,7 @@
         item.dataset.name = pokemon.name;
         item.dataset.number = pokemon.number;
         item.dataset.isStrong = pokemon.isStrong;
+        item.dataset.isStrong = pokemon.isStrong;
         suggestionsEl.appendChild(item);
       });
       
@@ -139,6 +140,7 @@
       
       // Clear selected pokemon if input changes
       if (this.value !== selectedPokemon1.textContent.replace('Selected: ', '').trim()) {
+      if (this.value !== selectedPokemon1.textContent.replace('Selected: ', '').trim()) {
         hiddenInput1.value = '';
         selectedPokemon1.style.display = 'none';
         preview1.innerHTML = '';
@@ -153,6 +155,7 @@
       
       // Clear selected pokemon if input changes
       if (this.value !== selectedPokemon2.textContent.replace('Selected: ', '').trim()) {
+      if (this.value !== selectedPokemon2.textContent.replace('Selected: ', '').trim()) {
         hiddenInput2.value = '';
         selectedPokemon2.style.display = 'none';
         preview2.innerHTML = '';
@@ -164,7 +167,12 @@
     suggestions1.addEventListener('click', function(e) {
       const item = e.target.closest('.suggestion-item');
       if (item) {
+      const item = e.target.closest('.suggestion-item');
+      if (item) {
         const pokemon = {
+          id: item.dataset.id,
+          name: item.dataset.name,
+          number: item.dataset.number
           id: item.dataset.id,
           name: item.dataset.name,
           number: item.dataset.number
@@ -178,7 +186,12 @@
     suggestions2.addEventListener('click', function(e) {
       const item = e.target.closest('.suggestion-item');
       if (item) {
+      const item = e.target.closest('.suggestion-item');
+      if (item) {
         const pokemon = {
+          id: item.dataset.id,
+          name: item.dataset.name,
+          number: item.dataset.number
           id: item.dataset.id,
           name: item.dataset.name,
           number: item.dataset.number

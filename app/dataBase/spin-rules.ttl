@@ -1,0 +1,120 @@
+@prefix pdx: <http://poked-x.org/pokemon/> .
+@prefix sp: <http://spinrdf.org/sp#> .
+@prefix spin: <http://spinrdf.org/spin#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Regras já existentes
+<http://poked-x.org/pokemon/rule/InferHasSameTypeAs> a spin:Rule ;
+    spin:body pdx:construct3 .
+
+<http://poked-x.org/pokemon/rule/InferLegendaryPokemon> a spin:Rule ;
+    spin:body pdx:construct1 .
+
+<http://poked-x.org/pokemon/rule/InferStrongAgainst> a spin:Rule ;
+    spin:body pdx:construct2 .
+
+pdx:construct1 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?pokemon a pdx:LegendaryPokemon .
+    }
+    WHERE {
+        ?pokemon pdx:isLegendary true .
+    }
+"""^^xsd:string .
+
+pdx:construct2 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?type1 pdx:strongAgainst ?type2 .
+    }
+    WHERE {
+        ?type1 pdx:effectiveAgainst ?type2 ;
+               pdx:effectiveness ?value .
+        FILTER (?value > 1.5)
+    }
+"""^^xsd:string .
+
+pdx:construct3 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?p1 pdx:hasSameTypeAs ?p2 .
+    }
+    WHERE {
+        ?p1 pdx:primaryType ?type .
+        ?p2 pdx:primaryType ?type .
+        FILTER (?p1 != ?p2)
+    }
+"""^^xsd:string .
+
+<http://poked-x.org/pokemon/rule/InferStrongPokemon> a spin:Rule ;
+    spin:body pdx:construct5 .
+
+<http://poked-x.org/pokemon/rule/InferOldGeneration> a spin:Rule ;
+    spin:body pdx:construct6 .
+
+<http://poked-x.org/pokemon/rule/InferSharedPrimaryType> a spin:Rule ;
+    spin:body pdx:construct7 .
+
+<http://poked-x.org/pokemon/rule/InferFastPokemon> a spin:Rule ;
+    spin:body pdx:construct8 .
+
+<http://poked-x.org/pokemon/rule/InferMixedType> a spin:Rule ;
+    spin:body pdx:construct9 .
+
+pdx:construct5 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?pokemon pdx:isStrong true .
+    }
+    WHERE {
+        ?pokemon pdx:spAttack ?atk .
+        FILTER (?atk > 120)
+    }
+"""^^xsd:string .
+
+pdx:construct6 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?pokemon pdx:isFromOldGen true .
+    }
+    WHERE {
+        ?pokemon pdx:generation ?gen .
+        FILTER (?gen <= 3)
+    }
+"""^^xsd:string .
+
+pdx:construct7 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?p1 pdx:sharesPrimaryTypeWith ?p2 .
+    }
+    WHERE {
+        ?p1 pdx:primaryType ?type .
+        ?p2 pdx:primaryType ?type .
+        FILTER (?p1 != ?p2)
+    }
+"""^^xsd:string .
+
+pdx:construct8 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?pokemon pdx:isFast true .
+    }
+    WHERE {
+        ?pokemon pdx:speed ?spd .
+        FILTER (?spd >= 100)
+    }
+"""^^xsd:string .
+
+pdx:construct9 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?pokemon pdx:isMixedType true .
+    }
+    WHERE {
+        ?pokemon pdx:primaryType ?t1 .
+        ?pokemon pdx:secondaryType ?t2 .
+        FILTER (?t1 != ?t2)
+    }
+"""^^xsd:string .

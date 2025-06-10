@@ -12,28 +12,35 @@ body {
     color: white;
 }
 
-.container {
+/* Make container class more specific */
+body .container.no-sidebar {
     display: flex;
-    justify-content: flex-end;
-    align-items: stretch;
+    justify-content: center;
+    align-items: flex-start;  /* Changed from stretch to align at top */
     gap: 40px;
     width: 100%;
-    max-width: 1400px;
-    height: 100%;
+    max-width: 1800px;  /* Reduced from 2400px */
+    height: auto;
+    padding: 2rem;
+    padding-left: 300px;
+    box-sizing: border-box;
+    margin: 0 auto;
 }
 
 /* Two main columns */
 .column {
     flex: 1;
     padding-top: 2rem;
+    min-width: 0;
 }
 
 .card-column {
-    flex: 0 1 600px;
+    flex: 0 1 800px;  /* Reduced from 1200px */
     display: flex;
     flex-direction: column;
     justify-content: stretch;
     align-items: stretch;
+    min-width: 0;
 }
 
 .data-column {
@@ -41,21 +48,22 @@ body {
     display: flex;
     flex-direction: column;
     gap: 30px;
-    max-width: 600px;
-    justify-content: space-between;
+    width: 800px;  /* Match card-column width */
+    max-width: 800px;  /* Match card-column width */
+    min-width: 0;
 }
 
 .card {
     background: white;
     color: #000;
     width: 100%;
-    padding: 40px;
+    padding: 40px;  /* Reduced from 80px */
     border-radius: 15px;
     text-align: center;
     box-shadow: -2px 3px 0 #7e5813, 15px 15px 0 #69471fab;
     position: relative;
     box-sizing: border-box;
-    height: 100%;
+    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -92,7 +100,7 @@ body {
 }
 
 .image img {
-    width: 180px;
+    width: 220px;
     margin: 10px 0;
 }
 
@@ -106,19 +114,22 @@ body {
 }
 
 .description {
-    font-size: 17px;
+    font-size: 16px;
     text-align: justify;
-    margin: 25px 10px;
+    margin: 20px 10px;
     color: #555;
+    max-width: 800px;
+    margin: 20px auto;
 }
 
+/* Make the info grid wider */
 .info-grid {
     display: flex;
-    justify-content: space-between;
-    align-items: end;
-    gap: 20px;
-    margin-bottom: 15px;
-    line-height: 1.8;
+    justify-content: space-around;
+    align-items: center;
+    gap: 40px;  /* Reduced from 60px */
+    margin: 20px 0;
+    padding: 0 20px;  /* Reduced from 40px */
 }
 
 .info-grid > div {
@@ -149,22 +160,25 @@ body {
     gap: 5px;
 }
 
+/* Adjust stats layout to be more horizontal */
 .stats {
     display: flex;
-    justify-content: space-between;
-    gap: 20px;
+    justify-content: space-around;
+    gap: 60px;  /* Reduced from 80px */
+    margin: 20px 0;
+    padding: 0 20px;  /* Reduced from 40px */
 }
 
 .column-stats {
-    margin-top: 4rem;
-    
+    margin-top: 2rem;
+    flex: 1;
 }
 
 .bar {
-    width: 150px;
-    height: 10px;
+    width: 250px;  /* Reduced from 300px */
+    height: 12px;
     background: #e6e6e6;
-    border-radius: 5px;
+    border-radius: 6px;
     border: 1px solid #ccc;
     overflow: hidden;
     margin: 5px;
@@ -192,20 +206,11 @@ body {
 
 /* Radar chart section */
 .chart-section, .type-matchups {
+    width: 100%;
     background: white;
-    color: #000;
-    padding: 30px;
+    padding: 40px;
     border-radius: 15px;
     box-shadow: -2px 3px 0 #7e5813, 15px 15px 0 #69471fab;
-    width: 100%;
-    box-sizing: border-box;
-}
-.card,
-.chart-section,
-.type-matchups {
-    padding: 50px;
-    border-radius: 20px;
-    box-shadow: -3px 4px 0 #7e5813, 20px 20px 0 #69471fab;
 }
 
 .radar-chart-container {
@@ -308,19 +313,60 @@ h3 {
 .type.steel    { background-color: #B8B8D0; }
 .type.fairy    { background-color: #EE99AC; }
 
-/* ---------- RESPONSIVO ---------- */
-@media (max-width: 1100px) {
-    .container {
+/* Responsive adjustments */
+@media (max-width: 1800px) {
+    body .container.no-sidebar {
         flex-direction: column;
         align-items: center;
+        padding: 1rem;
+        padding-left: 300px;
     }
 
     .column {
         width: 100%;
-        max-width: 500px;
+        max-width: 800px;  /* Match the card width */
     }
 
     .card-column, .data-column {
         flex: none;
+        width: 100%;
     }
+
+    .bar {
+        width: 200px;
+    }
+}
+
+@media (max-width: 1200px) {
+    body .container.no-sidebar {
+        padding-left: 1rem;
+    }
+}
+
+.same-type-section {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #eee;
+}
+
+.same-type-section h2 {
+    color: var(--type-color);
+    font-size: 24px;
+    margin-bottom: 15px;
+    text-align: left;
+    border-bottom: 2px solid var(--type-color);
+    padding-bottom: 10px;
+}
+
+.same-type-pokemon {
+    font-size: 18px;
+    margin: 15px 0;
+    color: #333;
+}
+
+.hint {
+    font-size: 14px;
+    color: #666;
+    font-style: italic;
+    margin-top: 10px;
 }
