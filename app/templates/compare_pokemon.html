@@ -7,26 +7,28 @@
 
 
 {% block content %}
-<div class="content">
-  <h1>Compare Pokémon Sizes</h1>
+<div class="content" vocab="http://schema.org/ http://poked-x.org/pokemon/" typeof="pdx:PokemonComparison">
+  <h1 property="name">Compare Pokémon Sizes</h1>
 
-<form method="post" style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+<form method="post" style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;" property="potentialAction" typeof="SearchAction">
   {% csrf_token %}
-  <input type="text" id="pokemon-search" placeholder="Search Pokémon..." autocomplete="off">
+  <input type="text" id="pokemon-search" placeholder="Search Pokémon..." autocomplete="off" property="query-input">
   <input type="hidden" name="pokemons" id="selected-pokemons">
   <button type="submit" class="compare-btn">Compare</button>
 </form>
 
 <div id="suggestions"></div>
 
-<div id="selected-list" class="selected-pokeballs">
+<div id="selected-list" class="selected-pokeballs" property="pdx:selectedPokemons" typeof="ItemList">
   {% if selected_pokemons %}
     {% for p in selected_pokemons %}
-      <div class="pokeball-wrapper" data-id="{{ p.number }}" title="{{ p.name }}">
+      <div class="pokeball-wrapper" data-id="{{ p.number }}" title="{{ p.name }}" property="itemListElement" typeof="pdx:Pokemon" resource="http://poked-x.org/pokemon/Pokemon/{{ p.number }}">
         <button type="button" class="pokeball-button">
           <img src="https://raw.githubusercontent.com/replyre/poke-info/main/search.png" alt="Pokéball">
         </button>
-        <img src="{{ p.image_url }}" class="pokemon-inside" alt="{{ p.name }}">
+        <img src="{{ p.image_url }}" class="pokemon-inside" alt="{{ p.name }}" property="image">
+        <meta property="name" content="{{ p.name }}">
+        <meta property="identifier" content="{{ p.number }}">
       </div>
     {% endfor %}
   {% else %}
@@ -42,7 +44,7 @@
   {% if pokemons %}
     <hr>
     <h2>Size Comparison</h2>
-    <div class="comparison-wrapper" style="position: relative; height: {{ max_display_height }}px;">
+    <div class="comparison-wrapper" style="position: relative; height: {{ max_display_height }}px;" property="pdx:sizeComparison" typeof="pdx:SizeComparison">
       <div class="ruler-grid">
         {% for tick in tick_data %}
           <div class="ruler-line" style="top: {{ tick.top_px|floatformat:0 }}px;">
@@ -53,12 +55,12 @@
     
       <div class="comparison-container">
         {% for p in pokemons %}
-          <div style="text-align: center;">
-            <img src="{{ p.image_url }}" alt="{{ p.name }}" style="height: {{ p.scaled_height }};">
+          <div style="text-align: center;" typeof="pdx:Pokemon" resource="http://poked-x.org/pokemon/Pokemon/{{ p.number }}">
+            <img src="{{ p.image_url }}" alt="{{ p.name }}" style="height: {{ p.scaled_height }};" property="image">
             <div style="margin-top: 10px;">
-                <strong>#{{ p.number }} {{ p.name }}</strong><br>
-                Height: {{ p.height }} m<br>
-                Weight: {{ p.weight }} kg
+                <strong property="name">#{{ p.number }} {{ p.name }}</strong><br>
+                Height: <span property="pdx:height">{{ p.height }}</span> m<br>
+                Weight: <span property="pdx:weight">{{ p.weight }}</span> kg
             </div>
           </div>
         {% endfor %}
@@ -69,6 +71,26 @@
 {% endblock %}
 
 {% block extra_scripts %}
+<script type="application/ld+json">
+{
+  "@context": {
+    "pdx": "http://poked-x.org/pokemon/",
+    "schema": "http://schema.org/"
+  },
+  "@type": "pdx:PokemonList",
+  "pokemons": [
+    {% for p in form.fields.pokemons.choices %}
+    {
+      "@type": "pdx:Pokemon",
+      "number": "{{ p.0 }}",
+      "name": "{{ p.1|escapejs }}",
+      "image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ p.0 }}.png"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+
 <script>
   const allPokemons = [
     {% for p in form.fields.pokemons.choices %}
@@ -122,6 +144,8 @@
       const wrapper = document.createElement('div');
       wrapper.classList.add('pokeball-wrapper');
       wrapper.title = pokemon.name;
+      wrapper.setAttribute('typeof', 'pdx:Pokemon');
+      wrapper.setAttribute('resource', `http://poked-x.org/pokemon/Pokemon/${pokemon.number}`);
 
       const button = document.createElement('button');
       button.type = "button";
@@ -135,10 +159,21 @@
       spriteImg.src = pokemon.image_url;
       spriteImg.alt = pokemon.name;
       spriteImg.classList.add('pokemon-inside');
+      spriteImg.setAttribute('property', 'image');
+
+      const nameMetaTag = document.createElement('meta');
+      nameMetaTag.setAttribute('property', 'name');
+      nameMetaTag.setAttribute('content', pokemon.name);
+
+      const idMetaTag = document.createElement('meta');
+      idMetaTag.setAttribute('property', 'identifier');
+      idMetaTag.setAttribute('content', pokemon.number);
 
       button.appendChild(backgroundImg);
       wrapper.appendChild(button);
       wrapper.appendChild(spriteImg);
+      wrapper.appendChild(nameMetaTag);
+      wrapper.appendChild(idMetaTag);
 
       wrapper.onclick = () => {
           selectedPokemons = selectedPokemons.filter(n => n !== pokemon.number);
