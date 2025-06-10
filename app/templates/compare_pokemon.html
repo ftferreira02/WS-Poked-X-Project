@@ -7,26 +7,26 @@
 
 
 {% block content %}
-<div class="content">
-  <h1>Compare Pokémon Sizes</h1>
+<div class="content" typeof="schema:WebPage" resource="#comparison">
+  <h1 property="schema:name">Compare Pokémon Sizes</h1>
 
-<form method="post" style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+<form method="post" style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;" typeof="schema:SearchAction">
   {% csrf_token %}
-  <input type="text" id="pokemon-search" placeholder="Search Pokémon..." autocomplete="off">
+  <input type="text" id="pokemon-search" placeholder="Search Pokémon..." autocomplete="off" property="schema:query-input">
   <input type="hidden" name="pokemons" id="selected-pokemons">
   <button type="submit" class="compare-btn">Compare</button>
 </form>
 
 <div id="suggestions"></div>
 
-<div id="selected-list" class="selected-pokeballs">
+<div id="selected-list" class="selected-pokeballs" typeof="pokemon:ComparisonList">
   {% if selected_pokemons %}
     {% for p in selected_pokemons %}
-      <div class="pokeball-wrapper" data-id="{{ p.number }}" title="{{ p.name }}">
+      <div class="pokeball-wrapper" data-id="{{ p.number }}" title="{{ p.name }}" typeof="pokemon:Pokemon" resource="pokemon:{{ p.number }}">
         <button type="button" class="pokeball-button">
           <img src="https://raw.githubusercontent.com/replyre/poke-info/main/search.png" alt="Pokéball">
         </button>
-        <img src="{{ p.image_url }}" class="pokemon-inside" alt="{{ p.name }}">
+        <img src="{{ p.image_url }}" class="pokemon-inside" alt="{{ p.name }}" property="schema:image">
       </div>
     {% endfor %}
   {% else %}
@@ -42,23 +42,24 @@
   {% if pokemons %}
     <hr>
     <h2>Size Comparison</h2>
-    <div class="comparison-wrapper" style="position: relative; height: {{ max_display_height }}px;">
+    <div class="comparison-wrapper" data-height="{{ max_display_height }}" typeof="pokemon:SizeComparison">
       <div class="ruler-grid">
         {% for tick in tick_data %}
-          <div class="ruler-line" style="top: {{ tick.top_px|floatformat:0 }}px;">
-            <span>{{ tick.label }} m</span>
+          <div class="ruler-line" data-top="{{ tick.top_px|floatformat:0 }}">
+            <span property="schema:value">{{ tick.label }} m</span>
           </div>
         {% endfor %}
       </div>
     
       <div class="comparison-container">
         {% for p in pokemons %}
-          <div style="text-align: center;">
-            <img src="{{ p.image_url }}" alt="{{ p.name }}" style="height: {{ p.scaled_height }};">
-            <div style="margin-top: 10px;">
-                <strong>#{{ p.number }} {{ p.name }}</strong><br>
-                Height: {{ p.height }} m<br>
-                Weight: {{ p.weight }} kg
+          <div class="pokemon-details" typeof="pokemon:Pokemon" resource="pokemon:{{ p.number }}">
+            <img class="pokemon-image" src="{{ p.image_url }}" alt="{{ p.name }}" data-height="{{ p.scaled_height }}" property="schema:image">
+            <div class="pokemon-details-info">
+                <strong property="schema:identifier">#{{ p.number }}</strong>
+                <span property="schema:name">{{ p.name }}</span><br>
+                Height: <span property="schema:height">{{ p.height }} m</span><br>
+                Weight: <span property="schema:weight">{{ p.weight }} kg</span>
             </div>
           </div>
         {% endfor %}
@@ -70,16 +71,28 @@
 
 {% block extra_scripts %}
 <script>
-  const allPokemons = [
-    {% for p in form.fields.pokemons.choices %}
-      { 
-        number: "{{ p.0 }}", 
-        name: "{{ p.1|escapejs }}", 
-        image_url: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ p.0 }}.png"
-      },
-    {% endfor %}
-  ];
-  </script>
+  // Set height CSS variable from data attribute
+  const wrapper = document.querySelector('.comparison-wrapper');
+  if (wrapper) {
+    wrapper.style.setProperty('--height', wrapper.dataset.height);
+  }
+
+  // Set ruler line positions
+  document.querySelectorAll('.ruler-line').forEach(line => {
+    line.style.setProperty('--top-px', `${line.dataset.top}px`);
+  });
+
+  // Set pokemon image heights
+  document.querySelectorAll('.pokemon-image').forEach(img => {
+    img.style.setProperty('--scaled-height', img.dataset.height);
+  });
+
+  const allPokemons = JSON.parse('{{ form.fields.pokemons.choices|safe|escapejs }}').map(p => ({
+    number: p[0],
+    name: p[1],
+    image_url: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p[0]}.png`
+  }));
+</script>
 
 <script>
   const searchInput = document.getElementById('pokemon-search');

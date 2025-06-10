@@ -110,8 +110,13 @@
 
   .comparison-wrapper {
     position: relative;
-    height: 400px;
-    margin-top: 100px; /* 👈 adds space between the title and ruler lines */
+    margin-top: 100px;
+  }
+
+  .comparison-wrapper::before {
+    content: '';
+    display: block;
+    height: calc(var(--height, 400) * 1px);
   }
 
   .comparison-container {
@@ -157,6 +162,7 @@
     font-size: 12px;
     font-family: monospace;
     color: #888;
+    top: var(--top-px);
   }
   
   .ruler-line span {
@@ -175,4 +181,16 @@
     position: absolute;
     right: 0;
     transform: translateY(-50%);
+  }
+
+  .pokemon-details {
+    text-align: center;
+  }
+
+  .pokemon-details-info {
+    margin-top: 10px;
+  }
+
+  .pokemon-image {
+    height: var(--scaled-height);
   }
