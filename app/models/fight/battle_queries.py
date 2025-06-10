@@ -1,116 +1,86 @@
 from app.sparql_client import run_query, run_update
 from datetime import datetime
+import uuid
 
 def save_battle_result(pokemon1, pokemon2, winner):
-    """Salva o resultado da batalha no banco de dados RDF usando SPARQL INSERT."""
-    battle_id = f"battle_{datetime.now().strftime('%Y%m%d%H%M%S')}"
-    battle_uri = f"http://example.org/pokemon/Battle/{battle_id}"
-    
-    # Debug print
-    print(f"Saving battle: {pokemon1['name']} vs {pokemon2['name']}, Winner: {winner['name']}")
-    
-    insert_query = f"""
-    PREFIX poke: <http://example.org/pokemon/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    """Save the battle result to the RDF database"""
+    battle_id = str(uuid.uuid4())
+    battle_uri = f"http://poked-x.org/pokemon/Battle/{battle_id}"
+
+    query = f"""
+    PREFIX pdx: <http://poked-x.org/pokemon/>
+    PREFIX sc: <http://schema.org/>
 
     INSERT DATA {{
-        <{battle_uri}> rdf:type poke:Battle ;
-            poke:date "{datetime.now().isoformat()}"^^xsd:dateTime ;
-            poke:pokemon1 <http://example.org/pokemon/Pokemon/{pokemon1['id']}> ;
-            poke:pokemon2 <http://example.org/pokemon/Pokemon/{pokemon2['id']}> ;
-            poke:winner <http://example.org/pokemon/Pokemon/{winner['id']}> ;
-            poke:pokemon1Name "{pokemon1['name']}" ;
-            poke:pokemon2Name "{pokemon2['name']}" ;
-            poke:winnerName "{winner['name']}" .
+        <{battle_uri}> a pdx:Battle ;
+            pdx:pokemon1 <http://poked-x.org/pokemon/Pokemon/{pokemon1['id']}> ;
+            pdx:pokemon2 <http://poked-x.org/pokemon/Pokemon/{pokemon2['id']}> ;
+            pdx:winner <http://poked-x.org/pokemon/Pokemon/{winner['id']}> ;
+            pdx:timestamp "{datetime.now().isoformat()}"^^xsd:dateTime .
     }}
     """
+    run_update(query)
+    return battle_id
 
-    try:
-        result = run_update(insert_query)
-        print(f"Insert result: {result}")
-        return True
-    except Exception as e:
-        print(f"Error saving battle result: {e}")
-        return False
 
-def get_battle_history(limit=10):
-    """Recupera o histórico de batalhas do banco de dados RDF usando SPARQL."""
-    print("Fetching battle history...")
-    
-    query = f"""
-    PREFIX poke: <http://example.org/pokemon/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+def get_battle_history():
+    """Get the history of all battles"""
+    query = """
+    PREFIX pdx: <http://poked-x.org/pokemon/>
+    PREFIX sc: <http://schema.org/>
 
-    SELECT ?battle ?date ?pokemon1Name ?pokemon2Name ?winnerName
-    WHERE {{
-        ?battle rdf:type poke:Battle ;
-                poke:date ?date ;
-                poke:pokemon1Name ?pokemon1Name ;
-                poke:pokemon2Name ?pokemon2Name ;
-                poke:winnerName ?winnerName .
-    }}
-    ORDER BY DESC(?date)
-    LIMIT {limit}
-    """
-
-    try:
-        results = run_query(query)
-        print("Battle query results:", results)
+    SELECT ?battle ?pokemon1 ?pokemon2 ?winner ?timestamp ?name1 ?name2 ?nameWinner
+    WHERE {
+        ?battle a pdx:Battle ;
+                pdx:pokemon1 ?pokemon1 ;
+                pdx:pokemon2 ?pokemon2 ;
+                pdx:winner ?winner ;
+                pdx:timestamp ?timestamp .
         
-        battle_history = []
+        ?pokemon1 sc:name ?name1 .
+        ?pokemon2 sc:name ?name2 .
+        ?winner sc:name ?nameWinner .
+    }
+    ORDER BY DESC(?timestamp)
+    LIMIT 10
+    """
+    results = run_query(query)
+    battles = []
 
-        for result in results.get('results', {}).get('bindings', []):
-            # Get the date string from the result
-            date_str = result.get('date', {}).get('value', '')
-            
-            # Try to parse the date string into a datetime object
-            try:
-                # Try parsing ISO format date
-                date_obj = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
-            except ValueError:
-                try:
-                    # Fallback to a more flexible parser if needed
-                    date_obj = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
-                except ValueError:
-                    # If all parsing fails, use the current date as a fallback
-                    print(f"Could not parse date: {date_str}")
-                    date_obj = datetime.now()
-            
-            entry = {
-                'battle_id': result.get('battle', {}).get('value', '').split('/')[-1],
-                'date': date_obj,  # Now a datetime object
-                'pokemon1_name': result.get('pokemon1Name', {}).get('value', ''),
-                'pokemon2_name': result.get('pokemon2Name', {}).get('value', ''),
-                'winner_name': result.get('winnerName', {}).get('value', '')
-            }
-            battle_history.append(entry)
+    if results and "results" in results and "bindings" in results["results"]:
+        for binding in results["results"]["bindings"]:
+            battle_uri = binding["battle"]["value"]
+            battle_id = battle_uri.split("/")[-1]
+            pokemon1_name = binding["name1"]["value"]
+            pokemon2_name = binding["name2"]["value"]
+            winner_name = binding["nameWinner"]["value"]
+            timestamp = binding["timestamp"]["value"]
 
-        print(f"Returning {len(battle_history)} battles")
-        return battle_history
-    except Exception as e:
-        print(f"Error retrieving battle history: {e}")
-        import traceback
-        traceback.print_exc()
-        return []
-    
+            # Convert timestamp to a more readable format
+            dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+            formatted_time = dt.strftime("%Y-%m-%d %H:%M:%S")
+
+            battles.append({
+                "id": battle_id,
+                "pokemon1": pokemon1_name,
+                "pokemon2": pokemon2_name,
+                "winner": winner_name,
+                "timestamp": formatted_time
+            })
+
+    return battles
+
+
 def delete_battle(battle_id):
-    """Remove uma batalha específica do RDF."""
-    battle_uri = f"http://example.org/pokemon/Battle/{battle_id}"
-    
-    delete_query = f"""
-    PREFIX poke: <http://example.org/pokemon/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    """Delete a battle from the RDF database"""
+    battle_uri = f"http://poked-x.org/pokemon/Battle/{battle_id}"
+
+    query = f"""
+    PREFIX pdx: <http://poked-x.org/pokemon/>
+    PREFIX sc: <http://schema.org/>
 
     DELETE WHERE {{
         <{battle_uri}> ?p ?o .
     }}
     """
-
-    try:
-        result = run_update(delete_query)
-        print(f"Deleted battle {battle_id}: {result}")
-        return True
-    except Exception as e:
-        print(f"Error deleting battle {battle_id}: {e}")
-        return False
+    run_update(query)

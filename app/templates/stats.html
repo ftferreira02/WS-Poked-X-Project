@@ -19,7 +19,7 @@
       <h2>{{ stats.pokedexNumber }}</h2>
 
       <div class="image">
-        <img src="{% static 'pokemon-images-index/' %}{{ stats.id }}.png?v={{ stats.id }}" alt="{{ stats.name }}">
+        <img src="{% static 'pokemon-images-index/' %}{{ stats.pokedexNumber }}.png?v={{ stats.pokedexNumber }}" alt="{{ stats.name }}">
       </div>
 
       <div class="descripton">
@@ -101,7 +101,7 @@
         <div class="weak-against">
           <h3>Weak Against</h3>
           <div class="type-list">
-            {% for type in stats.strongAgainst %}
+            {% for type in stats.weakAgainst %}
               <span class="type {{ type }}">{{ type|title }}</span>
             {% empty %}
               <span>No weaknesses</span>
@@ -111,7 +111,7 @@
         <div class="strong-against">
           <h3>Strong Against</h3>
           <div class="type-list">
-            {% for type in stats.weakAgainst %}
+            {% for type in stats.strongAgainst %}
               <span class="type {{ type }}">{{ type|title }}</span>
             {% empty %}
               <span>No strengths</span>

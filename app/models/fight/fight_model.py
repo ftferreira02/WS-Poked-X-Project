@@ -16,13 +16,15 @@ class PokemonFight:
     def _get_pokemon_data(self, pokemon_id):
         """Fetch Pokémon data from the SPARQL endpoint using DESCRIBE query (N3 format)"""
         query = f"""
-        DESCRIBE <http://example.org/pokemon/Pokemon/{pokemon_id}>
+        PREFIX pdx: <http://poked-x.org/pokemon/>
+        PREFIX sc: <http://schema.org/>
+        DESCRIBE <http://poked-x.org/pokemon/Pokemon/{pokemon_id}>
         """
         n3_data = run_query_describe(query)
         g = Graph()
         g.parse(data=n3_data, format="n3")
 
-        subject_uri = f"http://example.org/pokemon/Pokemon/{pokemon_id}"
+        subject_uri = f"http://poked-x.org/pokemon/Pokemon/{pokemon_id}"
         pokemon_data = {
             "id": pokemon_id,
             "effectiveness": {}
