@@ -513,6 +513,8 @@ class PokemonManager:
             }}
             """
         elif property_uri.endswith("type"):
+            # Convert pdx:Type/fire to <http://poked-x.org/pokemon/Type/fire>
+            full_uri = f"<http://poked-x.org/pokemon/{value_uri.replace('pdx:', '')}>"
             query = f"""
             PREFIX pdx: <http://poked-x.org/pokemon/>
             PREFIX sc: <http://schema.org/>
@@ -521,18 +523,20 @@ class PokemonManager:
                        sc:name "{n}" .
               {{
                 FILTER EXISTS {{
-                  ?pokemon pdx:primaryType <{value_uri}> .
+                  ?pokemon pdx:primaryType {full_uri} .
                 }}
               }}
               UNION
               {{
                 FILTER EXISTS {{
-                  ?pokemon pdx:secondaryType <{value_uri}> .
+                  ?pokemon pdx:secondaryType {full_uri} .
                 }}
               }}
             }}
             """
         elif property_uri.endswith("ability"):
+            # Convert pdx:Ability/overgrow to <http://poked-x.org/pokemon/Ability/overgrow>
+            full_uri = f"<http://poked-x.org/pokemon/{value_uri.replace('pdx:', '')}>"
             query = f"""
             PREFIX pdx: <http://poked-x.org/pokemon/>
             PREFIX sc: <http://schema.org/>
@@ -541,30 +545,33 @@ class PokemonManager:
                        sc:name "{n}" .
               {{
                 FILTER EXISTS {{
-                  ?pokemon pdx:ability1 <{value_uri}> .
+                  ?pokemon pdx:ability1 {full_uri} .
                 }}
               }}
               UNION
               {{
                 FILTER EXISTS {{
-                  ?pokemon pdx:ability2 <{value_uri}> .
+                  ?pokemon pdx:ability2 {full_uri} .
                 }}
               }}
             }}
             """
         elif property_uri.endswith("habitat"):
+            # Convert pdx:Habitat/cave to <http://poked-x.org/pokemon/Habitat/cave>
+            full_uri = f"<http://poked-x.org/pokemon/{value_uri.replace('pdx:', '')}>"
             query = f"""
             PREFIX pdx: <http://poked-x.org/pokemon/>
             PREFIX sc: <http://schema.org/>
             ASK {{
               ?pokemon a pdx:Pokemon ;
                        sc:name "{n}" ;
-                       pdx:habitat <{value_uri}> .
+                       pdx:habitat {full_uri} .
             }}
             """
         elif property_uri.endswith("weakAgainst"):
-            t = value_uri.rsplit('/', 1)[-1]
-            p = f"against{t.capitalize()}"
+            # Extract type name from the URI and handle it appropriately
+            type_name = value_uri.split('/')[-1]
+            p = f"against{type_name.capitalize()}"
             query = f"""
             PREFIX pdx: <http://poked-x.org/pokemon/>
             PREFIX sc: <http://schema.org/>
@@ -577,13 +584,17 @@ class PokemonManager:
             }}
             """
         else:
+            # Convert prefixed URIs to full URIs
+            prop = property_uri.replace('pdx:', '')
+            val = value_uri.replace('pdx:', '')
+            full_val_uri = f"<http://poked-x.org/pokemon/{val}>"
             query = f"""
             PREFIX pdx: <http://poked-x.org/pokemon/>
             PREFIX sc: <http://schema.org/>
             ASK {{
               ?pokemon a pdx:Pokemon ;
                        sc:name "{n}" ;
-                       <{property_uri}> <{value_uri}> .
+                       pdx:{prop} {full_val_uri} .
             }}
             """
         result = run_query(query)

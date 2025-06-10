@@ -65,7 +65,6 @@ def pokemon_battle_view(request, pokemon1_id="0", pokemon2_id="1", simulate="tru
 
     simulate = request.GET.get("simulate", "true").lower() == "true"
 
-
     # Create fight with selected Pokémon
     fight = PokemonFight(pokemon1_id, pokemon2_id)
 
@@ -90,12 +89,14 @@ def pokemon_battle_view(request, pokemon1_id="0", pokemon2_id="1", simulate="tru
         "hp2": fight.pokemon2["hp"]
     })
 
+    # Get battle history and save new battle if simulating
     battle_history = get_battle_history()
-
+    
     # Save the final result
+    battle_id = None
     if simulate:
         # Save battle result in the RDF database
-        save_battle_result(fight.pokemon1, fight.pokemon2, fight.winner)
+        battle_id = save_battle_result(fight.pokemon1, fight.pokemon2, fight.winner)
 
     # Template context
     context = {
@@ -106,7 +107,8 @@ def pokemon_battle_view(request, pokemon1_id="0", pokemon2_id="1", simulate="tru
         "winner": fight.winner["name"],
         "logs_json": json.dumps(battle_logs),
         "hp_progress_json": json.dumps(hp_progress),
-        "battle_history": battle_history
+        "battle_history": battle_history,
+        "current_battle_id": battle_id
     }
 
     return render(request, "fight.html", context)

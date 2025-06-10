@@ -58,14 +58,13 @@ def get_battle_history():
 
             # Convert timestamp to a more readable format
             dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
-            formatted_time = dt.strftime("%Y-%m-%d %H:%M:%S")
 
             battles.append({
-                "id": battle_id,
-                "pokemon1": pokemon1_name,
-                "pokemon2": pokemon2_name,
-                "winner": winner_name,
-                "timestamp": formatted_time
+                "battle_id": battle_id,
+                "pokemon1_name": pokemon1_name,
+                "pokemon2_name": pokemon2_name,
+                "winner_name": winner_name,
+                "date": dt
             })
 
     return battles

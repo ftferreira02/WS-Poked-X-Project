@@ -1,26 +1,26 @@
 document.addEventListener('DOMContentLoaded', function() {
     const propertyValues = {
-      'http://poked-x.org/pokemon/type': [
-        { label: 'Fire', uri: 'http://poked-x.org/pokemon/Type/fire' },
-        { label: 'Water', uri: 'http://poked-x.org/pokemon/Type/water' },
-        { label: 'Grass', uri: 'http://poked-x.org/pokemon/Type/grass' },
-        { label: 'Poison', uri: 'http://poked-x.org/pokemon/Type/poison' },
-        { label: 'Psychic', uri: 'http://poked-x.org/pokemon/Type/psychic' },
-        { label: 'Electric', uri: 'http://poked-x.org/pokemon/Type/electric' },
-        { label: 'Ground', uri: 'http://poked-x.org/pokemon/Type/ground' },
-        { label: 'Fighting', uri: 'http://poked-x.org/pokemon/Type/fighting' },
-        { label: 'Normal', uri: 'http://poked-x.org/pokemon/Type/normal' },
-        { label: 'Flying', uri: 'http://poked-x.org/pokemon/Type/flying' },
-        { label: 'Rock', uri: 'http://poked-x.org/pokemon/Type/rock' },
-        { label: 'Bug', uri: 'http://poked-x.org/pokemon/Type/bug' },
-        { label: 'Ghost', uri: 'http://poked-x.org/pokemon/Type/ghost' },
-        { label: 'Ice', uri: 'http://poked-x.org/pokemon/Type/ice' },
-        { label: 'Dragon', uri: 'http://poked-x.org/pokemon/Type/dragon' },
-        { label: 'Dark', uri: 'http://poked-x.org/pokemon/Type/dark' },
-        { label: 'Steel', uri: 'http://poked-x.org/pokemon/Type/steel' },
-        { label: 'Fairy', uri: 'http://poked-x.org/pokemon/Type/fairy' }
+      'pdx:type': [
+        { label: 'Fire', uri: 'pdx:Type/fire' },
+        { label: 'Water', uri: 'pdx:Type/water' },
+        { label: 'Grass', uri: 'pdx:Type/grass' },
+        { label: 'Poison', uri: 'pdx:Type/poison' },
+        { label: 'Psychic', uri: 'pdx:Type/psychic' },
+        { label: 'Electric', uri: 'pdx:Type/electric' },
+        { label: 'Ground', uri: 'pdx:Type/ground' },
+        { label: 'Fighting', uri: 'pdx:Type/fighting' },
+        { label: 'Normal', uri: 'pdx:Type/normal' },
+        { label: 'Flying', uri: 'pdx:Type/flying' },
+        { label: 'Rock', uri: 'pdx:Type/rock' },
+        { label: 'Bug', uri: 'pdx:Type/bug' },
+        { label: 'Ghost', uri: 'pdx:Type/ghost' },
+        { label: 'Ice', uri: 'pdx:Type/ice' },
+        { label: 'Dragon', uri: 'pdx:Type/dragon' },
+        { label: 'Dark', uri: 'pdx:Type/dark' },
+        { label: 'Steel', uri: 'pdx:Type/steel' },
+        { label: 'Fairy', uri: 'pdx:Type/fairy' }
       ],
-      'http://poked-x.org/pokemon/generation': [
+      'pdx:generation': [
         { label: 'Generation 1', uri: '1' },
         { label: 'Generation 2', uri: '2' },
         { label: 'Generation 3', uri: '3' },
@@ -30,71 +30,92 @@ document.addEventListener('DOMContentLoaded', function() {
         { label: 'Generation 7', uri: '7' },
         { label: 'Generation 8', uri: '8' }
       ],
-      'http://poked-x.org/pokemon/isLegendary': [
+      'pdx:isLegendary': [
         { label: 'Yes', uri: 'true' },
         { label: 'No', uri: 'false' }
       ],
-      'http://poked-x.org/pokemon/habitat': [
-        { label: 'Cave', uri: 'http://poked-x.org/pokemon/habitat/cave' },
-        { label: 'Forest', uri: 'http://poked-x.org/pokemon/habitat/forest' },
-        { label: 'Grassland', uri: 'http://poked-x.org/pokemon/habitat/grassland' },
-        { label: 'Mountain', uri: 'http://poked-x.org/pokemon/habitat/mountain' },
-        { label: 'Rare', uri: 'http://poked-x.org/pokemon/habitat/rare' },
-        { label: 'Rough Terrain', uri: 'http://poked-x.org/pokemon/habitat/roughterrain' },
-        { label: 'Sea', uri: 'http://poked-x.org/pokemon/habitat/sea' },
-        { label: 'Urban', uri: 'http://poked-x.org/pokemon/habitat/urban' },
-        { label: 'Waters Edge', uri: 'http://poked-x.org/pokemon/habitat/watersedge' }
+      'pdx:habitat': [
+        { label: 'Cave', uri: 'pdx:Habitat/cave' },
+        { label: 'Forest', uri: 'pdx:Habitat/forest' },
+        { label: 'Grassland', uri: 'pdx:Habitat/grassland' },
+        { label: 'Mountain', uri: 'pdx:Habitat/mountain' },
+        { label: 'Rare', uri: 'pdx:Habitat/rare' },
+        { label: 'Rough Terrain', uri: 'pdx:Habitat/roughterrain' },
+        { label: 'Sea', uri: 'pdx:Habitat/sea' },
+        { label: 'Urban', uri: 'pdx:Habitat/urban' },
+        { label: 'Waters Edge', uri: 'pdx:Habitat/watersedge' }
       ],
-      'http://poked-x.org/pokemon/ability': [
-        { label: 'Overgrow', uri: 'http://poked-x.org/pokemon/Ability/overgrow' },
-        { label: 'Blaze', uri: 'http://poked-x.org/pokemon/Ability/blaze' },
-        { label: 'Torrent', uri: 'http://poked-x.org/pokemon/Ability/torrent' },
-        { label: 'Chlorophyll', uri: 'http://poked-x.org/pokemon/Ability/chlorophyll' },
-        { label: 'Levitate', uri: 'http://poked-x.org/pokemon/Ability/levitate' },
-        { label: 'Lightning Rod', uri: 'http://poked-x.org/pokemon/Ability/lightningrod' },
-        { label: 'Run Away', uri: 'http://poked-x.org/pokemon/Ability/run_away' },
-        { label: 'Pastel Veil', uri: 'http://poked-x.org/pokemon/Ability/pastel_veil' },
-        { label: 'Intimidate', uri: 'http://poked-x.org/pokemon/Ability/intimidate' },
-        { label: 'Shield Dust', uri: 'http://poked-x.org/pokemon/Ability/shielddust' }
+      'pdx:ability': [
+        { label: 'Overgrow', uri: 'pdx:Ability/overgrow' },
+        { label: 'Blaze', uri: 'pdx:Ability/blaze' },
+        { label: 'Torrent', uri: 'pdx:Ability/torrent' },
+        { label: 'Chlorophyll', uri: 'pdx:Ability/chlorophyll' },
+        { label: 'Levitate', uri: 'pdx:Ability/levitate' },
+        { label: 'Lightning Rod', uri: 'pdx:Ability/lightningrod' },
+        { label: 'Run Away', uri: 'pdx:Ability/run_away' },
+        { label: 'Pastel Veil', uri: 'pdx:Ability/pastel_veil' },
+        { label: 'Intimidate', uri: 'pdx:Ability/intimidate' },
+        { label: 'Shield Dust', uri: 'pdx:Ability/shielddust' },
+        { label: 'Static', uri: 'pdx:Ability/static' },
+        { label: 'Sand Veil', uri: 'pdx:Ability/sand_veil' },
+        { label: 'Keen Eye', uri: 'pdx:Ability/keen_eye' },
+        { label: 'Inner Focus', uri: 'pdx:Ability/inner_focus' },
+        { label: 'Synchronize', uri: 'pdx:Ability/synchronize' },
+        { label: 'Clear Body', uri: 'pdx:Ability/clear_body' },
+        { label: 'Rock Head', uri: 'pdx:Ability/rock_head' },
+        { label: 'Sturdy', uri: 'pdx:Ability/sturdy' },
+        { label: 'Swift Swim', uri: 'pdx:Ability/swift_swim' },
+        { label: 'Battle Armor', uri: 'pdx:Ability/battle_armor' }
       ],
-      'http://poked-x.org/pokemon/weakAgainst': [
-        { label: 'Fire', uri: 'http://poked-x.org/pokemon/Type/fire' },
-        { label: 'Water', uri: 'http://poked-x.org/pokemon/Type/water' },
-        { label: 'Electric', uri: 'http://poked-x.org/pokemon/Type/electric' },
-        { label: 'Ground', uri: 'http://poked-x.org/pokemon/Type/ground' },
-        { label: 'Psychic', uri: 'http://poked-x.org/pokemon/Type/psychic' },
-        { label: 'Rock', uri: 'http://poked-x.org/pokemon/Type/rock' },
-        { label: 'Flying', uri: 'http://poked-x.org/pokemon/Type/flying' },
-        { label: 'Steel', uri: 'http://poked-x.org/pokemon/Type/steel' },
-        { label: 'Grass', uri: 'http://poked-x.org/pokemon/Type/grass' }
+      'pdx:weakAgainst': [
+        { label: 'Fire', uri: 'pdx:Type/fire' },
+        { label: 'Water', uri: 'pdx:Type/water' },
+        { label: 'Grass', uri: 'pdx:Type/grass' },
+        { label: 'Poison', uri: 'pdx:Type/poison' },
+        { label: 'Psychic', uri: 'pdx:Type/psychic' },
+        { label: 'Electric', uri: 'pdx:Type/electric' },
+        { label: 'Ground', uri: 'pdx:Type/ground' },
+        { label: 'Fighting', uri: 'pdx:Type/fighting' },
+        { label: 'Normal', uri: 'pdx:Type/normal' },
+        { label: 'Flying', uri: 'pdx:Type/flying' },
+        { label: 'Rock', uri: 'pdx:Type/rock' },
+        { label: 'Bug', uri: 'pdx:Type/bug' },
+        { label: 'Ghost', uri: 'pdx:Type/ghost' },
+        { label: 'Ice', uri: 'pdx:Type/ice' },
+        { label: 'Dragon', uri: 'pdx:Type/dragon' },
+        { label: 'Dark', uri: 'pdx:Type/dark' },
+        { label: 'Steel', uri: 'pdx:Type/steel' },
+        { label: 'Fairy', uri: 'pdx:Type/fairy' }
       ]
     };
   
-    const propertyItems = document.querySelectorAll('.property-item');
-    const propertyInput = document.getElementById('property');
-    const valueContainer = document.getElementById('value-container');
+    const pokemonInput = document.getElementById('pokemon');
     const valueSelect = document.getElementById('value');
+    const valueContainer = document.getElementById('value-container');
     const propertyLabel = document.getElementById('property-label');
     const valueLabel = document.getElementById('value-label');
-    const pokemonInput = document.getElementById('pokemon');
     const autocompleteList = document.getElementById('autocomplete-list');
-    const allPokemonNamesSet = new Set(allPokemonNames || []);
+    const allPokemonNamesSet = new Set(allPokemonNames);
   
-    const currentProperty = propertyInput.value;
-    if (currentProperty && propertyValues[currentProperty]) {
-      populateValueSelect(currentProperty);
-      valueContainer.style.display = 'block';
-    }
-  
-    propertyItems.forEach(item => {
+    // Property selection
+    document.querySelectorAll('.property-item').forEach(item => {
       item.addEventListener('click', function() {
-        propertyItems.forEach(i => i.classList.remove('selected'));
-        this.classList.add('selected');
-        const uri = this.getAttribute('data-uri');
-        propertyInput.value = uri;
-        propertyLabel.textContent = this.innerText.trim();
-        populateValueSelect(uri);
+        // Remove active class from all items
+        document.querySelectorAll('.property-item').forEach(i => i.classList.remove('active'));
+        
+        // Add active class to clicked item
+        this.classList.add('active');
+        
+        // Get the property URI and update the hidden input
+        const propertyUri = this.getAttribute('data-uri');
+        document.getElementById('property').value = propertyUri;
+        
+        // Update the property label in the question
+        propertyLabel.textContent = this.textContent.trim();
+        
+        // Show value selection and populate options
         valueContainer.style.display = 'block';
+        populateValueSelect(propertyUri);
       });
     });
   
@@ -103,8 +124,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   
     function populateValueSelect(uri) {
+      console.log('Populating values for URI:', uri);
       valueSelect.innerHTML = '<option value="">Select a value</option>';
       const possibleOptions = propertyValues[uri] || [];
+      console.log('Available options:', possibleOptions);
       possibleOptions.forEach(optObj => {
         const option = document.createElement('option');
         option.value = optObj.uri;
