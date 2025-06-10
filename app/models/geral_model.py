@@ -311,7 +311,10 @@ class PokemonManager:
         SELECT ?name ?attack ?defense ?hp ?spAttack ?spDefense ?speed ?totalPoints
             ?height ?weight ?isLegendary ?generation ?baseFriendship
             ?primaryType ?secondaryType ?pokedexNumber
-            (GROUP_CONCAT(DISTINCT ?effectiveness; separator=",") as ?allEffectiveness)
+            ?againstBug ?againstDark ?againstDragon ?againstElectric ?againstFairy
+            ?againstFight ?againstFire ?againstFlying ?againstGhost ?againstGrass
+            ?againstGround ?againstIce ?againstNormal ?againstPoison ?againstPsychic
+            ?againstRock ?againstSteel ?againstWater
         WHERE {{
             <http://poked-x.org/pokemon/Pokemon/{pokemon_id}>
                 sc:name ?name ;
@@ -328,71 +331,28 @@ class PokemonManager:
                 pdx:generation ?generation ;
                 pdx:baseFriendship ?baseFriendship ;
                 pdx:primaryType ?primaryType ;
-                pdx:pokedexNumber ?pokedexNumber .
+                pdx:pokedexNumber ?pokedexNumber ;
+                pdx:hasEffectiveness ?eff .
             OPTIONAL {{ <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:secondaryType ?secondaryType }}
-            OPTIONAL {{
-                <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:hasEffectiveness ?effNode .
-                ?effNode rdf:type pdx:Effectiveness .
-                {{
-                    ?effNode pdx:againstBug ?bugEff .
-                    BIND(CONCAT("bug:", ?bugEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstDark ?darkEff .
-                    BIND(CONCAT("dark:", ?darkEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstDragon ?dragonEff .
-                    BIND(CONCAT("dragon:", ?dragonEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstElectric ?electricEff .
-                    BIND(CONCAT("electric:", ?electricEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstFairy ?fairyEff .
-                    BIND(CONCAT("fairy:", ?fairyEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstFight ?fightEff .
-                    BIND(CONCAT("fighting:", ?fightEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstFire ?fireEff .
-                    BIND(CONCAT("fire:", ?fireEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstFlying ?flyingEff .
-                    BIND(CONCAT("flying:", ?flyingEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstGhost ?ghostEff .
-                    BIND(CONCAT("ghost:", ?ghostEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstGrass ?grassEff .
-                    BIND(CONCAT("grass:", ?grassEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstGround ?groundEff .
-                    BIND(CONCAT("ground:", ?groundEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstIce ?iceEff .
-                    BIND(CONCAT("ice:", ?iceEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstNormal ?normalEff .
-                    BIND(CONCAT("normal:", ?normalEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstPoison ?poisonEff .
-                    BIND(CONCAT("poison:", ?poisonEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstPsychic ?psychicEff .
-                    BIND(CONCAT("psychic:", ?psychicEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstRock ?rockEff .
-                    BIND(CONCAT("rock:", ?rockEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstSteel ?steelEff .
-                    BIND(CONCAT("steel:", ?steelEff) AS ?effectiveness)
-                }} UNION {{
-                    ?effNode pdx:againstWater ?waterEff .
-                    BIND(CONCAT("water:", ?waterEff) AS ?effectiveness)
-                }}
-            }}
+            ?eff pdx:againstBug ?againstBug ;
+                pdx:againstDark ?againstDark ;
+                pdx:againstDragon ?againstDragon ;
+                pdx:againstElectric ?againstElectric ;
+                pdx:againstFairy ?againstFairy ;
+                pdx:againstFight ?againstFight ;
+                pdx:againstFire ?againstFire ;
+                pdx:againstFlying ?againstFlying ;
+                pdx:againstGhost ?againstGhost ;
+                pdx:againstGrass ?againstGrass ;
+                pdx:againstGround ?againstGround ;
+                pdx:againstIce ?againstIce ;
+                pdx:againstNormal ?againstNormal ;
+                pdx:againstPoison ?againstPoison ;
+                pdx:againstPsychic ?againstPsychic ;
+                pdx:againstRock ?againstRock ;
+                pdx:againstSteel ?againstSteel ;
+                pdx:againstWater ?againstWater .
         }}
-        GROUP BY ?name ?attack ?defense ?hp ?spAttack ?spDefense ?speed ?totalPoints
-                ?height ?weight ?isLegendary ?generation ?baseFriendship
-                ?primaryType ?secondaryType ?pokedexNumber
         """
         results = run_query(query)
         bindings = results["results"]["bindings"]
@@ -462,18 +422,35 @@ class PokemonManager:
                 stats["secondaryType"] = binding["secondaryType"]["value"].split("/")[-1]
 
             # Process effectiveness data
-            if "allEffectiveness" in binding:
-                effectiveness_list = binding["allEffectiveness"]["value"].split(",")
-                for eff in effectiveness_list:
-                    if ":" in eff:
-                        type_name, value = eff.split(":")
-                        type_name = type_name.lower()
-                        val = float(value)
-                        if val > 1.0:  # Values > 1 mean the Pokemon is weak against this type
-                            stats["weakAgainst"].append(type_name)
-                        elif val < 1.0:  # Values < 1 mean the Pokemon is strong against this type
-                            stats["strongAgainst"].append(type_name)
-                        # val == 1.0 means normal effectiveness, we ignore these
+            type_effectiveness = {
+                'bug': ('againstBug', 'bug'),
+                'dark': ('againstDark', 'dark'),
+                'dragon': ('againstDragon', 'dragon'),
+                'electric': ('againstElectric', 'electric'),
+                'fairy': ('againstFairy', 'fairy'),
+                'fighting': ('againstFight', 'fighting'),
+                'fire': ('againstFire', 'fire'),
+                'flying': ('againstFlying', 'flying'),
+                'ghost': ('againstGhost', 'ghost'),
+                'grass': ('againstGrass', 'grass'),
+                'ground': ('againstGround', 'ground'),
+                'ice': ('againstIce', 'ice'),
+                'normal': ('againstNormal', 'normal'),
+                'poison': ('againstPoison', 'poison'),
+                'psychic': ('againstPsychic', 'psychic'),
+                'rock': ('againstRock', 'rock'),
+                'steel': ('againstSteel', 'steel'),
+                'water': ('againstWater', 'water')
+            }
+
+            for type_name, (binding_key, css_class) in type_effectiveness.items():
+                if binding_key in binding:
+                    val = float(binding[binding_key]["value"])
+                    if val > 1.0:  # Values > 1 mean the Pokemon is weak against this type
+                        stats["weakAgainst"].append(css_class)
+                    elif val < 1.0:  # Values < 1 mean the Pokemon is strong against this type
+                        stats["strongAgainst"].append(css_class)
+                    # val == 1.0 means normal effectiveness, we ignore these
 
         stats["strongAgainst"] = list(dict.fromkeys(stats["strongAgainst"]))
         stats["weakAgainst"] = list(dict.fromkeys(stats["weakAgainst"]))
