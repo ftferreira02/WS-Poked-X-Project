@@ -1,0 +1,270 @@
+@prefix pdx: <http://poked-x.org/pokemon/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+pdx:DualTypePokemon a owl:Class ;
+    rdfs:subClassOf pdx:Pokemon .
+
+pdx:FighterPokemon a owl:Class ;
+    rdfs:subClassOf pdx:Pokemon .
+
+pdx:GlassCannon a owl:Class ;
+    rdfs:subClassOf pdx:Pokemon .
+
+pdx:LegendaryPokemon a owl:Class ;
+    rdfs:subClassOf pdx:Pokemon .
+
+pdx:MegaEvolution a owl:Class ;
+    rdfs:subClassOf pdx:Pokemon .
+
+pdx:againstBug a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstDark a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstDragon a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstElectric a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstFairy a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstFight a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstFire a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstFlying a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstGhost a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstGrass a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstGround a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstIce a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstNormal a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstPoison a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstPsychic a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstRock a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstSteel a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:againstWater a owl:DatatypeProperty ;
+    rdfs:domain pdx:Effectiveness ;
+    rdfs:range xsd:float .
+
+pdx:attack a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:integer .
+
+pdx:baseFriendship a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:integer .
+
+pdx:defense a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:integer .
+
+pdx:evolvesTo a owl:ObjectProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range pdx:Pokemon .
+
+pdx:generation a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:integer .
+
+pdx:hasAbility a owl:ObjectProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range pdx:Ability .
+
+pdx:hasEffectiveness a owl:ObjectProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range pdx:Effectiveness .
+
+pdx:height a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:float .
+
+pdx:hp a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:integer .
+
+pdx:isLegendary a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:boolean .
+
+pdx:megaEvolutionOf a owl:ObjectProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range pdx:Pokemon .
+
+pdx:name a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:string .
+
+pdx:participatesIn a owl:ObjectProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range pdx:Battle .
+
+pdx:pokedexNumber a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:integer .
+
+pdx:primaryType a owl:ObjectProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range pdx:Type ;
+    owl:propertyDisjointWith pdx:secondaryType .
+
+pdx:spAttack a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:integer .
+
+pdx:spDefense a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:integer .
+
+pdx:speed a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:integer .
+
+pdx:totalPoints a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:integer .
+
+pdx:weight a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:float .
+
+<http://schema.org/name> a owl:DatatypeProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range xsd:string .
+
+pdx:Battle a owl:Class .
+
+pdx:evolvesTo a owl:ObjectProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    pdx:Pokemon ;
+    owl:inverseOf pdx:evolvesFrom .
+
+pdx:evolvesFrom a owl:ObjectProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    pdx:Pokemon ;
+    owl:inverseOf pdx:evolvesTo .
+
+pdx:LegendaryPokemon
+    a owl:Class ;
+    rdfs:subClassOf pdx:Pokemon ;
+    owl:equivalentClass [
+      a owl:Restriction ;
+      owl:onProperty pdx:isLegendary ;
+      owl:hasValue "true"^^xsd:boolean
+    ] .
+
+pdx:DualTypePokemon
+    a owl:Class ;
+    rdfs:subClassOf pdx:Pokemon ;
+    owl:equivalentClass [
+      a owl:Restriction ;
+      owl:onProperty pdx:secondaryType ;
+      owl:someValuesFrom pdx:Type
+    ] .
+
+pdx:MegaEvolution
+    a owl:Class ;
+    rdfs:subClassOf pdx:Pokemon ;
+    owl:equivalentClass [
+      a owl:Restriction ;
+      owl:onProperty pdx:megaEvolutionOf ;
+      owl:someValuesFrom pdx:Pokemon
+    ] .
+
+pdx:FighterPokemon
+    a owl:Class ;
+    rdfs:subClassOf pdx:Pokemon ;
+    owl:equivalentClass [
+      a owl:Restriction ;
+      owl:onProperty pdx:participatesIn ;
+      owl:someValuesFrom pdx:Battle
+    ] .
+
+pdx:GlassCannon
+    a owl:Class ;
+    rdfs:subClassOf pdx:Pokemon ;
+    owl:equivalentClass [
+      a owl:Class ;
+      owl:intersectionOf (
+        pdx:Pokemon
+        [ a owl:Restriction ;
+          owl:onProperty pdx:attack ;
+          owl:someValuesFrom [
+            a rdfs:Datatype ;
+            owl:onDatatype xsd:integer ;
+            owl:withRestrictions ( [ xsd:minExclusive "100"^^xsd:integer ] )
+          ]
+        ]
+        [ a owl:Restriction ;
+          owl:onProperty pdx:defense ;
+          owl:someValuesFrom [
+            a rdfs:Datatype ;
+            owl:onDatatype xsd:integer ;
+            owl:withRestrictions ( [ xsd:maxExclusive "50"^^xsd:integer ] )
+          ]
+        ]
+      )
+    ] .
+
+pdx:secondaryType a owl:ObjectProperty ;
+    rdfs:domain pdx:Pokemon ;
+    rdfs:range pdx:Type .
+    
+:pdx:bestMatchAgainst a owl:ObjectProperty ;
+    rdfs:domain    pdx:Pokemon ;
+    rdfs:range     pdx:Pokemon ;
+    rdfs:label     "Best Match Against" ;
+    rdfs:comment   "Links a Pokémon to another that is a highly effective counter." .
+
+pdx:Ability a owl:Class .
+
+pdx:Type a owl:Class .
+
+pdx:Effectiveness a owl:Class .
+
+pdx:Pokemon a owl:Class ;
+    owl:disjointWith pdx:Type .
+

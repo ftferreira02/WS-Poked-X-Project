@@ -19,9 +19,6 @@ pdx:LegendaryPokemon a owl:Class ;
 pdx:MegaEvolution a owl:Class ;
     rdfs:subClassOf pdx:Pokemon .
 
-pdx:Power a owl:Class ;
-    owl:equivalentClass pdx:Ability .
-
 pdx:againstBug a owl:DatatypeProperty ;
     rdfs:domain pdx:Effectiveness ;
     rdfs:range xsd:float .
@@ -191,7 +188,6 @@ pdx:evolvesFrom a owl:ObjectProperty ;
     rdfs:range    pdx:Pokemon ;
     owl:inverseOf pdx:evolvesTo .
 
-
 pdx:LegendaryPokemon
     a owl:Class ;
     rdfs:subClassOf pdx:Pokemon ;
@@ -257,6 +253,12 @@ pdx:GlassCannon
 pdx:secondaryType a owl:ObjectProperty ;
     rdfs:domain pdx:Pokemon ;
     rdfs:range pdx:Type .
+    
+:pdx:bestMatchAgainst a owl:ObjectProperty ;
+    rdfs:domain    pdx:Pokemon ;
+    rdfs:range     pdx:Pokemon ;
+    rdfs:label     "Best Match Against" ;
+    rdfs:comment   "Links a Pokémon to another that is a highly effective counter." .
 
 pdx:Ability a owl:Class .
 
@@ -266,6 +268,8 @@ pdx:Effectiveness a owl:Class .
 
 pdx:Pokemon a owl:Class ;
     owl:disjointWith pdx:Type .
+
+
     
 <http://poked-x.org/pokemon/Pokemon/0> pdx:ability1 <http://poked-x.org/pokemon/Ability/overgrow> ;
     pdx:attack 49 ;
