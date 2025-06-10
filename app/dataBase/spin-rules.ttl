@@ -12,6 +12,10 @@
 <http://poked-x.org/pokemon/rule/InferStrongAgainst> a spin:Rule ;
     spin:body pdx:construct2 .
 
+<http://poked-x.org/pokemon/rule/InferBestMatchAgainst> a spin:Rule ;
+    spin:body pdx:construct10 .
+    
+
 pdx:construct1 a sp:Construct ;
     sp:text """
     CONSTRUCT {
@@ -115,5 +119,70 @@ pdx:construct9 a sp:Construct ;
         ?pokemon pdx:primaryType ?t1 .
         ?pokemon pdx:secondaryType ?t2 .
         FILTER (?t1 != ?t2)
+    }
+"""^^xsd:string .
+
+pdx:construct10 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?attacker pdx:bestMatchAgainst ?target .
+        ?attacker pdx:matchStrength ?strength .
+    }
+    WHERE {
+        # Get target Pokemon and its types
+        ?target pdx:primaryType ?targetType1 .
+        OPTIONAL { ?target pdx:secondaryType ?targetType2 . }
+        
+        # Get potential attacker Pokemon (different from target)
+        ?attacker pdx:primaryType ?attackerType1 .
+        ?attacker pdx:attack ?attack .
+        ?attacker pdx:spAttack ?spAttack .
+        FILTER (?attacker != ?target)
+        
+        # Calculate type effectiveness
+        OPTIONAL {
+            ?eff1 pdx:attackingType ?attackerType1 ;
+                   pdx:defendingType ?targetType1 ;
+                   pdx:effectiveness ?eff1Value .
+        }
+        OPTIONAL {
+            ?eff2 pdx:attackingType ?attackerType1 ;
+                   pdx:defendingType ?targetType2 ;
+                   pdx:effectiveness ?eff2Value .
+        }
+        
+        # Get attacker's secondary type effectiveness if exists
+        OPTIONAL { ?attacker pdx:secondaryType ?attackerType2 . }
+        OPTIONAL {
+            ?eff3 pdx:attackingType ?attackerType2 ;
+                   pdx:defendingType ?targetType1 ;
+                   pdx:effectiveness ?eff3Value .
+        }
+        OPTIONAL {
+            ?eff4 pdx:attackingType ?attackerType2 ;
+                   pdx:defendingType ?targetType2 ;
+                   pdx:effectiveness ?eff4Value .
+        }
+        
+        # Calculate total effectiveness (default to 1.0 if no effectiveness found)
+        BIND(COALESCE(?eff1Value, 1.0) as ?e1)
+        BIND(COALESCE(?eff2Value, 1.0) as ?e2)
+        BIND(COALESCE(?eff3Value, 1.0) as ?e3)
+        BIND(COALESCE(?eff4Value, 1.0) as ?e4)
+        
+        # Calculate average effectiveness across all type matchups
+        BIND(IF(BOUND(?targetType2), 
+            IF(BOUND(?attackerType2), (?e1 + ?e2 + ?e3 + ?e4) / 4, (?e1 + ?e2) / 2),
+            IF(BOUND(?attackerType2), (?e1 + ?e3) / 2, ?e1)
+        ) as ?typeEffectiveness)
+        
+        # Calculate combined attack power
+        BIND((?attack + ?spAttack) as ?totalAttack)
+        
+        # Calculate final strength score
+        BIND(?typeEffectiveness * ?totalAttack as ?strength)
+        
+        # Only include if there's some advantage (effectiveness > 1.0 or high stats)
+        FILTER(?typeEffectiveness > 1.0 || ?totalAttack > 150)
     }
 """^^xsd:string .
