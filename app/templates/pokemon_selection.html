@@ -89,10 +89,16 @@
       filteredPokemon.forEach(pokemon => {
         const item = document.createElement('div');
         item.className = 'suggestion-item';
-        item.textContent = pokemon.name;
+        if (pokemon.isStrong) {
+          item.classList.add('strong-pokemon');
+          item.innerHTML = `${pokemon.name} <span class="strong-badge">⚡ Strong</span>`;
+        } else {
+          item.textContent = pokemon.name;
+        }
         item.dataset.id = pokemon.id;
         item.dataset.name = pokemon.name;
         item.dataset.number = pokemon.number;
+        item.dataset.isStrong = pokemon.isStrong;
         suggestionsEl.appendChild(item);
       });
       
@@ -102,7 +108,11 @@
     // Function to update preview
     function updatePreview(previewEl, pokemon) {
       const staticPath = "{% static 'pokemon-images-index/' %}";
-      previewEl.innerHTML = `<img src="${staticPath}${pokemon.id}.png" alt="${pokemon.name}">`;
+      previewEl.innerHTML = `
+        <div class="preview-container">
+          <img src="${staticPath}${pokemon.id}.png" alt="${pokemon.name}">
+        </div>
+      `;
     }
     
     // Function to set selected pokemon
@@ -125,7 +135,7 @@
       showSuggestions(this, suggestions1, filteredPokemon);
       
       // Clear selected pokemon if input changes
-      if (this.value !== selectedPokemon1.textContent.replace('Selected: ', '')) {
+      if (this.value !== selectedPokemon1.textContent.replace('Selected: ', '').trim()) {
         hiddenInput1.value = '';
         selectedPokemon1.style.display = 'none';
         preview1.innerHTML = '';
@@ -139,7 +149,7 @@
       showSuggestions(this, suggestions2, filteredPokemon);
       
       // Clear selected pokemon if input changes
-      if (this.value !== selectedPokemon2.textContent.replace('Selected: ', '')) {
+      if (this.value !== selectedPokemon2.textContent.replace('Selected: ', '').trim()) {
         hiddenInput2.value = '';
         selectedPokemon2.style.display = 'none';
         preview2.innerHTML = '';
@@ -149,11 +159,12 @@
     
     // Event delegation for suggestion1 clicks
     suggestions1.addEventListener('click', function(e) {
-      if (e.target.classList.contains('suggestion-item')) {
+      const item = e.target.closest('.suggestion-item');
+      if (item) {
         const pokemon = {
-          id: e.target.dataset.id,
-          name: e.target.dataset.name,
-          number: e.target.dataset.number
+          id: item.dataset.id,
+          name: item.dataset.name,
+          number: item.dataset.number
         };
         selectPokemon(input1, hiddenInput1, selectedPokemon1, preview1, pokemon);
         suggestions1.style.display = 'none';
@@ -162,11 +173,12 @@
     
     // Event delegation for suggestion2 clicks
     suggestions2.addEventListener('click', function(e) {
-      if (e.target.classList.contains('suggestion-item')) {
+      const item = e.target.closest('.suggestion-item');
+      if (item) {
         const pokemon = {
-          id: e.target.dataset.id,
-          name: e.target.dataset.name,
-          number: e.target.dataset.number
+          id: item.dataset.id,
+          name: item.dataset.name,
+          number: item.dataset.number
         };
         selectPokemon(input2, hiddenInput2, selectedPokemon2, preview2, pokemon);
         suggestions2.style.display = 'none';

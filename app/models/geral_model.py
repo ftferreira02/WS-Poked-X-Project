@@ -312,25 +312,27 @@ class PokemonManager:
             ?primaryType ?secondaryType ?pokedexNumber
             ?againstType ?value
         WHERE {{
-        <http://example.org/pokemon/Pokemon/{pokemon_id}> schema1:name ?name ;
-                                                        ns1:attack ?attack ;
-                                                        ns1:defense ?defense ;
-                                                        ns1:hp ?hp ;
-                                                        ns1:spAttack ?spAttack ;
-                                                        ns1:spDefense ?spDefense ;
-                                                        ns1:speed ?speed ;
-                                                        ns1:totalPoints ?totalPoints ;
-                                                        ns1:height ?height ;
-                                                        ns1:weight ?weight ;
-                                                        ns1:isLegendary ?isLegendary ;
-                                                        ns1:generation ?generation ;
-                                                        ns1:baseFriendship ?baseFriendship ;
-                                                        ns1:primaryType ?primaryType ;
-                                                        ns1:secondaryType ?secondaryType ;
-                                                        ns1:pokedexNumber ?pokedexNumber ;
-                                                        ns1:effectiveness ?eff .
-        ?eff ?againstType ?value .
-        FILTER STRSTARTS(STR(?againstType), STR(ns1:against))
+            <http://example.org/pokemon/Pokemon/{pokemon_id}>
+                schema1:name ?name ;
+                ns1:attack ?attack ;
+                ns1:defense ?defense ;
+                ns1:hp ?hp ;
+                ns1:spAttack ?spAttack ;
+                ns1:spDefense ?spDefense ;
+                ns1:speed ?speed ;
+                ns1:totalPoints ?totalPoints ;
+                ns1:height ?height ;
+                ns1:weight ?weight ;
+                ns1:isLegendary ?isLegendary ;
+                ns1:generation ?generation ;
+                ns1:baseFriendship ?baseFriendship ;
+                ns1:primaryType ?primaryType ;
+                ns1:secondaryType ?secondaryType ;
+                ns1:pokedexNumber ?pokedexNumber .
+            OPTIONAL {{
+                <http://example.org/pokemon/Pokemon/{pokemon_id}> ns1:effectiveness ?effNode .
+                ?effNode ?againstType ?value .
+            }}
         }}
         """
         results = run_query(query)
@@ -361,8 +363,10 @@ class PokemonManager:
             "pokedexNumber": 0,
             "designer": "",
             "firstAppearance": "",
+            "sameTypePokemon": None
         }
 
+        # Process the main stats
         for binding in bindings:
             name_value = binding["name"]["value"]
             if not stats["name"]:
@@ -372,41 +376,50 @@ class PokemonManager:
                     if full_info:
                         insert_turtle_to_graphdb(full_info)
 
-
-                # 2. Extrai os campos visíveis (como antes)
+                # Get DBpedia info
                 dbpedia_data = get_dbpedia_info(name_value, lang="en")
+                stats["description"] = dbpedia_data["description"]
+                stats["designer"] = dbpedia_data["designer"]
+                stats["firstAppearance"] = dbpedia_data["firstAppearance"]
 
-                stats.update({
-                    "name": name_value,
-                    "attack": int(binding["attack"]["value"]),
-                    "defense": int(binding["defense"]["value"]),
-                    "hp": int(binding["hp"]["value"]),
-                    "spAttack": int(binding["spAttack"]["value"]),
-                    "spDefense": int(binding["spDefense"]["value"]),
-                    "speed": int(binding["speed"]["value"]),
-                    "totalPoints": int(binding["totalPoints"]["value"]),
-                    "height": float(binding["height"]["value"]),
-                    "weight": float(binding["weight"]["value"]),
-                    "isLegendary": (binding["isLegendary"]["value"] == "true"),
-                    "generation": int(binding["generation"]["value"]),
-                    "baseFriendship": int(binding["baseFriendship"]["value"]),
-                    "primaryType": binding["primaryType"]["value"].split("/")[-1],
-                    "secondaryType": binding["secondaryType"]["value"].split("/")[-1],
-                    "pokedexNumber": int(binding.get("pokedexNumber", {}).get("value", 0)),
-                    "description": dbpedia_data["description"],
-                    "designer": dbpedia_data["designer"],
-                    "firstAppearance": dbpedia_data["firstAppearance"],
-                })
+            stats["name"] = name_value
 
-            type_name = binding["againstType"]["value"].split("against")[-1].lower()
-            val = float(binding["value"]["value"])
-            if val > 1.0:
-                stats["strongAgainst"].append(type_name)
-            elif 0.0 < val < 1.0:
-                stats["weakAgainst"].append(type_name)
+            for key in ["attack", "defense", "hp", "spAttack", "spDefense", "speed", "totalPoints", 
+                       "generation", "baseFriendship", "pokedexNumber"]:
+                if key in binding:
+                    stats[key] = int(float(binding[key]["value"]))
+
+            for key in ["height", "weight"]:
+                if key in binding:
+                    stats[key] = float(binding[key]["value"])
+
+            if "isLegendary" in binding:
+                stats["isLegendary"] = binding["isLegendary"]["value"].lower() == "true"
+
+            if "primaryType" in binding:
+                stats["primaryType"] = binding["primaryType"]["value"].split("/")[-1]
+
+            if "secondaryType" in binding:
+                stats["secondaryType"] = binding["secondaryType"]["value"].split("/")[-1]
+
+            # Process effectiveness data
+            if "againstType" in binding and "value" in binding:
+                type_uri = binding["againstType"]["value"]
+                if "against" in type_uri:
+                    type_name = type_uri.split("/")[-1].replace("against", "").lower()
+                    val = float(binding["value"]["value"])
+                    if val > 1.0:
+                        stats["strongAgainst"].append(type_name)
+                    elif 0.0 < val < 1.0:
+                        stats["weakAgainst"].append(type_name)
 
         stats["strongAgainst"] = list(dict.fromkeys(stats["strongAgainst"]))
         stats["weakAgainst"] = list(dict.fromkeys(stats["weakAgainst"]))
+
+        # Get same type Pokemon
+        from app.sparql_client import get_same_type_pokemons
+        same_type_pokemon = get_same_type_pokemons(pokemon_id)
+        stats["sameTypePokemon"] = same_type_pokemon
 
         return stats
 

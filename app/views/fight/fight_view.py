@@ -8,6 +8,7 @@ from app.models.fight.battle_queries import delete_battle
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
 from django.utils.http import urlencode
+from app.sparql_client import run_query
 
 
 def pokemon_selection_view(request):
@@ -26,7 +27,33 @@ def pokemon_selection_view(request):
     
     # Get all Pokémon for JavaScript
     all_pokemons = PokemonManager.get_all_pokemons()
-    pokemon_data = [{'id': p.id, 'name': p.name, 'number': p.number} for p in all_pokemons]
+    pokemon_data = []
+    
+    # Get strong Pokemon data using spAttack > 120
+    strong_pokemon_query = """
+    PREFIX pdx: <http://poked-x.org/pokemon/>
+    PREFIX sc: <http://schema.org/>
+    SELECT ?pokemon ?name WHERE {
+        ?pokemon pdx:spAttack ?spAttack ;
+                 sc:name ?name .
+        FILTER(?spAttack > 120)
+    }
+    """
+    strong_results = run_query(strong_pokemon_query)
+    strong_pokemon_names = set()
+    if strong_results and "results" in strong_results and "bindings" in strong_results["results"]:
+        for binding in strong_results["results"]["bindings"]:
+            if "name" in binding:
+                strong_pokemon_names.add(binding["name"]["value"])
+    
+    # Add isStrong flag to pokemon data
+    for p in all_pokemons:
+        pokemon_data.append({
+            'id': p.id,
+            'name': p.name,
+            'number': p.number,
+            'isStrong': p.name in strong_pokemon_names
+        })
     
     return render(request, 'pokemon_selection.html', {
         'form': form,

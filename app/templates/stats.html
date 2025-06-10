@@ -60,8 +60,6 @@
           <span class="highlight" id="secondary-type">Secondary Type:</span> {{ stats.secondaryType|title }}
         </p>
       {% endif %}
-      
-      
 
       <div class="stats">
         <div class="column-stats">
@@ -121,6 +119,14 @@
           </div>
         </div>
       </div>
+
+      {% if stats.sameTypePokemon %}
+        <div class="same-type-section">
+          <h2>{{ stats.name }} Is the Same Type As...</h2>
+          <p class="same-type-pokemon">{{ stats.sameTypePokemon }}</p>
+          <p class="hint">(Refresh to see other {{ stats.primaryType|title }} type Pokémon)</p>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>
