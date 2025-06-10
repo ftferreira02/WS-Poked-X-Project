@@ -1,0 +1,484 @@
+@prefix pdx:  <http://poked-x.org/pokemon/> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+### Effectiveness datatype properties
+
+pdx:againstBug
+    a       owl:DatatypeProperty ;
+    rdfs:domain  pdx:Effectiveness ;
+    rdfs:range   xsd:float ;
+    rdfs:label   "weakness to Bug" ;
+    rdfs:comment "Damage multiplier when hit by Bug-type attacks." .
+
+pdx:againstDark
+    a       owl:DatatypeProperty ;
+    rdfs:domain  pdx:Effectiveness ;
+    rdfs:range   xsd:float ;
+    rdfs:label   "weakness to Dark" ;
+    rdfs:comment "Damage multiplier when hit by Dark-type attacks." .
+
+pdx:againstDragon
+    a       owl:DatatypeProperty ;
+    rdfs:domain  pdx:Effectiveness ;
+    rdfs:range   xsd:float ;
+    rdfs:label   "weakness to Dragon" ;
+    rdfs:comment "Damage multiplier when hit by Dragon-type attacks." .
+
+pdx:againstElectric
+    a       owl:DatatypeProperty ;
+    rdfs:domain  pdx:Effectiveness ;
+    rdfs:range   xsd:float ;
+    rdfs:label   "weakness to Electric" ;
+    rdfs:comment "Damage multiplier when hit by Electric-type attacks." .
+
+pdx:againstFairy
+    a       owl:DatatypeProperty ;
+    rdfs:domain  pdx:Effectiveness ;
+    rdfs:range   xsd:float ;
+    rdfs:label   "weakness to Fairy" ;
+    rdfs:comment "Damage multiplier when hit by Fairy-type attacks." .
+
+pdx:againstFight
+    a       owl:DatatypeProperty ;
+    rdfs:domain  pdx:Effectiveness ;
+    rdfs:range   xsd:float ;
+    rdfs:label   "weakness to Fighting" ;
+    rdfs:comment "Damage multiplier when hit by Fighting-type attacks." .
+
+pdx:againstFire
+    a       owl:DatatypeProperty ;
+    rdfs:domain  pdx:Effectiveness ;
+    rdfs:range   xsd:float ;
+    rdfs:label   "weakness to Fire" ;
+    rdfs:comment "Damage multiplier when hit by Fire-type attacks." .
+
+pdx:againstFlying
+    a       owl:DatatypeProperty ;
+    rdfs:domain  pdx:Effectiveness ;
+    rdfs:range   xsd:float ;
+    rdfs:label   "weakness to Flying" ;
+    rdfs:comment "Damage multiplier when hit by Flying-type attacks." .
+
+pdx:againstGhost
+    a       owl:DatatypeProperty ;
+    rdfs:domain  pdx:Effectiveness ;
+    rdfs:range   xsd:float ;
+    rdfs:label   "weakness to Ghost" ;
+    rdfs:comment "Damage multiplier when hit by Ghost-type attacks." .
+
+pdx:againstGrass
+    a       owl:DatatypeProperty ;
+    rdfs:domain  pdx:Effectiveness ;
+    rdfs:range   xsd:float ;
+    rdfs:label   "weakness to Grass" ;
+    rdfs:comment "Damage multiplier when hit by Grass-type attacks." .
+
+pdx:againstGround
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Effectiveness ;
+    rdfs:range    xsd:float ;
+    rdfs:label    "weakness to Ground" ;
+    rdfs:comment  "Damage multiplier when hit by Ground-type attacks." .
+
+pdx:againstIce
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Effectiveness ;
+    rdfs:range    xsd:float ;
+    rdfs:label    "weakness to Ice" ;
+    rdfs:comment  "Damage multiplier when hit by Ice-type attacks." .
+
+pdx:againstNormal
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Effectiveness ;
+    rdfs:range    xsd:float ;
+    rdfs:label    "weakness to Normal" ;
+    rdfs:comment  "Damage multiplier when hit by Normal-type attacks." .
+
+pdx:againstPoison
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Effectiveness ;
+    rdfs:range    xsd:float ;
+    rdfs:label    "weakness to Poison" ;
+    rdfs:comment  "Damage multiplier when hit by Poison-type attacks." .
+
+pdx:againstPsychic
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Effectiveness ;
+    rdfs:range    xsd:float ;
+    rdfs:label    "weakness to Psychic" ;
+    rdfs:comment  "Damage multiplier when hit by Psychic-type attacks." .
+
+pdx:againstRock
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Effectiveness ;
+    rdfs:range    xsd:float ;
+    rdfs:label    "weakness to Rock" ;
+    rdfs:comment  "Damage multiplier when hit by Rock-type attacks." .
+
+pdx:againstSteel
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Effectiveness ;
+    rdfs:range    xsd:float ;
+    rdfs:label    "weakness to Steel" ;
+    rdfs:comment  "Damage multiplier when hit by Steel-type attacks." .
+
+pdx:againstWater
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Effectiveness ;
+    rdfs:range    xsd:float ;
+    rdfs:label    "weakness to Water" ;
+    rdfs:comment  "Damage multiplier when hit by Water-type attacks." .
+
+### Core Pokémon stats & relationships
+
+pdx:attack
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:integer ;
+    rdfs:label    "attack" ;
+    rdfs:comment  "Physical attack stat of a Pokémon." .
+
+pdx:baseFriendship
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:integer ;
+    rdfs:label    "base friendship" ;
+    rdfs:comment  "Base friendship level of a Pokémon." .
+
+pdx:defense
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:integer ;
+    rdfs:label    "defense" ;
+    rdfs:comment  "Physical defense stat of a Pokémon." .
+
+pdx:evolvesTo
+    a       owl:ObjectProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    pdx:Pokemon ;
+    rdfs:label    "evolves to" ;
+    rdfs:comment  "Links a Pokémon to its next evolutionary form." .
+
+pdx:generation
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:integer ;
+    rdfs:label    "generation" ;
+    rdfs:comment  "Generation number to which a Pokémon belongs." .
+
+pdx:hasAbility
+    a       owl:ObjectProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    pdx:Ability ;
+    rdfs:label    "has ability" ;
+    rdfs:comment  "Associates a Pokémon with one of its abilities." .
+
+pdx:hasEffectiveness
+    a       owl:ObjectProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    pdx:Effectiveness ;
+    rdfs:label    "has effectiveness" ;
+    rdfs:comment  "Associates a Pokémon with its type‐damage profile." .
+
+pdx:height
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:float ;
+    rdfs:label    "height" ;
+    rdfs:comment  "Height of the Pokémon in meters." .
+
+pdx:hp
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:integer ;
+    rdfs:label    "HP" ;
+    rdfs:comment  "Hit points stat of a Pokémon." .
+    pdx:isLegendary a owl:DatatypeProperty ;
+        rdfs:domain pdx:Pokemon ;
+        rdfs:range xsd:boolean .
+
+pdx:isLegendary
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:boolean ;
+    rdfs:label    "is legendary" ;
+    rdfs:comment  "Indicates if a Pokémon is legendary (true/false)." .
+
+pdx:megaEvolutionOf
+    a       owl:ObjectProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    pdx:Pokemon ;
+    rdfs:label    "mega evolution of" ;
+    rdfs:comment  "Links a Mega Evolution Pokémon back to its base form." .
+
+pdx:name
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:string ;
+    rdfs:label    "name" ;
+    rdfs:comment  "The human-readable name of a Pokémon." .
+
+pdx:pokedexNumber
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:integer ;
+    rdfs:label    "Pokédex number" ;
+    rdfs:comment  "Unique National Pokédex identifier." .
+
+pdx:primaryType
+    a       owl:ObjectProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    pdx:Type ;
+    owl:propertyDisjointWith pdx:secondaryType ;
+    rdfs:label    "primary type" ;
+    rdfs:comment  "The primary elemental type of a Pokémon." .
+
+pdx:spAttack
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:integer ;
+    rdfs:label    "special attack" ;
+    rdfs:comment  "Special attack stat of a Pokémon." .
+
+pdx:spDefense
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:integer ;
+    rdfs:label    "special defense" ;
+    rdfs:comment  "Special defense stat of a Pokémon." .
+
+pdx:speed
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:integer ;
+    rdfs:label    "speed" ;
+    rdfs:comment  "Speed stat of a Pokémon." .
+
+pdx:totalPoints
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:integer ;
+    rdfs:label    "total points" ;
+    rdfs:comment  "Sum of all base stats of a Pokémon." .
+
+pdx:weight
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:float ;
+    rdfs:label    "weight" ;
+    rdfs:comment  "Weight of the Pokémon in kilograms." .
+
+<http://schema.org/name>
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    xsd:string ;
+    rdfs:label    "schema:name" ;
+    rdfs:comment  "Schema.org name property for embedding in web pages." .
+
+### Inverse properties for evolution
+
+pdx:evolvesTo
+    a            owl:ObjectProperty ;
+    rdfs:domain  pdx:Pokemon ;
+    rdfs:range   pdx:Pokemon ;
+    owl:inverseOf pdx:evolvesFrom ;
+    rdfs:label   "evolves to" ;
+    rdfs:comment "Links a Pokémon to its next evolutionary form." .
+
+pdx:evolvesFrom
+    a            owl:ObjectProperty ;
+    rdfs:domain  pdx:Pokemon ;
+    rdfs:range   pdx:Pokemon ;
+    owl:inverseOf pdx:evolvesTo ;
+    rdfs:label   "evolves from" ;
+    rdfs:comment "Links a Pokémon back to its previous evolutionary form." .
+
+### The Battle event itself
+pdx:Battle
+    a       owl:Class ;
+    rdfs:label   "Battle" ;
+    rdfs:comment "A Pokémon battle event between two or more Pokémon." ;
+    owl:disjointWith pdx:Pokemon,
+                       pdx:Effectiveness,
+                       pdx:Type .
+
+### Participation linking Pokémon ↔ Battle
+pdx:BattleParticipation
+    a       owl:Class ;
+    rdfs:label   "Battle Participation" ;
+    rdfs:comment "Record of a Pokémon’s involvement in a battle event." ;
+    owl:disjointWith pdx:Pokemon,
+                       pdx:Type .
+
+### From Pokémon to its participation record
+pdx:participatedIn
+    a       owl:ObjectProperty ;
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    pdx:BattleParticipation ;
+    rdfs:label    "participated in" ;
+    rdfs:comment  "Links a Pokémon to a battle participation record." .
+
+### From Battle to each participation record (inverse of participatedIn)
+pdx:hasParticipation
+    a            owl:ObjectProperty ;
+    rdfs:domain  pdx:Battle ;
+    rdfs:range   pdx:BattleParticipation ;
+    owl:inverseOf pdx:participatedIn ;
+    rdfs:label   "has participation" ;
+    rdfs:comment "Links a battle to each Pokémon participation record." .
+
+### From Participation back to the Pokémon
+pdx:involvesPokemon
+    a       owl:ObjectProperty ;
+    rdfs:domain   pdx:BattleParticipation ;
+    rdfs:range    pdx:Pokemon ;
+    rdfs:label    "involves Pokémon" ;
+    rdfs:comment  "Links a participation record back to the Pokémon." .
+
+### The outcome on that Participation
+pdx:battleResult
+    a       owl:DatatypeProperty ;
+    rdfs:domain   pdx:BattleParticipation ;
+    rdfs:range    xsd:string ;
+    rdfs:label    "battle result" ;
+    rdfs:comment  "Outcome for this Pokémon in the battle (e.g., 'win' or 'lose')." .
+
+
+### Class definitions with necessary & sufficient conditions
+
+pdx:LegendaryPokemon
+    a       owl:Class ;
+    rdfs:subClassOf pdx:Pokemon ;
+    rdfs:label   "Legendary Pokémon" ;
+    rdfs:comment "Pokémon with isLegendary = true." ;
+    owl:equivalentClass [
+        a       owl:Restriction ;
+        owl:onProperty pdx:isLegendary ;
+        owl:hasValue "true"^^xsd:boolean
+    ] .
+
+pdx:DualTypePokemon
+    a       owl:Class ;
+    rdfs:subClassOf pdx:Pokemon ;
+    rdfs:label   "Dual-Type Pokémon" ;
+    rdfs:comment "Pokémon having both primary and secondary types." ;
+    owl:equivalentClass [
+        a       owl:Restriction ;
+        owl:onProperty pdx:secondaryType ;
+        owl:someValuesFrom pdx:Type
+    ] .
+
+pdx:MegaEvolution
+    a       owl:Class ;
+    rdfs:subClassOf pdx:Pokemon ;
+    rdfs:label   "Mega Evolution Pokémon" ;
+    rdfs:comment "Pokémon that are Mega Evolutions of a base form." ;
+    owl:equivalentClass [
+        a       owl:Restriction ;
+        owl:onProperty pdx:megaEvolutionOf ;
+        owl:someValuesFrom pdx:Pokemon
+    ] .
+
+pdx:FighterPokemon
+    a       owl:Class ;
+    rdfs:subClassOf pdx:Pokemon ;
+    rdfs:label   "Battle-Ready Pokémon" ;
+    rdfs:comment "Pokémon that have participated in at least one battle." ;
+    owl:equivalentClass [
+        a       owl:Restriction ;
+        owl:onProperty pdx:participatedIn ;
+        owl:someValuesFrom pdx:BattleParticipation
+    ] .
+
+pdx:GlassCannon
+    a       owl:Class ;
+    rdfs:subClassOf pdx:Pokemon ;
+    rdfs:label   "Glass-Cannon Pokémon" ;
+    rdfs:comment "High-attack but low-defense Pokémon." ;
+    owl:equivalentClass [
+        a       owl:Class ;
+        owl:intersectionOf (
+            pdx:Pokemon
+            [ a owl:Restriction ;
+              owl:onProperty pdx:attack ;
+              owl:someValuesFrom [
+                a       rdfs:Datatype ;
+                owl:onDatatype xsd:integer ;
+                owl:withRestrictions ( [ xsd:minExclusive "100"^^xsd:integer ] )
+              ]
+            ]
+            [ a owl:Restriction ;
+              owl:onProperty pdx:defense ;
+              owl:someValuesFrom [
+                a       rdfs:Datatype ;
+                owl:onDatatype xsd:integer ;
+                owl:withRestrictions ( [ xsd:maxExclusive "50"^^xsd:integer ] )
+              ]
+            ]
+        )
+    ] .
+
+### Evolution inverse properties
+
+pdx:secondaryType
+    a       owl:ObjectProperty ;
+    rdfs:domain  pdx:Pokemon ;
+    rdfs:range   pdx:Type ;
+    rdfs:label   "secondary type" ;
+    rdfs:comment "The secondary elemental type of a Pokémon." .
+
+pdx:evolvesTo
+    a            owl:ObjectProperty ;
+    rdfs:domain  pdx:Pokemon ;
+    rdfs:range   pdx:Pokemon ;
+    owl:inverseOf pdx:evolvesFrom ;
+    rdfs:label   "evolves to" ;
+    rdfs:comment "Links a Pokémon to its next evolutionary form." .
+
+pdx:evolvesFrom
+    a            owl:ObjectProperty ;
+    rdfs:domain  pdx:Pokemon ;
+    rdfs:range   pdx:Pokemon ;
+    owl:inverseOf pdx:evolvesTo ;
+    rdfs:label   "evolves from" ;
+    rdfs:comment "Links a Pokémon back to its previous evolutionary form." .
+
+### Best match counter
+
+pdx:bestMatchAgainst
+    a       owl:ObjectProperty ;
+    rdfs:domain  pdx:Pokemon ;
+    rdfs:range   pdx:Pokemon ;
+    rdfs:label   "best match against" ;
+    rdfs:comment "Links a Pokémon to another that is a highly effective counter." .
+
+### Fundamental classes
+
+pdx:Ability
+    a       owl:Class ;
+    rdfs:label   "Ability" ;
+    rdfs:comment "An ability or skill that a Pokémon can possess." .
+
+pdx:Type
+    a       owl:Class ;
+    rdfs:label   "Type" ;
+    rdfs:comment "An elemental type category." .
+
+# Effectiveness profile class
+pdx:Effectiveness
+    a       owl:Class ;
+    rdfs:label   "Effectiveness Profile" ;
+    rdfs:comment "Damage multipliers against each type." ;
+    owl:disjointWith pdx:Pokemon .
+
+# Pokémon class
+pdx:Pokemon
+    a       owl:Class ;
+    rdfs:label   "Pokémon" ;
+    rdfs:comment "The class of all Pokémon species." ;
+    owl:disjointWith pdx:Effectiveness,
+                     pdx:BattleParticipation,
+                     pdx:Type .
+
