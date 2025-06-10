@@ -12,35 +12,35 @@
 {% block content %}
 <div class="spacer"></div>
 <!-- Pokémon Selection Page -->
-<div class="selection-container" typeof="schema:InteractionCounter" property="interactionType" resource="pokemon:PokemonSelection">
-  <h1 class="selection-title" property="name">Choose Your Pokemon</h1>
+<div class="selection-container">
+  <h1 class="selection-title">Choose Your Pokemon</h1>
   
-  <form method="post" action="{% url 'pokemon_selection' %}" id="pokemon-selection-form" autocomplete="off" typeof="schema:Action">
+  <form method="post" action="{% url 'pokemon_selection' %}" id="pokemon-selection-form" autocomplete="off">
     {% csrf_token %}
     <div class="pokemon-selection-form">
-      <div class="selection-card" typeof="pokemon:PokemonSelection" resource="#pokemon1">
-        <h2 property="name">First Pokemon</h2>
+      <div class="selection-card">
+        <h2>First Pokemon</h2>
         <div class="selection-input-container">
           {{ form.pokemon1 }}
-          <div id="suggestions1" class="suggestions-container" property="suggestedAnswer"></div>
-          <div id="selected-pokemon1" class="selected-pokemon" property="pokemon:selectedPokemon"></div>
+          <div id="suggestions1" class="suggestions-container"></div>
+          <div id="selected-pokemon1" class="selected-pokemon"></div>
         </div>
         {{ form.pokemon1_id }}
-        <div class="pokemon-preview" id="preview1" property="image"></div>
+        <div class="pokemon-preview" id="preview1"></div>
       </div>
       
-      <div class="selection-card" typeof="pokemon:PokemonSelection" resource="#pokemon2">
-        <h2 property="name">Second Pokemon</h2>
+      <div class="selection-card">
+        <h2>Second Pokemon</h2>
         <div class="selection-input-container">
           {{ form.pokemon2 }}
-          <div id="suggestions2" class="suggestions-container" property="suggestedAnswer"></div>
-          <div id="selected-pokemon2" class="selected-pokemon" property="pokemon:selectedPokemon"></div>
+          <div id="suggestions2" class="suggestions-container"></div>
+          <div id="selected-pokemon2" class="selected-pokemon"></div>
         </div>
         {{ form.pokemon2_id }}
-        <div class="pokemon-preview" id="preview2" property="image"></div>
+        <div class="pokemon-preview" id="preview2"></div>
       </div>
       
-      <button type="submit" class="battle-button" id="battle-button" disabled property="schema:actionOption">
+      <button type="submit" class="battle-button" id="battle-button" disabled>
         Start Battle!
       </button>
     </div>
@@ -52,7 +52,7 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // Pokemon data from the server
-    const pokemonData = JSON.parse('{{ pokemon_data_json|safe }}');
+    const pokemonData = {{ pokemon_data_json|safe }};
     
     // Elements
     const input1 = document.querySelector('[name="pokemon1"]');
@@ -89,19 +89,15 @@
       filteredPokemon.forEach(pokemon => {
         const item = document.createElement('div');
         item.className = 'suggestion-item';
-        item.setAttribute('typeof', 'pokemon:Pokemon');
-        item.setAttribute('resource', `pokemon:${pokemon.id}`);
-        
         if (pokemon.isStrong) {
           item.classList.add('strong-pokemon');
-          item.innerHTML = `<span property="name">${pokemon.name}</span> <span class="strong-badge" property="pokemon:isStrong">⚡ Strong</span>`;
+          item.innerHTML = `${pokemon.name} <span class="strong-badge">⚡ Strong</span>`;
         } else {
-          item.innerHTML = `<span property="name">${pokemon.name}</span>`;
+          item.textContent = pokemon.name;
         }
         item.dataset.id = pokemon.id;
         item.dataset.name = pokemon.name;
         item.dataset.number = pokemon.number;
-        item.dataset.isStrong = pokemon.isStrong;
         item.dataset.isStrong = pokemon.isStrong;
         suggestionsEl.appendChild(item);
       });
@@ -113,8 +109,8 @@
     function updatePreview(previewEl, pokemon) {
       const staticPath = "{% static 'pokemon-images-index/' %}";
       previewEl.innerHTML = `
-        <div class="preview-container" typeof="pokemon:Pokemon" resource="pokemon:${pokemon.id}">
-          <img src="${staticPath}${pokemon.id}.png" alt="${pokemon.name}" property="image">
+        <div class="preview-container">
+          <img src="${staticPath}${pokemon.id}.png" alt="${pokemon.name}">
         </div>
       `;
     }

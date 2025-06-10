@@ -1,10 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"
-      prefix="schema: http://schema.org/
-              pokemon: http://poked-x.org/ns#
-              dbo: http://dbpedia.org/ontology/
-              foaf: http://xmlns.com/foaf/0.1/"
-      vocab="http://schema.org/">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,14 +7,12 @@
     <!-- Adiciona o Bootstrap para fácil estilização -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body typeof="schema:WebPage">
-    <div class="container" typeof="pokemon:SearchResults" resource="#pokemon-list">
-        <h1 class="mt-5" property="schema:name">Pokémon Encontrados</h1>
-        <ul class="list-group mt-3" rel="pokemon:results">
+<body>
+    <div class="container">
+        <h1 class="mt-5">Pokémon Encontrados</h1>
+        <ul class="list-group mt-3">
             {% for pokemon in pokemons %}
-                <li class="list-group-item" typeof="pokemon:Pokemon" resource="pokemon:{{ pokemon.id }}">
-                    <span property="schema:name">{{ pokemon }}</span>
-                </li>
+                <li class="list-group-item">{{ pokemon }}</li>
             {% empty %}
                 <li class="list-group-item">Nenhum Pokémon encontrado.</li>
             {% endfor %}
@@ -27,6 +20,4 @@
     </div>
 
     <!-- Adiciona o script do Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <script src
