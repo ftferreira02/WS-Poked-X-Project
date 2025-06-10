@@ -18,6 +18,10 @@
   <div class="teams-container">
     <div class="team-section" typeof="pokemon:Team" resource="#team1">
       <h2>Team 1</h2>
+      <div class="team-balance">
+        <div class="balance-score" id="team1-balance">-</div>
+        <div class="balance-label">Team Balance Score</div>
+      </div>
       <div class="team-selection">
         <div class="search-box">
           <input type="text" class="pokemon-search" id="team1-search" placeholder="Search Pokémon...">
@@ -52,6 +56,10 @@
 
     <div class="team-section" typeof="pokemon:Team" resource="#team2">
       <h2>Team 2</h2>
+      <div class="team-balance">
+        <div class="balance-score" id="team2-balance">-</div>
+        <div class="balance-label">Team Balance Score</div>
+      </div>
       <div class="team-selection">
         <div class="search-box">
           <input type="text" class="pokemon-search" id="team2-search" placeholder="Search Pokémon...">
@@ -86,102 +94,15 @@
 {% block extra_scripts %}
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const pokemonData = JSON.parse('{{ pokemon_data_json|safe }}');
+    // Placeholder for future functionality
     const teams = {
       team1: [],
       team2: []
     };
 
-    function filterPokemon(query, excludeIds) {
-      if (query.length < 2) return [];
-      const lowerQuery = query.toLowerCase();
-      return pokemonData
-        .filter(p => 
-          p.name.toLowerCase().includes(lowerQuery) && 
-          !excludeIds.includes(p.id)
-        )
-        .slice(0, 5);
-    }
-
-    function showSuggestions(teamId, suggestions) {
-      const suggestionsEl = document.getElementById(`${teamId}-suggestions`);
-      suggestionsEl.innerHTML = '';
-      
-      suggestions.forEach(pokemon => {
-        const div = document.createElement('div');
-        div.className = 'suggestion-item';
-        div.innerHTML = `
-          <img src="${pokemon.image}" alt="${pokemon.name}" class="pokemon-icon">
-          <span>${pokemon.name}</span>
-        `;
-        div.onclick = () => addToTeam(teamId, pokemon);
-        suggestionsEl.appendChild(div);
-      });
-      
-      suggestionsEl.style.display = suggestions.length ? 'block' : 'none';
-    }
-
-    function addToTeam(teamId, pokemon) {
-      if (teams[teamId].length >= 6) return;
-      
-      teams[teamId].push(pokemon);
-      updateTeamDisplay(teamId);
-      document.getElementById(`${teamId}-suggestions`).style.display = 'none';
-      document.getElementById(`${teamId}-search`).value = '';
-      
-      updateCompareButton();
-    }
-
-    function removeFromTeam(teamId, pokemonId) {
-      teams[teamId] = teams[teamId].filter(p => p.id !== pokemonId);
-      updateTeamDisplay(teamId);
-      updateCompareButton();
-    }
-
-    function updateTeamDisplay(teamId) {
-      const container = document.getElementById(`${teamId}-pokemon`);
-      container.innerHTML = '';
-      
-      teams[teamId].forEach(pokemon => {
-        const div = document.createElement('div');
-        div.className = 'selected-pokemon';
-        div.innerHTML = `
-          <img src="${pokemon.image}" alt="${pokemon.name}" class="pokemon-icon">
-          <span>${pokemon.name}</span>
-          <button class="remove-btn" onclick="removeFromTeam('${teamId}', '${pokemon.id}')">×</button>
-        `;
-        container.appendChild(div);
-      });
-    }
-
     function updateCompareButton() {
       const button = document.getElementById('compare-button');
       button.disabled = teams.team1.length === 0 || teams.team2.length === 0;
-    }
-
-    function displayAnalysis(teamId, data) {
-      // Display offensive coverage
-      const offensiveEl = document.getElementById(`${teamId}-offensive`);
-      offensiveEl.innerHTML = data.coverage.offensive
-        .map(type => `<span class="type ${type.toLowerCase()}">${type}</span>`)
-        .join('');
-
-      // Display defensive coverage
-      const defensiveEl = document.getElementById(`${teamId}-defensive`);
-      defensiveEl.innerHTML = data.coverage.defensive
-        .map(type => `<span class="type ${type.toLowerCase()}">${type}</span>`)
-        .join('');
-
-      // Display roles
-      const rolesEl = document.getElementById(`${teamId}-roles`);
-      rolesEl.innerHTML = Object.entries(data.roles)
-        .map(([role, count]) => `
-          <div class="role-item">
-            <span class="role-name">${role}</span>
-            <span class="role-count">${count}</span>
-          </div>
-        `)
-        .join('');
     }
 
     // Event listeners
@@ -189,28 +110,12 @@
       const searchInput = document.getElementById(`${teamId}-search`);
       
       searchInput.addEventListener('input', () => {
-        const excludeIds = [...teams.team1, ...teams.team2].map(p => p.id);
-        const suggestions = filterPokemon(searchInput.value, excludeIds);
-        showSuggestions(teamId, suggestions);
+        // Placeholder for search functionality
       });
     });
 
-    document.getElementById('compare-button').addEventListener('click', async () => {
-      const response = await fetch('/compare/teams/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        },
-        body: JSON.stringify({
-          team1: teams.team1.map(p => p.id),
-          team2: teams.team2.map(p => p.id)
-        })
-      });
-
-      const data = await response.json();
-      displayAnalysis('team1', data.team1);
-      displayAnalysis('team2', data.team2);
+    document.getElementById('compare-button').addEventListener('click', () => {
+      // Placeholder for comparison functionality
     });
 
     // Hide suggestions when clicking outside
