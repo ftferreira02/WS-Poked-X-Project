@@ -7,9 +7,17 @@ def save_battle_result(pokemon1, pokemon2, winner):
     battle_id = str(uuid.uuid4())
     battle_uri = f"http://poked-x.org/pokemon/Battle/{battle_id}"
 
+    print(f"Debug - Saving battle result:")
+    print(f"Debug - Battle ID: {battle_id}")
+    print(f"Debug - Battle URI: {battle_uri}")
+    print(f"Debug - Pokemon1: {pokemon1}")
+    print(f"Debug - Pokemon2: {pokemon2}")
+    print(f"Debug - Winner: {winner}")
+
     query = f"""
     PREFIX pdx: <http://poked-x.org/pokemon/>
     PREFIX sc: <http://schema.org/>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
     INSERT DATA {{
         <{battle_uri}> a pdx:Battle ;
@@ -19,6 +27,7 @@ def save_battle_result(pokemon1, pokemon2, winner):
             pdx:timestamp "{datetime.now().isoformat()}"^^xsd:dateTime .
     }}
     """
+    print(f"Debug - SPARQL Query: {query}")
     run_update(query)
     return battle_id
 
@@ -44,7 +53,9 @@ def get_battle_history():
     ORDER BY DESC(?timestamp)
     LIMIT 10
     """
+    print(f"Debug - Executing battle history query: {query}")
     results = run_query(query)
+    print(f"Debug - Query results: {results}")
     battles = []
 
     if results and "results" in results and "bindings" in results["results"]:
@@ -56,18 +67,26 @@ def get_battle_history():
             winner_name = binding["nameWinner"]["value"]
             timestamp = binding["timestamp"]["value"]
 
+            print(f"Debug - Processing battle:")
+            print(f"Debug - Battle URI: {battle_uri}")
+            print(f"Debug - Battle ID: {battle_id}")
+            print(f"Debug - Pokemon1: {pokemon1_name}")
+            print(f"Debug - Pokemon2: {pokemon2_name}")
+            print(f"Debug - Winner: {winner_name}")
+            print(f"Debug - Timestamp: {timestamp}")
+
             # Convert timestamp to a more readable format
             dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
-            formatted_time = dt.strftime("%Y-%m-%d %H:%M:%S")
 
             battles.append({
-                "id": battle_id,
-                "pokemon1": pokemon1_name,
-                "pokemon2": pokemon2_name,
-                "winner": winner_name,
-                "timestamp": formatted_time
+                "battle_id": battle_id,
+                "pokemon1_name": pokemon1_name,
+                "pokemon2_name": pokemon2_name,
+                "winner_name": winner_name,
+                "date": dt
             })
 
+    print(f"Debug - Final battle history: {battles}")
     return battles
 
 

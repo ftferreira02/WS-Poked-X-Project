@@ -91,6 +91,9 @@ def pokemon_battle_view(request, pokemon1_id="0", pokemon2_id="1", simulate="tru
     })
 
     battle_history = get_battle_history()
+    print("Debug - Battle History:", battle_history)  # Debug output
+    for battle in battle_history:
+        print(f"Debug - Battle entry: {battle}")  # Debug each entry
 
     # Save the final result
     if simulate:
@@ -113,17 +116,25 @@ def pokemon_battle_view(request, pokemon1_id="0", pokemon2_id="1", simulate="tru
 
 @csrf_exempt
 def delete_battle_view(request, battle_id):
+    print(f"Debug - Received battle_id: {battle_id}")
+    print(f"Debug - Request method: {request.method}")
+    print(f"Debug - GET params: {request.GET}")
+    
     pokemon1_id = request.GET.get('pokemon1_id')
     pokemon2_id = request.GET.get('pokemon2_id')
 
-    if request.method == "POST":
-        delete_battle(battle_id)
+    print(f"Debug - Pokemon IDs: {pokemon1_id}, {pokemon2_id}")
 
+    if request.method == "POST":
+        print(f"Debug - Deleting battle with ID: {battle_id}")
+        delete_battle(battle_id)
 
     if pokemon1_id and pokemon2_id:
         base_url = reverse('pokemon_battle', kwargs={'pokemon1_id': pokemon1_id, 'pokemon2_id': pokemon2_id})
         query_string = urlencode({'simulate': 'false'})
         url = f"{base_url}?{query_string}"
+        print(f"Debug - Redirecting to: {url}")
         return redirect(url)
     else:
+        print("Debug - Redirecting to pokemon selection")
         return redirect('pokemon_selection')
