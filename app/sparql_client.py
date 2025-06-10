@@ -158,3 +158,72 @@ def get_same_type_pokemons(pokemon_id):
     if results["results"]["bindings"]:
         return results["results"]["bindings"][0]["otherName"]["value"]
     return None
+
+def get_pokemon_role(pokemon_id):
+    query = """
+    PREFIX pdx: <http://poked-x.org/pokemon/>
+    PREFIX sc: <http://schema.org/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+    SELECT ?role WHERE {
+        <http://poked-x.org/pokemon/Pokemon/""" + str(pokemon_id) + """> pdx:stats ?stats .
+        ?stats pdx:hp ?hp ;
+               pdx:attack ?atk ;
+               pdx:defense ?def ;
+               pdx:spAttack ?spAtk ;
+               pdx:spDefense ?spDef ;
+               pdx:speed ?spd .
+        
+        BIND(
+            IF(?hp > 80 && ?def > 70 && ?spDef > 70, "Tank",
+            IF(?spd > 90 && (?atk > 80 || ?spAtk > 80), "Speedster",
+            IF((?atk > 90 || ?spAtk > 90) && ?spd > 70, "Sweeper",
+            IF(?def > 90 && ?spDef > 90, "Wall",
+            IF((?atk + ?spAtk + ?spd + ?def + ?spDef + ?hp) > 500, "All-Rounder",
+            "Support"))))) as ?role
+        )
+    }
+    """
+    results = run_query(query)
+    if results["results"]["bindings"]:
+        return results["results"]["bindings"][0]["role"]["value"]
+    return "Unknown"
+
+def get_team_coverage(pokemon_ids):
+    ids_list = ", ".join(f"<http://poked-x.org/pokemon/Pokemon/{id}>" for id in pokemon_ids)
+    query = f"""
+    PREFIX pdx: <http://poked-x.org/pokemon/>
+    PREFIX sc: <http://schema.org/>
+
+    SELECT DISTINCT ?type (COUNT(DISTINCT ?pokemon) as ?count) WHERE {{
+        VALUES ?pokemon {{ {ids_list} }}
+        {{
+            ?pokemon pdx:strongAgainst ?type .
+        }} UNION {{
+            ?pokemon pdx:weakAgainst ?type .
+        }}
+    }}
+    GROUP BY ?type
+    """
+    results = run_query(query)
+    coverage = {
+        "offensive": set(),
+        "defensive": set()
+    }
+    
+    for binding in results["results"]["bindings"]:
+        type_name = binding["type"]["value"].split("/")[-1]
+        count = int(binding["count"]["value"])
+        if count > 0:
+            coverage["offensive"].add(type_name)
+            if count >= 2:  # If multiple Pokémon can handle this type
+                coverage["defensive"].add(type_name)
+    
+    return coverage
+
+def analyze_team_roles(pokemon_ids):
+    roles = {}
+    for pid in pokemon_ids:
+        role = get_pokemon_role(pid)
+        roles[role] = roles.get(role, 0) + 1
+    return roles

@@ -13,40 +13,6 @@
 <http://poked-x.org/pokemon/rule/InferStrongAgainst> a spin:Rule ;
     spin:body pdx:construct2 .
 
-pdx:construct1 a sp:Construct ;
-    sp:text """
-    CONSTRUCT {
-        ?pokemon a pdx:LegendaryPokemon .
-    }
-    WHERE {
-        ?pokemon pdx:isLegendary true .
-    }
-"""^^xsd:string .
-
-pdx:construct2 a sp:Construct ;
-    sp:text """
-    CONSTRUCT {
-        ?type1 pdx:strongAgainst ?type2 .
-    }
-    WHERE {
-        ?type1 pdx:effectiveAgainst ?type2 ;
-               pdx:effectiveness ?value .
-        FILTER (?value > 1.5)
-    }
-"""^^xsd:string .
-
-pdx:construct3 a sp:Construct ;
-    sp:text """
-    CONSTRUCT {
-        ?p1 pdx:hasSameTypeAs ?p2 .
-    }
-    WHERE {
-        ?p1 pdx:primaryType ?type .
-        ?p2 pdx:primaryType ?type .
-        FILTER (?p1 != ?p2)
-    }
-"""^^xsd:string .
-
 <http://poked-x.org/pokemon/rule/InferStrongPokemon> a spin:Rule ;
     spin:body pdx:construct5 .
 
@@ -61,6 +27,24 @@ pdx:construct3 a sp:Construct ;
 
 <http://poked-x.org/pokemon/rule/InferMixedType> a spin:Rule ;
     spin:body pdx:construct9 .
+
+<http://poked-x.org/pokemon/rule/InferTankPokemon> a spin:Rule ;
+    spin:body pdx:construct10 .
+
+<http://poked-x.org/pokemon/rule/InferGlassCannon> a spin:Rule ;
+    spin:body pdx:construct11 .
+
+<http://poked-x.org/pokemon/rule/InferPhysicalAttacker> a spin:Rule ;
+    spin:body pdx:construct12 .
+
+<http://poked-x.org/pokemon/rule/InferSpecialAttacker> a spin:Rule ;
+    spin:body pdx:construct13 .
+
+<http://poked-x.org/pokemon/rule/InferBalancedPokemon> a spin:Rule ;
+    spin:body pdx:construct14 .
+
+<http://poked-x.org/pokemon/rule/InferWeakAgainst> a spin:Rule ;
+    spin:body pdx:construct15 .
 
 pdx:construct5 a sp:Construct ;
     sp:text """
@@ -116,5 +100,89 @@ pdx:construct9 a sp:Construct ;
         ?pokemon pdx:primaryType ?t1 .
         ?pokemon pdx:secondaryType ?t2 .
         FILTER (?t1 != ?t2)
+    }
+"""^^xsd:string .
+
+pdx:construct10 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?pokemon pdx:isTank true .
+    }
+    WHERE {
+        ?pokemon pdx:hp ?hp ;
+                 pdx:defense ?def ;
+                 pdx:spDefense ?spDef .
+        FILTER (?hp >= 100 && ?def >= 80 && ?spDef >= 80)
+    }
+"""^^xsd:string .
+
+pdx:construct11 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?pokemon pdx:isGlassCannon true .
+    }
+    WHERE {
+        ?pokemon pdx:attack ?atk ;
+                 pdx:spAttack ?spAtk ;
+                 pdx:hp ?hp ;
+                 pdx:defense ?def .
+        FILTER ((?atk >= 120 || ?spAtk >= 120) && ?hp <= 70 && ?def <= 70)
+    }
+"""^^xsd:string .
+
+pdx:construct12 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?pokemon pdx:isPhysicalAttacker true .
+    }
+    WHERE {
+        ?pokemon pdx:attack ?atk ;
+                 pdx:spAttack ?spAtk .
+        FILTER (?atk > ?spAtk && ?atk >= 100)
+    }
+"""^^xsd:string .
+
+pdx:construct13 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?pokemon pdx:isSpecialAttacker true .
+    }
+    WHERE {
+        ?pokemon pdx:spAttack ?spAtk ;
+                 pdx:attack ?atk .
+        FILTER (?spAtk > ?atk && ?spAtk >= 100)
+    }
+"""^^xsd:string .
+
+pdx:construct14 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?pokemon pdx:isBalanced true .
+    }
+    WHERE {
+        ?pokemon pdx:hp ?hp ;
+                 pdx:attack ?atk ;
+                 pdx:defense ?def ;
+                 pdx:spAttack ?spAtk ;
+                 pdx:spDefense ?spDef ;
+                 pdx:speed ?spd .
+        FILTER (?hp >= 70 && ?hp <= 100 && 
+                ?atk >= 70 && ?atk <= 100 &&
+                ?def >= 70 && ?def <= 100 &&
+                ?spAtk >= 70 && ?spAtk <= 100 &&
+                ?spDef >= 70 && ?spDef <= 100 &&
+                ?spd >= 70 && ?spd <= 100)
+    }
+"""^^xsd:string .
+
+pdx:construct15 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?type1 pdx:weakAgainst ?type2 .
+    }
+    WHERE {
+        ?type1 pdx:effectiveAgainst ?type2 ;
+               pdx:effectiveness ?value .
+        FILTER (?value < 1.0)
     }
 """^^xsd:string .

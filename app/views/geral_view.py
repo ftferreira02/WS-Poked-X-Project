@@ -11,6 +11,10 @@ from app.sparql_client import run_construct_query
 import json
 from django.http import JsonResponse
 from app.sparql_client import dbpedia_data_already_loaded
+from ..sparql_client import (
+    get_dbpedia_info, get_full_dbpedia_info_turtle,
+    insert_turtle_to_graphdb, get_pokemon_role, get_team_coverage, analyze_team_roles
+)
 
 
 # Lista de tipos para o dropdown de filtros.
@@ -217,4 +221,61 @@ def ask_pokemon_question(request):
 def check_dbpedia_status(request, name):
     exists = dbpedia_data_already_loaded(name)
     return JsonResponse({"name": name, "exists": exists})
+
+def compare_teams(request):
+    if request.method == 'POST':
+        team1_ids = request.POST.getlist('team1[]')
+        team2_ids = request.POST.getlist('team2[]')
+        
+        if len(team1_ids) > 6 or len(team2_ids) > 6:
+            return JsonResponse({'error': 'Teams cannot have more than 6 Pokémon'}, status=400)
+            
+        team1_coverage = get_team_coverage(team1_ids)
+        team2_coverage = get_team_coverage(team2_ids)
+        
+        team1_roles = analyze_team_roles(team1_ids)
+        team2_roles = analyze_team_roles(team2_ids)
+        
+        return JsonResponse({
+            'team1': {
+                'coverage': {
+                    'offensive': list(team1_coverage['offensive']),
+                    'defensive': list(team1_coverage['defensive'])
+                },
+                'roles': team1_roles
+            },
+            'team2': {
+                'coverage': {
+                    'offensive': list(team2_coverage['offensive']),
+                    'defensive': list(team2_coverage['defensive'])
+                },
+                'roles': team2_roles
+            }
+        })
+    
+    # For GET requests, render the template with all Pokémon data
+    query = """
+    PREFIX pdx: <http://poked-x.org/pokemon/>
+    PREFIX sc: <http://schema.org/>
+    
+    SELECT ?id ?name ?image WHERE {
+        ?pokemon a pdx:Pokemon ;
+                sc:identifier ?id ;
+                sc:name ?name .
+        OPTIONAL { ?pokemon sc:image ?image }
+    }
+    ORDER BY ?id
+    """
+    results = run_query(query)
+    pokemon_data = []
+    for result in results["results"]["bindings"]:
+        pokemon_data.append({
+            'id': result['id']['value'],
+            'name': result['name']['value'],
+            'image': result.get('image', {}).get('value', '')
+        })
+    
+    return render(request, 'compare_teams.html', {
+        'pokemon_data_json': json.dumps(pokemon_data)
+    })
 
