@@ -3,38 +3,6 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 
-### Subclasses of Pokémon
-
-pdx:DualTypePokemon
-    a       owl:Class ;
-    rdfs:subClassOf pdx:Pokemon ;
-    rdfs:label       "Dual-Type Pokémon" ;
-    rdfs:comment     "Pokémon that have both a primary and secondary type." .
-
-pdx:FighterPokemon
-    a       owl:Class ;
-    rdfs:subClassOf pdx:Pokemon ;
-    rdfs:label       "Battle-Ready Pokémon" ;
-    rdfs:comment     "Pokémon that have participated in at least one battle." .
-
-pdx:GlassCannon
-    a       owl:Class ;
-    rdfs:subClassOf pdx:Pokemon ;
-    rdfs:label       "Glass-Cannon Pokémon" ;
-    rdfs:comment     "High-attack but low-defense Pokémon." .
-
-pdx:LegendaryPokemon
-    a       owl:Class ;
-    rdfs:subClassOf pdx:Pokemon ;
-    rdfs:label       "Legendary Pokémon" ;
-    rdfs:comment     "Pokémon with isLegendary = true." .
-
-pdx:MegaEvolution
-    a       owl:Class ;
-    rdfs:subClassOf pdx:Pokemon ;
-    rdfs:label       "Mega Evolution Pokémon" ;
-    rdfs:comment     "Pokémon that are Mega Evolutions of a base form." .
-
 ### Effectiveness datatype properties
 
 pdx:againstBug
@@ -327,39 +295,56 @@ pdx:evolvesFrom
     rdfs:label   "evolves from" ;
     rdfs:comment "Links a Pokémon back to its previous evolutionary form." .
 
+### The Battle event itself
+pdx:Battle
+    a       owl:Class ;
+    rdfs:label   "Battle" ;
+    rdfs:comment "A Pokémon battle event between two or more Pokémon." ;
+    owl:disjointWith pdx:Pokemon,
+                       pdx:Effectiveness,
+                       pdx:Type .
 
-    @prefix pdx:  <http://poked-x.org/pokemon/> .
-@prefix owl:  <http://www.w3.org/2002/07/owl#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
-
-### Battle participation model
-
+### Participation linking Pokémon ↔ Battle
 pdx:BattleParticipation
     a       owl:Class ;
     rdfs:label   "Battle Participation" ;
-    rdfs:comment "Record of a Pokémon’s involvement in a battle event." .
+    rdfs:comment "Record of a Pokémon’s involvement in a battle event." ;
+    owl:disjointWith pdx:Pokemon,
+                       pdx:Type .
 
+### From Pokémon to its participation record
 pdx:participatedIn
     a       owl:ObjectProperty ;
-    rdfs:domain  pdx:Pokemon ;
-    rdfs:range   pdx:BattleParticipation ;
-    rdfs:label   "participated in" ;
-    rdfs:comment "Links a Pokémon to a battle participation record." .
+    rdfs:domain   pdx:Pokemon ;
+    rdfs:range    pdx:BattleParticipation ;
+    rdfs:label    "participated in" ;
+    rdfs:comment  "Links a Pokémon to a battle participation record." .
 
-pdx:involvesPokemon
-    a       owl:ObjectProperty ;
+### From Battle to each participation record (inverse of participatedIn)
+pdx:hasParticipation
+    a            owl:ObjectProperty ;
     rdfs:domain  pdx:Battle ;
     rdfs:range   pdx:BattleParticipation ;
-    rdfs:label   "involves Pokémon" ;
+    owl:inverseOf pdx:participatedIn ;
+    rdfs:label   "has participation" ;
     rdfs:comment "Links a battle to each Pokémon participation record." .
 
+### From Participation back to the Pokémon
+pdx:involvesPokemon
+    a       owl:ObjectProperty ;
+    rdfs:domain   pdx:BattleParticipation ;
+    rdfs:range    pdx:Pokemon ;
+    rdfs:label    "involves Pokémon" ;
+    rdfs:comment  "Links a participation record back to the Pokémon." .
+
+### The outcome on that Participation
 pdx:battleResult
     a       owl:DatatypeProperty ;
-    rdfs:domain  pdx:BattleParticipation ;
-    rdfs:range   xsd:string ;
-    rdfs:label   "battle result" ;
-    rdfs:comment "Outcome for this Pokémon in the battle (e.g., 'win' or 'lose')." .
+    rdfs:domain   pdx:BattleParticipation ;
+    rdfs:range    xsd:string ;
+    rdfs:label    "battle result" ;
+    rdfs:comment  "Outcome for this Pokémon in the battle (e.g., 'win' or 'lose')." .
+
 
 ### Class definitions with necessary & sufficient conditions
 
@@ -481,14 +466,19 @@ pdx:Type
     rdfs:label   "Type" ;
     rdfs:comment "An elemental type category." .
 
+# Effectiveness profile class
 pdx:Effectiveness
     a       owl:Class ;
     rdfs:label   "Effectiveness Profile" ;
-    rdfs:comment "Damage multipliers against each type." .
+    rdfs:comment "Damage multipliers against each type." ;
+    owl:disjointWith pdx:Pokemon .
 
+# Pokémon class
 pdx:Pokemon
     a       owl:Class ;
     rdfs:label   "Pokémon" ;
     rdfs:comment "The class of all Pokémon species." ;
-    owl:disjointWith pdx:Type .
+    owl:disjointWith pdx:Effectiveness,
+                     pdx:BattleParticipation,
+                     pdx:Type .
 
