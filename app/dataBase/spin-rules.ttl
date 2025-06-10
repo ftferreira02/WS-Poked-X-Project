@@ -12,9 +12,11 @@
 <http://poked-x.org/pokemon/rule/InferStrongAgainst> a spin:Rule ;
     spin:body pdx:construct2 .
 
-<http://poked-x.org/pokemon/rule/InferBestMatchAgainst> a spin:Rule ;
+<http://poked-x.org/pokemon/rule/InferStrongestMatchAgainst> a spin:Rule ;
     spin:body pdx:construct10 .
-    
+
+<http://poked-x.org/pokemon/rule/InferWeakestMatchAgainst> a spin:Rule ;
+    spin:body pdx:construct11 .
 
 pdx:construct1 a sp:Construct ;
     sp:text """
@@ -125,33 +127,47 @@ pdx:construct9 a sp:Construct ;
 pdx:construct10 a sp:Construct ;
     sp:text """
     CONSTRUCT {
-        ?attacker pdx:bestMatchAgainst ?target .
+        ?attacker pdx:strongestMatchAgainst ?target .
         ?attacker pdx:matchStrength ?strength .
     }
     WHERE {
-        # Get target Pokemon and its types
-        ?target pdx:primaryType ?targetType1 .
+        # Get target Pokemon and its defensive stats and types
+        ?target pdx:primaryType ?targetType1 ;
+                pdx:defense ?targetDefense ;
+                pdx:spDefense ?targetSpDefense .
         OPTIONAL { ?target pdx:secondaryType ?targetType2 . }
         
         # Get potential attacker Pokemon (different from target)
-        ?attacker pdx:primaryType ?attackerType1 .
-        ?attacker pdx:attack ?attack .
-        ?attacker pdx:spAttack ?spAttack .
+        ?attacker pdx:primaryType ?attackerType1 ;
+                  pdx:attack ?attackerAttack ;
+                  pdx:spAttack ?attackerSpAttack .
         FILTER (?attacker != ?target)
         
-        # Calculate type effectiveness
+        # Calculate physical and special attack ratios
+        BIND(?attackerAttack / ?targetDefense as ?physicalRatio)
+        BIND(?attackerSpAttack / ?targetSpDefense as ?specialRatio)
+        
+        # Get the maximum attack ratio (attacker chooses best attack type)
+        BIND(IF(?physicalRatio > ?specialRatio, ?physicalRatio, ?specialRatio) as ?attackRatio)
+        
+        # Calculate type effectiveness modifiers
+        # Primary type effectiveness (always exists)
         OPTIONAL {
             ?eff1 pdx:attackingType ?attackerType1 ;
                    pdx:defendingType ?targetType1 ;
                    pdx:effectiveness ?eff1Value .
         }
+        BIND(COALESCE(?eff1Value, 1.0) as ?modifier1)
+        
+        # Secondary type effectiveness (if target has secondary type)
         OPTIONAL {
             ?eff2 pdx:attackingType ?attackerType1 ;
                    pdx:defendingType ?targetType2 ;
                    pdx:effectiveness ?eff2Value .
         }
+        BIND(IF(BOUND(?targetType2), COALESCE(?eff2Value, 1.0), 1.0) as ?modifier2)
         
-        # Get attacker's secondary type effectiveness if exists
+        # If attacker has secondary type, also consider its effectiveness
         OPTIONAL { ?attacker pdx:secondaryType ?attackerType2 . }
         OPTIONAL {
             ?eff3 pdx:attackingType ?attackerType2 ;
@@ -164,25 +180,94 @@ pdx:construct10 a sp:Construct ;
                    pdx:effectiveness ?eff4Value .
         }
         
-        # Calculate total effectiveness (default to 1.0 if no effectiveness found)
-        BIND(COALESCE(?eff1Value, 1.0) as ?e1)
-        BIND(COALESCE(?eff2Value, 1.0) as ?e2)
-        BIND(COALESCE(?eff3Value, 1.0) as ?e3)
-        BIND(COALESCE(?eff4Value, 1.0) as ?e4)
+        # Calculate secondary attacker type modifiers
+        BIND(IF(BOUND(?attackerType2), COALESCE(?eff3Value, 1.0), 1.0) as ?modifier3)
+        BIND(IF(BOUND(?attackerType2) && BOUND(?targetType2), COALESCE(?eff4Value, 1.0), 1.0) as ?modifier4)
         
-        # Calculate average effectiveness across all type matchups
-        BIND(IF(BOUND(?targetType2), 
-            IF(BOUND(?attackerType2), (?e1 + ?e2 + ?e3 + ?e4) / 4, (?e1 + ?e2) / 2),
-            IF(BOUND(?attackerType2), (?e1 + ?e3) / 2, ?e1)
+        # Calculate total type effectiveness (product of all applicable modifiers)
+        BIND(IF(BOUND(?attackerType2),
+            IF(BOUND(?targetType2), ?modifier1 * ?modifier2 * ?modifier3 * ?modifier4, ?modifier1 * ?modifier3),
+            IF(BOUND(?targetType2), ?modifier1 * ?modifier2, ?modifier1)
         ) as ?typeEffectiveness)
         
-        # Calculate combined attack power
-        BIND((?attack + ?spAttack) as ?totalAttack)
+        # Final strength calculation: attackRatio × typeEffectiveness
+        BIND(?attackRatio * ?typeEffectiveness as ?strength)
         
-        # Calculate final strength score
-        BIND(?typeEffectiveness * ?totalAttack as ?strength)
+        # Only include matches with some advantage (either type or stats)
+        FILTER(?typeEffectiveness > 1.0 || ?attackRatio > 1.2)
+    }
+"""^^xsd:string .
+
+pdx:construct11 a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?attacker pdx:weakestMatchAgainst ?target .
+        ?attacker pdx:matchWeakness ?weakness .
+    }
+    WHERE {
+        # Get target Pokemon and its defensive stats and types
+        ?target pdx:primaryType ?targetType1 ;
+                pdx:defense ?targetDefense ;
+                pdx:spDefense ?targetSpDefense .
+        OPTIONAL { ?target pdx:secondaryType ?targetType2 . }
         
-        # Only include if there's some advantage (effectiveness > 1.0 or high stats)
-        FILTER(?typeEffectiveness > 1.0 || ?totalAttack > 150)
+        # Get potential attacker Pokemon (different from target)
+        ?attacker pdx:primaryType ?attackerType1 ;
+                  pdx:attack ?attackerAttack ;
+                  pdx:spAttack ?attackerSpAttack .
+        FILTER (?attacker != ?target)
+        
+        # Calculate physical and special attack ratios
+        BIND(?attackerAttack / ?targetDefense as ?physicalRatio)
+        BIND(?attackerSpAttack / ?targetSpDefense as ?specialRatio)
+        
+        # Get the maximum attack ratio (attacker chooses best attack type)
+        BIND(IF(?physicalRatio > ?specialRatio, ?physicalRatio, ?specialRatio) as ?attackRatio)
+        
+        # Calculate type effectiveness modifiers
+        # Primary type effectiveness (always exists)
+        OPTIONAL {
+            ?eff1 pdx:attackingType ?attackerType1 ;
+                   pdx:defendingType ?targetType1 ;
+                   pdx:effectiveness ?eff1Value .
+        }
+        BIND(COALESCE(?eff1Value, 1.0) as ?modifier1)
+        
+        # Secondary type effectiveness (if target has secondary type)
+        OPTIONAL {
+            ?eff2 pdx:attackingType ?attackerType1 ;
+                   pdx:defendingType ?targetType2 ;
+                   pdx:effectiveness ?eff2Value .
+        }
+        BIND(IF(BOUND(?targetType2), COALESCE(?eff2Value, 1.0), 1.0) as ?modifier2)
+        
+        # If attacker has secondary type, also consider its effectiveness
+        OPTIONAL { ?attacker pdx:secondaryType ?attackerType2 . }
+        OPTIONAL {
+            ?eff3 pdx:attackingType ?attackerType2 ;
+                   pdx:defendingType ?targetType1 ;
+                   pdx:effectiveness ?eff3Value .
+        }
+        OPTIONAL {
+            ?eff4 pdx:attackingType ?attackerType2 ;
+                   pdx:defendingType ?targetType2 ;
+                   pdx:effectiveness ?eff4Value .
+        }
+        
+        # Calculate secondary attacker type modifiers
+        BIND(IF(BOUND(?attackerType2), COALESCE(?eff3Value, 1.0), 1.0) as ?modifier3)
+        BIND(IF(BOUND(?attackerType2) && BOUND(?targetType2), COALESCE(?eff4Value, 1.0), 1.0) as ?modifier4)
+        
+        # Calculate total type effectiveness (product of all applicable modifiers)
+        BIND(IF(BOUND(?attackerType2),
+            IF(BOUND(?targetType2), ?modifier1 * ?modifier2 * ?modifier3 * ?modifier4, ?modifier1 * ?modifier3),
+            IF(BOUND(?targetType2), ?modifier1 * ?modifier2, ?modifier1)
+        ) as ?typeEffectiveness)
+        
+        # Final weakness calculation: attackRatio × typeEffectiveness (inverted for weakness)
+        BIND(?attackRatio * ?typeEffectiveness as ?weakness)
+        
+        # Only include matches that are disadvantageous (low effectiveness or poor stats matchup)
+        FILTER(?typeEffectiveness < 1.0 || ?attackRatio < 0.8)
     }
 """^^xsd:string .
