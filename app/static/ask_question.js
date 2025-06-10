@@ -1,26 +1,26 @@
 document.addEventListener('DOMContentLoaded', function() {
     const propertyValues = {
-      'http://example.org/pokemon/type': [
-        { label: 'Fire', uri: 'http://example.org/pokemon/Type/fire' },
-        { label: 'Water', uri: 'http://example.org/pokemon/Type/water' },
-        { label: 'Grass', uri: 'http://example.org/pokemon/Type/grass' },
-        { label: 'Poison', uri: 'http://example.org/pokemon/Type/poison' },
-        { label: 'Psychic', uri: 'http://example.org/pokemon/Type/psychic' },
-        { label: 'Electric', uri: 'http://example.org/pokemon/Type/electric' },
-        { label: 'Ground', uri: 'http://example.org/pokemon/Type/ground' },
-        { label: 'Fighting', uri: 'http://example.org/pokemon/Type/fighting' },
-        { label: 'Normal', uri: 'http://example.org/pokemon/Type/normal' },
-        { label: 'Flying', uri: 'http://example.org/pokemon/Type/flying' },
-        { label: 'Rock', uri: 'http://example.org/pokemon/Type/rock' },
-        { label: 'Bug', uri: 'http://example.org/pokemon/Type/bug' },
-        { label: 'Ghost', uri: 'http://example.org/pokemon/Type/ghost' },
-        { label: 'Ice', uri: 'http://example.org/pokemon/Type/ice' },
-        { label: 'Dragon', uri: 'http://example.org/pokemon/Type/dragon' },
-        { label: 'Dark', uri: 'http://example.org/pokemon/Type/dark' },
-        { label: 'Steel', uri: 'http://example.org/pokemon/Type/steel' },
-        { label: 'Fairy', uri: 'http://example.org/pokemon/Type/fairy' }
+      'http://poked-x.org/pokemon/type': [
+        { label: 'Fire', uri: 'http://poked-x.org/pokemon/Type/fire' },
+        { label: 'Water', uri: 'http://poked-x.org/pokemon/Type/water' },
+        { label: 'Grass', uri: 'http://poked-x.org/pokemon/Type/grass' },
+        { label: 'Poison', uri: 'http://poked-x.org/pokemon/Type/poison' },
+        { label: 'Psychic', uri: 'http://poked-x.org/pokemon/Type/psychic' },
+        { label: 'Electric', uri: 'http://poked-x.org/pokemon/Type/electric' },
+        { label: 'Ground', uri: 'http://poked-x.org/pokemon/Type/ground' },
+        { label: 'Fighting', uri: 'http://poked-x.org/pokemon/Type/fighting' },
+        { label: 'Normal', uri: 'http://poked-x.org/pokemon/Type/normal' },
+        { label: 'Flying', uri: 'http://poked-x.org/pokemon/Type/flying' },
+        { label: 'Rock', uri: 'http://poked-x.org/pokemon/Type/rock' },
+        { label: 'Bug', uri: 'http://poked-x.org/pokemon/Type/bug' },
+        { label: 'Ghost', uri: 'http://poked-x.org/pokemon/Type/ghost' },
+        { label: 'Ice', uri: 'http://poked-x.org/pokemon/Type/ice' },
+        { label: 'Dragon', uri: 'http://poked-x.org/pokemon/Type/dragon' },
+        { label: 'Dark', uri: 'http://poked-x.org/pokemon/Type/dark' },
+        { label: 'Steel', uri: 'http://poked-x.org/pokemon/Type/steel' },
+        { label: 'Fairy', uri: 'http://poked-x.org/pokemon/Type/fairy' }
       ],
-      'http://example.org/pokemon/generation': [
+      'http://poked-x.org/pokemon/generation': [
         { label: 'Generation 1', uri: '1' },
         { label: 'Generation 2', uri: '2' },
         { label: 'Generation 3', uri: '3' },
@@ -30,43 +30,43 @@ document.addEventListener('DOMContentLoaded', function() {
         { label: 'Generation 7', uri: '7' },
         { label: 'Generation 8', uri: '8' }
       ],
-      'http://example.org/pokemon/isLegendary': [
+      'http://poked-x.org/pokemon/isLegendary': [
         { label: 'Yes', uri: 'true' },
         { label: 'No', uri: 'false' }
       ],
-      'http://example.org/pokemon/habitat': [
-        { label: 'Cave', uri: 'http://example.org/pokemon/habitat/cave' },
-        { label: 'Forest', uri: 'http://example.org/pokemon/habitat/forest' },
-        { label: 'Grassland', uri: 'http://example.org/pokemon/habitat/grassland' },
-        { label: 'Mountain', uri: 'http://example.org/pokemon/habitat/mountain' },
-        { label: 'Rare', uri: 'http://example.org/pokemon/habitat/rare' },
-        { label: 'Rough Terrain', uri: 'http://example.org/pokemon/habitat/roughterrain' },
-        { label: 'Sea', uri: 'http://example.org/pokemon/habitat/sea' },
-        { label: 'Urban', uri: 'http://example.org/pokemon/habitat/urban' },
-        { label: 'Waters Edge', uri: 'http://example.org/pokemon/habitat/watersedge' }
+      'http://poked-x.org/pokemon/habitat': [
+        { label: 'Cave', uri: 'http://poked-x.org/pokemon/habitat/cave' },
+        { label: 'Forest', uri: 'http://poked-x.org/pokemon/habitat/forest' },
+        { label: 'Grassland', uri: 'http://poked-x.org/pokemon/habitat/grassland' },
+        { label: 'Mountain', uri: 'http://poked-x.org/pokemon/habitat/mountain' },
+        { label: 'Rare', uri: 'http://poked-x.org/pokemon/habitat/rare' },
+        { label: 'Rough Terrain', uri: 'http://poked-x.org/pokemon/habitat/roughterrain' },
+        { label: 'Sea', uri: 'http://poked-x.org/pokemon/habitat/sea' },
+        { label: 'Urban', uri: 'http://poked-x.org/pokemon/habitat/urban' },
+        { label: 'Waters Edge', uri: 'http://poked-x.org/pokemon/habitat/watersedge' }
       ],
-      'http://example.org/pokemon/ability': [
-        { label: 'Overgrow', uri: 'http://example.org/pokemon/Ability/overgrow' },
-        { label: 'Blaze', uri: 'http://example.org/pokemon/Ability/blaze' },
-        { label: 'Torrent', uri: 'http://example.org/pokemon/Ability/torrent' },
-        { label: 'Chlorophyll', uri: 'http://example.org/pokemon/Ability/chlorophyll' },
-        { label: 'Levitate', uri: 'http://example.org/pokemon/Ability/levitate' },
-        { label: 'Lightning Rod', uri: 'http://example.org/pokemon/Ability/lightningrod' },
-        { label: 'Run Away', uri: 'http://example.org/pokemon/Ability/run_away' },
-        { label: 'Pastel Veil', uri: 'http://example.org/pokemon/Ability/pastel_veil' },
-        { label: 'Intimidate', uri: 'http://example.org/pokemon/Ability/intimidate' },
-        { label: 'Shield Dust', uri: 'http://example.org/pokemon/Ability/shielddust' }
+      'http://poked-x.org/pokemon/ability': [
+        { label: 'Overgrow', uri: 'http://poked-x.org/pokemon/Ability/overgrow' },
+        { label: 'Blaze', uri: 'http://poked-x.org/pokemon/Ability/blaze' },
+        { label: 'Torrent', uri: 'http://poked-x.org/pokemon/Ability/torrent' },
+        { label: 'Chlorophyll', uri: 'http://poked-x.org/pokemon/Ability/chlorophyll' },
+        { label: 'Levitate', uri: 'http://poked-x.org/pokemon/Ability/levitate' },
+        { label: 'Lightning Rod', uri: 'http://poked-x.org/pokemon/Ability/lightningrod' },
+        { label: 'Run Away', uri: 'http://poked-x.org/pokemon/Ability/run_away' },
+        { label: 'Pastel Veil', uri: 'http://poked-x.org/pokemon/Ability/pastel_veil' },
+        { label: 'Intimidate', uri: 'http://poked-x.org/pokemon/Ability/intimidate' },
+        { label: 'Shield Dust', uri: 'http://poked-x.org/pokemon/Ability/shielddust' }
       ],
-      'http://example.org/pokemon/weakAgainst': [
-        { label: 'Fire', uri: 'http://example.org/pokemon/Type/fire' },
-        { label: 'Water', uri: 'http://example.org/pokemon/Type/water' },
-        { label: 'Electric', uri: 'http://example.org/pokemon/Type/electric' },
-        { label: 'Ground', uri: 'http://example.org/pokemon/Type/ground' },
-        { label: 'Psychic', uri: 'http://example.org/pokemon/Type/psychic' },
-        { label: 'Rock', uri: 'http://example.org/pokemon/Type/rock' },
-        { label: 'Flying', uri: 'http://example.org/pokemon/Type/flying' },
-        { label: 'Steel', uri: 'http://example.org/pokemon/Type/steel' },
-        { label: 'Grass', uri: 'http://example.org/pokemon/Type/grass' }
+      'http://poked-x.org/pokemon/weakAgainst': [
+        { label: 'Fire', uri: 'http://poked-x.org/pokemon/Type/fire' },
+        { label: 'Water', uri: 'http://poked-x.org/pokemon/Type/water' },
+        { label: 'Electric', uri: 'http://poked-x.org/pokemon/Type/electric' },
+        { label: 'Ground', uri: 'http://poked-x.org/pokemon/Type/ground' },
+        { label: 'Psychic', uri: 'http://poked-x.org/pokemon/Type/psychic' },
+        { label: 'Rock', uri: 'http://poked-x.org/pokemon/Type/rock' },
+        { label: 'Flying', uri: 'http://poked-x.org/pokemon/Type/flying' },
+        { label: 'Steel', uri: 'http://poked-x.org/pokemon/Type/steel' },
+        { label: 'Grass', uri: 'http://poked-x.org/pokemon/Type/grass' }
       ]
     };
   
