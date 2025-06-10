@@ -22,6 +22,21 @@
         <img src="{% static 'pokemon-images-index/' %}{{ stats.id }}.png?v={{ stats.id }}" alt="{{ stats.name }}">
       </div>
 
+      <div class="descripton">
+        <p>{{ stats.description }}</p>
+
+        {% if stats.designer or stats.firstAppearance %}
+          <div class="about">
+            {% if stats.designer %}
+              <p><strong>designer:</strong> {{ stats.designer }}</p>
+            {% endif %}
+            {% if stats.firstAppearance %}
+              <p><strong>First Appearance:</strong> {{ stats.firstAppearance }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+      
       <div class="type {{ stats.primaryType|lower }}" id="primary-type">
         {{ stats.primaryType|title }}
       </div>
