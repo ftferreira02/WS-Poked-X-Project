@@ -185,10 +185,9 @@ body .container.no-sidebar {
 }
 
 .fill {
-    width: var(--stat-width);
     height: 100%;
-    background-color: currentColor;
-    border-radius: 4px;
+    background-color: var(--type-color);
+    opacity: 0.9;
 }
 
 .back-link {
