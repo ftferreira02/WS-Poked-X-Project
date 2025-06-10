@@ -185,10 +185,9 @@ body .container.no-sidebar {
 }
 
 .fill {
-    width: var(--stat-width);
     height: 100%;
-    background-color: currentColor;
-    border-radius: 4px;
+    background-color: var(--type-color);
+    opacity: 0.9;
 }
 
 .back-link {
@@ -369,4 +368,26 @@ h3 {
     color: #666;
     font-style: italic;
     margin-top: 10px;
+}
+
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 600px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.error-message .back-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.error-message .back-link:hover {
+  text-decoration: underline;
 }

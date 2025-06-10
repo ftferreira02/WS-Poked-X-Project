@@ -10,41 +10,20 @@
 <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
 
-<div class="content" typeof="schema:WebPage" resource="#evolution-chains">
-    <h1 property="schema:name">All Evolution Chains</h1>
-    <p style="margin-bottom: 1rem;" property="schema:description">
+<div class="content">
+    <h1>All Evolution Chains</h1>
+    <p style="margin-bottom: 1rem;">
         Explore how Pokémon evolve from one form to another! Click on any Pokémon to view full stats and abilities.
     </p>
-    <div id="evolution-network" style="width: 100%; height: 800px; border: 1px solid lightgray;" 
-         typeof="pokemon:EvolutionNetwork" 
-         property="pokemon:visualization">
-    </div>
+    <div id="evolution-network" style="width: 100%; height: 800px; border: 1px solid lightgray;"></div>
 </div>
   
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-    // Add RDFa annotations dynamically to nodes
-    const nodesData = JSON.parse('{{ nodes_json|safe }}');
-    nodesData.forEach(node => {
-        node.title = `<div typeof="pokemon:Pokemon" resource="pokemon:${node.id}">
-                        <span property="schema:name">${node.label}</span>
-                     </div>`;
-    });
-    
-    const nodes = new vis.DataSet(nodesData);
-    
-    // Add RDFa annotations to edges (evolution relationships)
-    const edgesData = JSON.parse('{{ edges_json|safe }}');
-    edgesData.forEach(edge => {
-        edge.title = `<div typeof="pokemon:Evolution" resource="pokemon:evolution_${edge.from}_${edge.to}">
-                        <span property="pokemon:evolves_from" resource="pokemon:${edge.from}"></span>
-                        <span property="pokemon:evolves_to" resource="pokemon:${edge.to}"></span>
-                     </div>`;
-    });
-    
-    const edges = new vis.DataSet(edgesData);
+    const nodes = new vis.DataSet({{ nodes_json|safe }});
+    const edges = new vis.DataSet({{ edges_json|safe }});
   
     const container = document.getElementById("evolution-network");
     const data = { nodes, edges };

@@ -3,7 +3,6 @@
 @prefix spin: <http://spinrdf.org/spin#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-# Regras já existentes
 <http://poked-x.org/pokemon/rule/InferHasSameTypeAs> a spin:Rule ;
     spin:body pdx:construct3 .
 

@@ -1,57 +1,51 @@
-<div class="sidebar" typeof="schema:WPSideBar" resource="#main-nav">
-  <div class="sidebar-header" property="schema:headline">
+<div class="sidebar">
+  <div class="sidebar-header">
     <div class="pixel-logo" id="pixel-logo"></div>
-    <h1 property="schema:name">POKED-X</h1>
-    <p property="schema:description">POKEMON DATABASE</p>
+    <h1>POKED-X</h1>
+    <p>POKEMON DATABASE</p>
   </div>
   
-  <ul class="nav" typeof="schema:SiteNavigationElement">
+  <ul class="nav">
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'search_pokemon' %}" data-page="search" property="schema:url">
+      <a class="nav-link" href="{% url 'search_pokemon' %}" data-page="search">
         <div class="pixel-icon" id="articles-icon"></div>
-        <span property="schema:name">SEARCH</span>
+        SEARCH
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'battle' %}" data-page="battle" property="schema:url">
+      <a class="nav-link" href="{% url 'battle' %}" data-page="battle">
         <div class="pixel-icon" id="games-icon"></div>
-        <span property="schema:name">FIGHT</span>
+        FIGHT
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'ask_question' %}" data-page="ask" property="schema:url">
+      <a class="nav-link" href="{% url 'ask_question' %}" data-page="ask">
         <div class="pixel-icon" id="ask-icon"></div>
-        <span property="schema:name">ASK</span>
+        ASK
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'compare_pokemon' %}" data-page="compare" property="schema:url">
+      <a class="nav-link" href="{% url 'compare_pokemon' %}" data-page="compare">
         <div class="pixel-icon" id="ask-icon"></div>
-        <span property="schema:name">COMPARE</span>
+        COMPARE
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'compare_teams' %}" data-page="compare-teams" property="schema:url">
-        <div class="pixel-icon" id="compare-teams-icon"></div>
-        <span property="schema:name">COMPARE TEAMS</span>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'evolution_chain' %}" data-page="evolution-chain" property="schema:url">
+      <a class="nav-link" href="{% url 'evolution_chain' %}" data-page="evolution-chain">
         <div class="pixel-icon" id="ask-icon"></div>
-        <span property="schema:name">EVOLUTIONS</span>
+        EVOLUTIONS
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-page="about" property="schema:url">
+      <a class="nav-link" data-page="about">
         <div class="pixel-icon" id="about-icon"></div>
-        <span property="schema:name">ABOUT US</span>
+        ABOUT US
       </a>
     </li>
   </ul>
   
-  <div class="sidebar-footer" property="schema:footer">
-    <p property="schema:copyrightHolder">Poked-X</p>
-    <p property="schema:slogan">All you need to know about pokemons!</p>
+  <div class="sidebar-footer">
+    <p>Poked-X</p>
+    <p>All you need to know about pokemons!</p>
   </div>
-</div>
+  </div>

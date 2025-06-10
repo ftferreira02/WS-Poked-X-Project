@@ -69,17 +69,17 @@ class PokemonManager:
     @staticmethod
     def get_all_pokemons():
         query = """
-        PREFIX ex: <http://example.org/pokemon/>
+        PREFIX pdx: <http://poked-x.org/pokemon/>
         PREFIX sc: <http://schema.org/>
 
         SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf  WHERE {
-        ?pokemon a ex:Pokemon ;
+        ?pokemon a pdx:Pokemon ;
                 sc:name ?name ;
-                ex:pokedexNumber ?number ;
-                ex:primaryType ?primaryType ;
-                ex:totalPoints ?totalPoints .
-          OPTIONAL { ?pokemon ex:secondaryType ?secondaryType }
-          OPTIONAL { ?pokemon ex:megaEvolutionOf ?megaOf }
+                pdx:pokedexNumber ?number ;
+                pdx:primaryType ?primaryType ;
+                pdx:totalPoints ?totalPoints .
+          OPTIONAL { ?pokemon pdx:secondaryType ?secondaryType }
+          OPTIONAL { ?pokemon pdx:megaEvolutionOf ?megaOf }
 
         }
         ORDER BY ?number
@@ -92,17 +92,17 @@ class PokemonManager:
         escaped_filter = name_filter.replace('"', '\\"')
 
         query = f"""
-        PREFIX ex: <http://example.org/pokemon/>
+        PREFIX pdx: <http://poked-x.org/pokemon/>
         PREFIX sc: <http://schema.org/>
 
         SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf  WHERE {{
-            ?pokemon a ex:Pokemon ;
+            ?pokemon a pdx:Pokemon ;
                     sc:name ?name ;
-                    ex:pokedexNumber ?number ;
-                    ex:primaryType ?primaryType ;
-                    ex:totalPoints ?totalPoints .
-            OPTIONAL {{ ?pokemon ex:secondaryType ?secondaryType }}
-            OPTIONAL {{ ?pokemon ex:megaEvolutionOf ?megaOf }}
+                    pdx:pokedexNumber ?number ;
+                    pdx:primaryType ?primaryType ;
+                    pdx:totalPoints ?totalPoints .
+            OPTIONAL {{ ?pokemon pdx:secondaryType ?secondaryType }}
+            OPTIONAL {{ ?pokemon pdx:megaEvolutionOf ?megaOf }}
 
             FILTER CONTAINS(LCASE(?name), LCASE("{escaped_filter}"))
         }} ORDER BY ?name
@@ -113,21 +113,21 @@ class PokemonManager:
     @staticmethod
     def search_by_type(type_filter):
         query = f"""
-        PREFIX ex: <http://example.org/pokemon/>
+        PREFIX pdx: <http://poked-x.org/pokemon/>
         PREFIX sc: <http://schema.org/>
 
         SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf  WHERE {{
-            ?pokemon a ex:Pokemon ;
+            ?pokemon a pdx:Pokemon ;
                     sc:name ?name ;
-                    ex:pokedexNumber ?number ;
-                    ex:primaryType ?primaryType ;
-                    ex:totalPoints ?totalPoints .
-            OPTIONAL {{ ?pokemon ex:secondaryType ?secondaryType }}
-            OPTIONAL {{ ?pokemon ex:megaEvolutionOf ?megaOf }}
+                    pdx:pokedexNumber ?number ;
+                    pdx:primaryType ?primaryType ;
+                    pdx:totalPoints ?totalPoints .
+            OPTIONAL {{ ?pokemon pdx:secondaryType ?secondaryType }}
+            OPTIONAL {{ ?pokemon pdx:megaEvolutionOf ?megaOf }}
 
             FILTER (
-                LCASE(STR(?primaryType)) = "http://example.org/pokemon/type/{type_filter}" ||
-                LCASE(STR(?secondaryType)) = "http://example.org/pokemon/type/{type_filter}"
+                LCASE(STR(?primaryType)) = "http://poked-x.org/pokemon/type/{type_filter}" ||
+                LCASE(STR(?secondaryType)) = "http://poked-x.org/pokemon/type/{type_filter}"
             )
         }} ORDER BY ?number
         """
@@ -139,23 +139,23 @@ class PokemonManager:
         escaped_name = name_filter.replace('"', '\\"')
 
         query = f"""
-        PREFIX ex: <http://example.org/pokemon/>
+        PREFIX pdx: <http://poked-x.org/pokemon/>
         PREFIX sc: <http://schema.org/>
 
         SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf  WHERE {{
-            ?pokemon a ex:Pokemon ;
+            ?pokemon a pdx:Pokemon ;
                     sc:name ?name ;
-                    ex:pokedexNumber ?number ;
-                    ex:primaryType ?primaryType ;
-                    ex:totalPoints ?totalPoints .
-            OPTIONAL {{ ?pokemon ex:secondaryType ?secondaryType }}
-            OPTIONAL {{ ?pokemon ex:megaEvolutionOf ?megaOf }}
+                    pdx:pokedexNumber ?number ;
+                    pdx:primaryType ?primaryType ;
+                    pdx:totalPoints ?totalPoints .
+            OPTIONAL {{ ?pokemon pdx:secondaryType ?secondaryType }}
+            OPTIONAL {{ ?pokemon pdx:megaEvolutionOf ?megaOf }}
 
             FILTER (
                 CONTAINS(LCASE(?name), LCASE("{escaped_name}")) &&
                 (
-                    LCASE(STR(?primaryType)) = "http://example.org/pokemon/type/{type_filter}" ||
-                    LCASE(STR(?secondaryType)) = "http://example.org/pokemon/type/{type_filter}"
+                    LCASE(STR(?primaryType)) = "http://poked-x.org/pokemon/type/{type_filter}" ||
+                    LCASE(STR(?secondaryType)) = "http://poked-x.org/pokemon/type/{type_filter}"
                 )
             )
         }} ORDER BY ?number
@@ -171,16 +171,16 @@ class PokemonManager:
         filter_conditions = " || ".join(f"?number = {pid}" for pid in pokemon_ids)
 
         query = f"""
-        PREFIX ex: <http://example.org/pokemon/>
+        PREFIX pdx: <http://poked-x.org/pokemon/>
         PREFIX sc: <http://schema.org/>
 
         SELECT ?pokemon ?name ?number ?height ?weight ?megaOf WHERE {{
-            ?pokemon a ex:Pokemon ;
+            ?pokemon a pdx:Pokemon ;
                     sc:name ?name ;
-                    ex:pokedexNumber ?number ;
-                    ex:height ?height ;
-                    ex:weight ?weight .
-            OPTIONAL {{ ?pokemon ex:megaEvolutionOf ?megaOf }}
+                    pdx:pokedexNumber ?number ;
+                    pdx:height ?height ;
+                    pdx:weight ?weight .
+            OPTIONAL {{ ?pokemon pdx:megaEvolutionOf ?megaOf }}
             FILTER ({filter_conditions})
         }}
         """
@@ -206,133 +206,131 @@ class PokemonManager:
     
     @staticmethod
     def get_construct_rdf_query_by_id(pokemon_id):
-        uri = f"<http://example.org/pokemon/Pokemon/{pokemon_id}>"
+        uri = f"<http://poked-x.org/pokemon/Pokemon/{pokemon_id}>"
         return f"""
-        PREFIX ex: <http://example.org/pokemon/>
+        PREFIX pdx: <http://poked-x.org/pokemon/>
         PREFIX sc: <http://schema.org/>
 
         CONSTRUCT {{
-        {uri} a ex:Pokemon ;
+            {uri} a pdx:Pokemon ;
                 sc:name ?name ;
-                ex:pokedexNumber ?number ;
-                ex:height ?height ;
-                ex:weight ?weight ;
-                ex:primaryType ?primaryType ;
-                ex:secondaryType ?secondaryType ;
-                ex:hp ?hp ;
-                ex:attack ?attack ;
-                ex:defense ?defense ;
-                ex:spAttack ?spAttack ;
-                ex:spDefense ?spDefense ;
-                ex:speed ?speed ;
-                ex:isLegendary ?isLegendary ;
-                ex:generation ?generation ;
-                ex:totalPoints ?totalPoints ;
-                ex:megaEvolutionOf ?megaOf ;
-                ex:ability1 ?ability1 ;
-                ex:ability2 ?ability2 ;
-                ex:abilityHidden ?abilityHidden ;
-                ex:effectiveness ?effNode .
+                pdx:pokedexNumber ?number ;
+                pdx:height ?height ;
+                pdx:weight ?weight ;
+                pdx:primaryType ?primaryType ;
+                pdx:secondaryType ?secondaryType ;
+                pdx:hp ?hp ;
+                pdx:attack ?attack ;
+                pdx:defense ?defense ;
+                pdx:spAttack ?spAttack ;
+                pdx:spDefense ?spDefense ;
+                pdx:speed ?speed ;
+                pdx:isLegendary ?isLegendary ;
+                pdx:generation ?generation ;
+                pdx:totalPoints ?totalPoints ;
+                pdx:megaEvolutionOf ?megaOf ;
+                pdx:ability1 ?ability1 ;
+                pdx:ability2 ?ability2 ;
+                pdx:abilityHidden ?abilityHidden ;
+                pdx:effectiveness ?effNode .
 
-        ?effNode
-            ex:againstBug ?againstBug ;
-            ex:againstDark ?againstDark ;
-            ex:againstDragon ?againstDragon ;
-            ex:againstElectric ?againstElectric ;
-            ex:againstFairy ?againstFairy ;
-            ex:againstFight ?againstFight ;
-            ex:againstFire ?againstFire ;
-            ex:againstFlying ?againstFlying ;
-            ex:againstGhost ?againstGhost ;
-            ex:againstGrass ?againstGrass ;
-            ex:againstGround ?againstGround ;
-            ex:againstIce ?againstIce ;
-            ex:againstNormal ?againstNormal ;
-            ex:againstPoison ?againstPoison ;
-            ex:againstPsychic ?againstPsychic ;
-            ex:againstRock ?againstRock ;
-            ex:againstSteel ?againstSteel ;
-            ex:againstWater ?againstWater .
+            ?effNode
+                pdx:againstBug ?againstBug ;
+                pdx:againstDark ?againstDark ;
+                pdx:againstDragon ?againstDragon ;
+                pdx:againstElectric ?againstElectric ;
+                pdx:againstFairy ?againstFairy ;
+                pdx:againstFight ?againstFight ;
+                pdx:againstFire ?againstFire ;
+                pdx:againstFlying ?againstFlying ;
+                pdx:againstGhost ?againstGhost ;
+                pdx:againstGrass ?againstGrass ;
+                pdx:againstGround ?againstGround ;
+                pdx:againstIce ?againstIce ;
+                pdx:againstNormal ?againstNormal ;
+                pdx:againstPoison ?againstPoison ;
+                pdx:againstPsychic ?againstPsychic ;
+                pdx:againstRock ?againstRock ;
+                pdx:againstSteel ?againstSteel ;
+                pdx:againstWater ?againstWater .
         }}
         WHERE {{
-        BIND ({uri} AS ?pokemon)
-        ?pokemon a ex:Pokemon ;
+            {uri} a pdx:Pokemon ;
                 sc:name ?name ;
-                ex:pokedexNumber ?number ;
-                ex:height ?height ;
-                ex:weight ?weight ;
-                ex:primaryType ?primaryType .
+                pdx:pokedexNumber ?number ;
+                pdx:height ?height ;
+                pdx:weight ?weight ;
+                pdx:primaryType ?primaryType .
 
-        OPTIONAL {{ ?pokemon ex:secondaryType ?secondaryType }}
-        OPTIONAL {{ ?pokemon ex:hp ?hp }}
-        OPTIONAL {{ ?pokemon ex:attack ?attack }}
-        OPTIONAL {{ ?pokemon ex:defense ?defense }}
-        OPTIONAL {{ ?pokemon ex:spAttack ?spAttack }}
-        OPTIONAL {{ ?pokemon ex:spDefense ?spDefense }}
-        OPTIONAL {{ ?pokemon ex:speed ?speed }}
-        OPTIONAL {{ ?pokemon ex:isLegendary ?isLegendary }}
-        OPTIONAL {{ ?pokemon ex:generation ?generation }}
-        OPTIONAL {{ ?pokemon ex:totalPoints ?totalPoints }}
-        OPTIONAL {{ ?pokemon ex:megaEvolutionOf ?megaOf }}
-        OPTIONAL {{ ?pokemon ex:ability1 ?ability1 }}
-        OPTIONAL {{ ?pokemon ex:ability2 ?ability2 }}
-        OPTIONAL {{ ?pokemon ex:abilityHidden ?abilityHidden }}
+            OPTIONAL {{ {uri} pdx:secondaryType ?secondaryType }}
+            OPTIONAL {{ {uri} pdx:hp ?hp }}
+            OPTIONAL {{ {uri} pdx:attack ?attack }}
+            OPTIONAL {{ {uri} pdx:defense ?defense }}
+            OPTIONAL {{ {uri} pdx:spAttack ?spAttack }}
+            OPTIONAL {{ {uri} pdx:spDefense ?spDefense }}
+            OPTIONAL {{ {uri} pdx:speed ?speed }}
+            OPTIONAL {{ {uri} pdx:isLegendary ?isLegendary }}
+            OPTIONAL {{ {uri} pdx:generation ?generation }}
+            OPTIONAL {{ {uri} pdx:totalPoints ?totalPoints }}
+            OPTIONAL {{ {uri} pdx:megaEvolutionOf ?megaOf }}
+            OPTIONAL {{ {uri} pdx:ability1 ?ability1 }}
+            OPTIONAL {{ {uri} pdx:ability2 ?ability2 }}
+            OPTIONAL {{ {uri} pdx:abilityHidden ?abilityHidden }}
 
-        OPTIONAL {{
-            ?pokemon ex:effectiveness ?effNode .
-            OPTIONAL {{ ?effNode ex:againstBug ?againstBug }}
-            OPTIONAL {{ ?effNode ex:againstDark ?againstDark }}
-            OPTIONAL {{ ?effNode ex:againstDragon ?againstDragon }}
-            OPTIONAL {{ ?effNode ex:againstElectric ?againstElectric }}
-            OPTIONAL {{ ?effNode ex:againstFairy ?againstFairy }}
-            OPTIONAL {{ ?effNode ex:againstFight ?againstFight }}
-            OPTIONAL {{ ?effNode ex:againstFire ?againstFire }}
-            OPTIONAL {{ ?effNode ex:againstFlying ?againstFlying }}
-            OPTIONAL {{ ?effNode ex:againstGhost ?againstGhost }}
-            OPTIONAL {{ ?effNode ex:againstGrass ?againstGrass }}
-            OPTIONAL {{ ?effNode ex:againstGround ?againstGround }}
-            OPTIONAL {{ ?effNode ex:againstIce ?againstIce }}
-            OPTIONAL {{ ?effNode ex:againstNormal ?againstNormal }}
-            OPTIONAL {{ ?effNode ex:againstPoison ?againstPoison }}
-            OPTIONAL {{ ?effNode ex:againstPsychic ?againstPsychic }}
-            OPTIONAL {{ ?effNode ex:againstRock ?againstRock }}
-            OPTIONAL {{ ?effNode ex:againstSteel ?againstSteel }}
-            OPTIONAL {{ ?effNode ex:againstWater ?againstWater }}
-        }}
+            OPTIONAL {{
+                {uri} pdx:effectiveness ?effNode .
+                OPTIONAL {{ ?effNode pdx:againstBug ?againstBug }}
+                OPTIONAL {{ ?effNode pdx:againstDark ?againstDark }}
+                OPTIONAL {{ ?effNode pdx:againstDragon ?againstDragon }}
+                OPTIONAL {{ ?effNode pdx:againstElectric ?againstElectric }}
+                OPTIONAL {{ ?effNode pdx:againstFairy ?againstFairy }}
+                OPTIONAL {{ ?effNode pdx:againstFight ?againstFight }}
+                OPTIONAL {{ ?effNode pdx:againstFire ?againstFire }}
+                OPTIONAL {{ ?effNode pdx:againstFlying ?againstFlying }}
+                OPTIONAL {{ ?effNode pdx:againstGhost ?againstGhost }}
+                OPTIONAL {{ ?effNode pdx:againstGrass ?againstGrass }}
+                OPTIONAL {{ ?effNode pdx:againstGround ?againstGround }}
+                OPTIONAL {{ ?effNode pdx:againstIce ?againstIce }}
+                OPTIONAL {{ ?effNode pdx:againstNormal ?againstNormal }}
+                OPTIONAL {{ ?effNode pdx:againstPoison ?againstPoison }}
+                OPTIONAL {{ ?effNode pdx:againstPsychic ?againstPsychic }}
+                OPTIONAL {{ ?effNode pdx:againstRock ?againstRock }}
+                OPTIONAL {{ ?effNode pdx:againstSteel ?againstSteel }}
+                OPTIONAL {{ ?effNode pdx:againstWater ?againstWater }}
+            }}
         }}
         """
 
     @staticmethod
     def get_stats_by_id(pokemon_id):
         query = f"""
-        PREFIX ns1: <http://example.org/pokemon/>
-        PREFIX schema1: <http://schema.org/>
+        PREFIX pdx: <http://poked-x.org/pokemon/>
+        PREFIX sc: <http://schema.org/>
         SELECT ?name ?attack ?defense ?hp ?spAttack ?spDefense ?speed ?totalPoints
             ?height ?weight ?isLegendary ?generation ?baseFriendship
             ?primaryType ?secondaryType ?pokedexNumber
             ?againstType ?value
         WHERE {{
-            <http://example.org/pokemon/Pokemon/{pokemon_id}>
-                schema1:name ?name ;
-                ns1:attack ?attack ;
-                ns1:defense ?defense ;
-                ns1:hp ?hp ;
-                ns1:spAttack ?spAttack ;
-                ns1:spDefense ?spDefense ;
-                ns1:speed ?speed ;
-                ns1:totalPoints ?totalPoints ;
-                ns1:height ?height ;
-                ns1:weight ?weight ;
-                ns1:isLegendary ?isLegendary ;
-                ns1:generation ?generation ;
-                ns1:baseFriendship ?baseFriendship ;
-                ns1:primaryType ?primaryType ;
-                ns1:secondaryType ?secondaryType ;
-                ns1:pokedexNumber ?pokedexNumber .
-            OPTIONAL {{
-                <http://example.org/pokemon/Pokemon/{pokemon_id}> ns1:effectiveness ?effNode .
-                ?effNode ?againstType ?value .
-            }}
+            <http://poked-x.org/pokemon/Pokemon/{pokemon_id}>
+                sc:name ?name ;
+                pdx:attack ?attack ;
+                pdx:defense ?defense ;
+                pdx:hp ?hp ;
+                pdx:spAttack ?spAttack ;
+                pdx:spDefense ?spDefense ;
+                pdx:speed ?speed ;
+                pdx:totalPoints ?totalPoints ;
+                pdx:height ?height ;
+                pdx:weight ?weight ;
+                pdx:isLegendary ?isLegendary ;
+                pdx:generation ?generation ;
+                pdx:baseFriendship ?baseFriendship ;
+                pdx:primaryType ?primaryType ;
+                pdx:pokedexNumber ?pokedexNumber ;
+                pdx:hasEffectiveness ?effNode .
+            OPTIONAL {{ <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:secondaryType ?secondaryType }}
+            ?effNode ?againstType ?value .
+            FILTER(CONTAINS(STR(?againstType), "against"))
         }}
         """
         results = run_query(query)
@@ -427,25 +425,25 @@ class PokemonManager:
     @staticmethod
     def get_all_evolution_chains():
         query = """
-        PREFIX ex: <http://example.org/pokemon/>
+        PREFIX pdx: <http://poked-x.org/pokemon/>
         PREFIX sc: <http://schema.org/>
 
         SELECT ?pokemon ?name ?number ?evolvesTo ?primaryType WHERE {
         {
-            ?pokemon a ex:Pokemon ;
+            ?pokemon a pdx:Pokemon ;
                     sc:name ?name ;
-                    ex:pokedexNumber ?number ;
-                    ex:primaryType ?primaryType ;
-                    ex:evolvesTo ?evolvesTo .
+                    pdx:pokedexNumber ?number ;
+                    pdx:primaryType ?primaryType ;
+                    pdx:evolvesTo ?evolvesTo .
         }
         UNION
         {
-            ?pokemon a ex:Pokemon ;
+            ?pokemon a pdx:Pokemon ;
                     sc:name ?name ;
-                    ex:pokedexNumber ?number ;
-                    ex:primaryType ?primaryType .
-            ?other ex:evolvesTo ?pokemon .
-            OPTIONAL { ?pokemon ex:evolvesTo ?evolvesTo }
+                    pdx:pokedexNumber ?number ;
+                    pdx:primaryType ?primaryType .
+            ?other pdx:evolvesTo ?pokemon .
+            OPTIONAL { ?pokemon pdx:evolvesTo ?evolvesTo }
         }
         }
         """
@@ -496,94 +494,94 @@ class PokemonManager:
         n = pokemon_name.replace('"', '\\"')
         if property_uri.endswith("generation"):
             query = f"""
-            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX pdx: <http://poked-x.org/pokemon/>
             PREFIX sc: <http://schema.org/>
             ASK {{
-              ?pokemon a ex:Pokemon ;
+              ?pokemon a pdx:Pokemon ;
                        sc:name "{n}" ;
-                       ex:generation {value_uri} .
+                       pdx:generation {value_uri} .
             }}
             """
         elif property_uri.endswith("isLegendary"):
             query = f"""
-            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX pdx: <http://poked-x.org/pokemon/>
             PREFIX sc: <http://schema.org/>
             ASK {{
-              ?pokemon a ex:Pokemon ;
+              ?pokemon a pdx:Pokemon ;
                        sc:name "{n}" ;
-                       ex:isLegendary {value_uri} .
+                       pdx:isLegendary {value_uri} .
             }}
             """
         elif property_uri.endswith("type"):
             query = f"""
-            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX pdx: <http://poked-x.org/pokemon/>
             PREFIX sc: <http://schema.org/>
             ASK {{
-              ?pokemon a ex:Pokemon ;
+              ?pokemon a pdx:Pokemon ;
                        sc:name "{n}" .
               {{
                 FILTER EXISTS {{
-                  ?pokemon ex:primaryType <{value_uri}> .
+                  ?pokemon pdx:primaryType <{value_uri}> .
                 }}
               }}
               UNION
               {{
                 FILTER EXISTS {{
-                  ?pokemon ex:secondaryType <{value_uri}> .
+                  ?pokemon pdx:secondaryType <{value_uri}> .
                 }}
               }}
             }}
             """
         elif property_uri.endswith("ability"):
             query = f"""
-            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX pdx: <http://poked-x.org/pokemon/>
             PREFIX sc: <http://schema.org/>
             ASK {{
-              ?pokemon a ex:Pokemon ;
+              ?pokemon a pdx:Pokemon ;
                        sc:name "{n}" .
               {{
                 FILTER EXISTS {{
-                  ?pokemon ex:ability1 <{value_uri}> .
+                  ?pokemon pdx:ability1 <{value_uri}> .
                 }}
               }}
               UNION
               {{
                 FILTER EXISTS {{
-                  ?pokemon ex:ability2 <{value_uri}> .
+                  ?pokemon pdx:ability2 <{value_uri}> .
                 }}
               }}
             }}
             """
         elif property_uri.endswith("habitat"):
             query = f"""
-            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX pdx: <http://poked-x.org/pokemon/>
             PREFIX sc: <http://schema.org/>
             ASK {{
-              ?pokemon a ex:Pokemon ;
+              ?pokemon a pdx:Pokemon ;
                        sc:name "{n}" ;
-                       ex:habitat <{value_uri}> .
+                       pdx:habitat <{value_uri}> .
             }}
             """
         elif property_uri.endswith("weakAgainst"):
             t = value_uri.rsplit('/', 1)[-1]
             p = f"against{t.capitalize()}"
             query = f"""
-            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX pdx: <http://poked-x.org/pokemon/>
             PREFIX sc: <http://schema.org/>
             ASK {{
-              ?pokemon a ex:Pokemon ;
+              ?pokemon a pdx:Pokemon ;
                        sc:name "{n}" ;
-                       ex:effectiveness ?eff .
-              ?eff ex:{p} ?val .
+                       pdx:effectiveness ?eff .
+              ?eff pdx:{p} ?val .
               FILTER(?val > 1.0)
             }}
             """
         else:
             query = f"""
-            PREFIX ex: <http://example.org/pokemon/>
+            PREFIX pdx: <http://poked-x.org/pokemon/>
             PREFIX sc: <http://schema.org/>
             ASK {{
-              ?pokemon a ex:Pokemon ;
+              ?pokemon a pdx:Pokemon ;
                        sc:name "{n}" ;
                        <{property_uri}> <{value_uri}> .
             }}

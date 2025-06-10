@@ -2,12 +2,11 @@ from django.shortcuts import render
 from django.core.paginator import Paginator
 from app.forms import PokemonSearchForm
 from app.forms import ComparePokemonForm
-from app.sparql_client import run_query
+from app.sparql_client import run_query, run_construct_query
 from app.models.geral_model import PokemonManager
 import math
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-from app.sparql_client import run_construct_query
 import json
 from django.http import JsonResponse
 from app.sparql_client import dbpedia_data_already_loaded
@@ -176,6 +175,18 @@ def all_evolution_chains(request):
 
   
 def pokemon_stats(request, pokemon_id):
+    # First, check if the Pokemon exists
+    query = f"""
+    PREFIX pdx: <http://poked-x.org/pokemon/>
+    PREFIX sc: <http://schema.org/>
+    ASK {{
+        <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> a pdx:Pokemon .
+    }}
+    """
+    exists = run_query(query)
+    if not exists.get("boolean", False):
+        return render(request, 'stats.html', {'error': 'Pokémon not found.'})
+
     stats = PokemonManager.get_stats_by_id(pokemon_id)
     if stats is None:
         return render(request, 'stats.html', {'error': 'Pokémon not found.'})
