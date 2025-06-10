@@ -65,14 +65,16 @@
       <span class="battle-date">{{ battle.date|date:"Y-m-d H:i" }}</span><br />
       <span class="battle-info">
         ⚔️ {{ battle.pokemon1_name }} vs {{ battle.pokemon2_name }}<br />
-        🏆 Vencedor: <strong>{{ battle.winner_name }}</strong>
+        🏆 Winner: <strong>{{ battle.winner_name }}</strong>
       </span>
-      <form method="post" action="{% url 'delete_battle' battle.battle_id %}?pokemon1_id={{ pokemon1.id }}&pokemon2_id={{ pokemon2.id }}" style="display:inline;">
+      {% if battle.battle_id and pokemon1.id and pokemon2.id %}
+      <form method="post" action="{% url 'delete_battle' battle_id=battle.battle_id %}?pokemon1_id={{ pokemon1.id }}&pokemon2_id={{ pokemon2.id }}" style="display:inline;">
         {% csrf_token %}
         <button type="submit" title="Remove Battle" class="remove-battle-button" style="background-color: transparent; border: none; cursor: pointer; color: red;">
           <span>❌ Remove</span>
         </button>
       </form>
+      {% endif %}
     </div>
     {% empty %}
     <p style="padding: 10px">No previous battles.</p>
