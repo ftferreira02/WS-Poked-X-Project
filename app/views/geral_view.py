@@ -2,15 +2,19 @@ from django.shortcuts import render
 from django.core.paginator import Paginator
 from app.forms import PokemonSearchForm
 from app.forms import ComparePokemonForm
-from app.sparql_client import run_query
+from app.sparql_client import run_query, run_construct_query
 from app.models.geral_model import PokemonManager
 import math
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-from app.sparql_client import run_construct_query
 import json
 from django.http import JsonResponse
 from app.sparql_client import dbpedia_data_already_loaded
+import os
+from django.conf import settings
+from django.shortcuts import render, redirect
+from .spin_rules_applier import apply_spin_rules
+
 
 
 # Lista de tipos para o dropdown de filtros.
@@ -172,6 +176,18 @@ def all_evolution_chains(request):
 
   
 def pokemon_stats(request, pokemon_id):
+    # First, check if the Pokemon exists
+    query = f"""
+    PREFIX pdx: <http://poked-x.org/pokemon/>
+    PREFIX sc: <http://schema.org/>
+    ASK {{
+        <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> a pdx:Pokemon .
+    }}
+    """
+    exists = run_query(query)
+    if not exists.get("boolean", False):
+        return render(request, 'stats.html', {'error': 'Pokémon not found.'})
+
     stats = PokemonManager.get_stats_by_id(pokemon_id)
     if stats is None:
         return render(request, 'stats.html', {'error': 'Pokémon not found.'})
@@ -218,3 +234,40 @@ def check_dbpedia_status(request, name):
     exists = dbpedia_data_already_loaded(name)
     return JsonResponse({"name": name, "exists": exists})
 
+
+def apply_spin_rules_view(request):
+    if request.method == 'POST':
+        spin_path = os.path.join('app/dataBase', 'spin-rules.ttl')
+        # chama a função
+        resultado = apply_spin_rules(spin_file_path=spin_path, dry_run=False)
+        # Retorna um pop-up de sucesso
+        return HttpResponse("""
+        <html>
+            <head>
+            <title>Sucesso</title>
+            <style>
+                body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 50px;
+                }
+                .popup {
+                display: inline-block;
+                padding: 20px;
+                border: 2px solid #4CAF50;
+                background-color: #f9f9f9;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                }
+                .popup h1 {
+                color: #4CAF50;
+                }
+            </style>
+            </head>
+            <body>
+            <div class="popup">
+                <h1>Regras aplicadas com sucesso!</h1>
+            </div>
+            </body>
+        </html>
+        """)

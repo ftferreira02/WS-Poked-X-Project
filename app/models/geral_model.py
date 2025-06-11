@@ -212,7 +212,7 @@ class PokemonManager:
         PREFIX sc: <http://schema.org/>
 
         CONSTRUCT {{
-        {uri} a pdx:Pokemon ;
+            {uri} a pdx:Pokemon ;
                 sc:name ?name ;
                 pdx:pokedexNumber ?number ;
                 pdx:height ?height ;
@@ -234,107 +234,8 @@ class PokemonManager:
                 pdx:abilityHidden ?abilityHidden ;
                 pdx:effectiveness ?effNode .
 
-        ?effNode
-            pdx:againstBug ?againstBug ;
-            pdx:againstDark ?againstDark ;
-            pdx:againstDragon ?againstDragon ;
-            pdx:againstElectric ?againstElectric ;
-            pdx:againstFairy ?againstFairy ;
-            pdx:againstFight ?againstFight ;
-            pdx:againstFire ?againstFire ;
-            pdx:againstFlying ?againstFlying ;
-            pdx:againstGhost ?againstGhost ;
-            pdx:againstGrass ?againstGrass ;
-            pdx:againstGround ?againstGround ;
-            pdx:againstIce ?againstIce ;
-            pdx:againstNormal ?againstNormal ;
-            pdx:againstPoison ?againstPoison ;
-            pdx:againstPsychic ?againstPsychic ;
-            pdx:againstRock ?againstRock ;
-            pdx:againstSteel ?againstSteel ;
-            pdx:againstWater ?againstWater .
-        }}
-        WHERE {{
-        BIND ({uri} AS ?pokemon)
-        ?pokemon a pdx:Pokemon ;
-                sc:name ?name ;
-                pdx:pokedexNumber ?number ;
-                pdx:height ?height ;
-                pdx:weight ?weight ;
-                pdx:primaryType ?primaryType .
-
-        OPTIONAL {{ ?pokemon pdx:secondaryType ?secondaryType }}
-        OPTIONAL {{ ?pokemon pdx:hp ?hp }}
-        OPTIONAL {{ ?pokemon pdx:attack ?attack }}
-        OPTIONAL {{ ?pokemon pdx:defense ?defense }}
-        OPTIONAL {{ ?pokemon pdx:spAttack ?spAttack }}
-        OPTIONAL {{ ?pokemon pdx:spDefense ?spDefense }}
-        OPTIONAL {{ ?pokemon pdx:speed ?speed }}
-        OPTIONAL {{ ?pokemon pdx:isLegendary ?isLegendary }}
-        OPTIONAL {{ ?pokemon pdx:generation ?generation }}
-        OPTIONAL {{ ?pokemon pdx:totalPoints ?totalPoints }}
-        OPTIONAL {{ ?pokemon pdx:megaEvolutionOf ?megaOf }}
-        OPTIONAL {{ ?pokemon pdx:ability1 ?ability1 }}
-        OPTIONAL {{ ?pokemon pdx:ability2 ?ability2 }}
-        OPTIONAL {{ ?pokemon pdx:abilityHidden ?abilityHidden }}
-
-        OPTIONAL {{
-            ?pokemon pdx:effectiveness ?effNode .
-            OPTIONAL {{ ?effNode pdx:againstBug ?againstBug }}
-            OPTIONAL {{ ?effNode pdx:againstDark ?againstDark }}
-            OPTIONAL {{ ?effNode pdx:againstDragon ?againstDragon }}
-            OPTIONAL {{ ?effNode pdx:againstElectric ?againstElectric }}
-            OPTIONAL {{ ?effNode pdx:againstFairy ?againstFairy }}
-            OPTIONAL {{ ?effNode pdx:againstFight ?againstFight }}
-            OPTIONAL {{ ?effNode pdx:againstFire ?againstFire }}
-            OPTIONAL {{ ?effNode pdx:againstFlying ?againstFlying }}
-            OPTIONAL {{ ?effNode pdx:againstGhost ?againstGhost }}
-            OPTIONAL {{ ?effNode pdx:againstGrass ?againstGrass }}
-            OPTIONAL {{ ?effNode pdx:againstGround ?againstGround }}
-            OPTIONAL {{ ?effNode pdx:againstIce ?againstIce }}
-            OPTIONAL {{ ?effNode pdx:againstNormal ?againstNormal }}
-            OPTIONAL {{ ?effNode pdx:againstPoison ?againstPoison }}
-            OPTIONAL {{ ?effNode pdx:againstPsychic ?againstPsychic }}
-            OPTIONAL {{ ?effNode pdx:againstRock ?againstRock }}
-            OPTIONAL {{ ?effNode pdx:againstSteel ?againstSteel }}
-            OPTIONAL {{ ?effNode pdx:againstWater ?againstWater }}
-        }}
-        }}
-        """
-
-    @staticmethod
-    def get_stats_by_id(pokemon_id):
-        query = f"""
-        PREFIX pdx: <http://poked-x.org/pokemon/>
-        PREFIX sc: <http://schema.org/>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        SELECT ?name ?attack ?defense ?hp ?spAttack ?spDefense ?speed ?totalPoints
-            ?height ?weight ?isLegendary ?generation ?baseFriendship
-            ?primaryType ?secondaryType ?pokedexNumber
-            ?againstBug ?againstDark ?againstDragon ?againstElectric ?againstFairy
-            ?againstFight ?againstFire ?againstFlying ?againstGhost ?againstGrass
-            ?againstGround ?againstIce ?againstNormal ?againstPoison ?againstPsychic
-            ?againstRock ?againstSteel ?againstWater
-        WHERE {{
-            <http://poked-x.org/pokemon/Pokemon/{pokemon_id}>
-                sc:name ?name ;
-                pdx:attack ?attack ;
-                pdx:defense ?defense ;
-                pdx:hp ?hp ;
-                pdx:spAttack ?spAttack ;
-                pdx:spDefense ?spDefense ;
-                pdx:speed ?speed ;
-                pdx:totalPoints ?totalPoints ;
-                pdx:height ?height ;
-                pdx:weight ?weight ;
-                pdx:isLegendary ?isLegendary ;
-                pdx:generation ?generation ;
-                pdx:baseFriendship ?baseFriendship ;
-                pdx:primaryType ?primaryType ;
-                pdx:pokedexNumber ?pokedexNumber ;
-                pdx:hasEffectiveness ?eff .
-            OPTIONAL {{ <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:secondaryType ?secondaryType }}
-            ?eff pdx:againstBug ?againstBug ;
+            ?effNode
+                pdx:againstBug ?againstBug ;
                 pdx:againstDark ?againstDark ;
                 pdx:againstDragon ?againstDragon ;
                 pdx:againstElectric ?againstElectric ;
@@ -353,6 +254,84 @@ class PokemonManager:
                 pdx:againstSteel ?againstSteel ;
                 pdx:againstWater ?againstWater .
         }}
+        WHERE {{
+            {uri} a pdx:Pokemon ;
+                sc:name ?name ;
+                pdx:pokedexNumber ?number ;
+                pdx:height ?height ;
+                pdx:weight ?weight ;
+                pdx:primaryType ?primaryType .
+
+            OPTIONAL {{ {uri} pdx:secondaryType ?secondaryType }}
+            OPTIONAL {{ {uri} pdx:hp ?hp }}
+            OPTIONAL {{ {uri} pdx:attack ?attack }}
+            OPTIONAL {{ {uri} pdx:defense ?defense }}
+            OPTIONAL {{ {uri} pdx:spAttack ?spAttack }}
+            OPTIONAL {{ {uri} pdx:spDefense ?spDefense }}
+            OPTIONAL {{ {uri} pdx:speed ?speed }}
+            OPTIONAL {{ {uri} pdx:isLegendary ?isLegendary }}
+            OPTIONAL {{ {uri} pdx:generation ?generation }}
+            OPTIONAL {{ {uri} pdx:totalPoints ?totalPoints }}
+            OPTIONAL {{ {uri} pdx:megaEvolutionOf ?megaOf }}
+            OPTIONAL {{ {uri} pdx:ability1 ?ability1 }}
+            OPTIONAL {{ {uri} pdx:ability2 ?ability2 }}
+            OPTIONAL {{ {uri} pdx:abilityHidden ?abilityHidden }}
+
+            OPTIONAL {{
+                {uri} pdx:effectiveness ?effNode .
+                OPTIONAL {{ ?effNode pdx:againstBug ?againstBug }}
+                OPTIONAL {{ ?effNode pdx:againstDark ?againstDark }}
+                OPTIONAL {{ ?effNode pdx:againstDragon ?againstDragon }}
+                OPTIONAL {{ ?effNode pdx:againstElectric ?againstElectric }}
+                OPTIONAL {{ ?effNode pdx:againstFairy ?againstFairy }}
+                OPTIONAL {{ ?effNode pdx:againstFight ?againstFight }}
+                OPTIONAL {{ ?effNode pdx:againstFire ?againstFire }}
+                OPTIONAL {{ ?effNode pdx:againstFlying ?againstFlying }}
+                OPTIONAL {{ ?effNode pdx:againstGhost ?againstGhost }}
+                OPTIONAL {{ ?effNode pdx:againstGrass ?againstGrass }}
+                OPTIONAL {{ ?effNode pdx:againstGround ?againstGround }}
+                OPTIONAL {{ ?effNode pdx:againstIce ?againstIce }}
+                OPTIONAL {{ ?effNode pdx:againstNormal ?againstNormal }}
+                OPTIONAL {{ ?effNode pdx:againstPoison ?againstPoison }}
+                OPTIONAL {{ ?effNode pdx:againstPsychic ?againstPsychic }}
+                OPTIONAL {{ ?effNode pdx:againstRock ?againstRock }}
+                OPTIONAL {{ ?effNode pdx:againstSteel ?againstSteel }}
+                OPTIONAL {{ ?effNode pdx:againstWater ?againstWater }}
+            }}
+        }}
+        """
+
+    @staticmethod
+    def get_stats_by_id(pokemon_id):
+        query = f"""
+        PREFIX pdx: <http://poked-x.org/pokemon/>
+        PREFIX sc: <http://schema.org/>
+        SELECT ?name ?attack ?defense ?hp ?spAttack ?spDefense ?speed ?totalPoints
+            ?height ?weight ?isLegendary ?generation ?baseFriendship
+            ?primaryType ?secondaryType ?pokedexNumber
+            ?againstType ?value
+        WHERE {{
+            <http://poked-x.org/pokemon/Pokemon/{pokemon_id}>
+                sc:name ?name ;
+                pdx:attack ?attack ;
+                pdx:defense ?defense ;
+                pdx:hp ?hp ;
+                pdx:spAttack ?spAttack ;
+                pdx:spDefense ?spDefense ;
+                pdx:speed ?speed ;
+                pdx:totalPoints ?totalPoints ;
+                pdx:height ?height ;
+                pdx:weight ?weight ;
+                pdx:isLegendary ?isLegendary ;
+                pdx:generation ?generation ;
+                pdx:baseFriendship ?baseFriendship ;
+                pdx:primaryType ?primaryType ;
+                pdx:pokedexNumber ?pokedexNumber ;
+                pdx:hasEffectiveness ?effNode .
+            OPTIONAL {{ <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:secondaryType ?secondaryType }}
+            ?effNode ?againstType ?value .
+            FILTER(CONTAINS(STR(?againstType), "against"))
+        }}
         """
         results = run_query(query)
         bindings = results["results"]["bindings"]
@@ -360,8 +339,7 @@ class PokemonManager:
             return None
 
         stats = {
-            "id": pokemon_id,  # Keep the Pokemon ID for the RDF export
-            "pokedexNumber": 0,  # Initialize pokedexNumber
+            "id": int(pokemon_id),
             "name": None,
             "description": "",
             "attack": 0,
@@ -380,6 +358,7 @@ class PokemonManager:
             "secondaryType": "",
             "strongAgainst": [],
             "weakAgainst": [],
+            "pokedexNumber": 0,
             "designer": "",
             "firstAppearance": "",
             "sameTypePokemon": None
@@ -422,35 +401,15 @@ class PokemonManager:
                 stats["secondaryType"] = binding["secondaryType"]["value"].split("/")[-1]
 
             # Process effectiveness data
-            type_effectiveness = {
-                'bug': ('againstBug', 'bug'),
-                'dark': ('againstDark', 'dark'),
-                'dragon': ('againstDragon', 'dragon'),
-                'electric': ('againstElectric', 'electric'),
-                'fairy': ('againstFairy', 'fairy'),
-                'fighting': ('againstFight', 'fighting'),
-                'fire': ('againstFire', 'fire'),
-                'flying': ('againstFlying', 'flying'),
-                'ghost': ('againstGhost', 'ghost'),
-                'grass': ('againstGrass', 'grass'),
-                'ground': ('againstGround', 'ground'),
-                'ice': ('againstIce', 'ice'),
-                'normal': ('againstNormal', 'normal'),
-                'poison': ('againstPoison', 'poison'),
-                'psychic': ('againstPsychic', 'psychic'),
-                'rock': ('againstRock', 'rock'),
-                'steel': ('againstSteel', 'steel'),
-                'water': ('againstWater', 'water')
-            }
-
-            for type_name, (binding_key, css_class) in type_effectiveness.items():
-                if binding_key in binding:
-                    val = float(binding[binding_key]["value"])
-                    if val > 1.0:  # Values > 1 mean the Pokemon is weak against this type
-                        stats["weakAgainst"].append(css_class)
-                    elif val < 1.0:  # Values < 1 mean the Pokemon is strong against this type
-                        stats["strongAgainst"].append(css_class)
-                    # val == 1.0 means normal effectiveness, we ignore these
+            if "againstType" in binding and "value" in binding:
+                type_uri = binding["againstType"]["value"]
+                if "against" in type_uri:
+                    type_name = type_uri.split("/")[-1].replace("against", "").lower()
+                    val = float(binding["value"]["value"])
+                    if val > 1.0:
+                        stats["strongAgainst"].append(type_name)
+                    elif 0.0 < val < 1.0:
+                        stats["weakAgainst"].append(type_name)
 
         stats["strongAgainst"] = list(dict.fromkeys(stats["strongAgainst"]))
         stats["weakAgainst"] = list(dict.fromkeys(stats["weakAgainst"]))

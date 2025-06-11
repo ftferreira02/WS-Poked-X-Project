@@ -67,6 +67,18 @@
         </div>
     </div>
 
+    <div class="container my-4">
+      <div class="d-flex justify-content-center">
+        <form action="{% url 'apply_spin_rules' %}" method="post" class="w-50">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-success btn-lg w-100">
+            <i class="bi bi-lightning-charge-fill me-2"></i>
+            Aplicar SPIN Rules
+          </button>
+        </form>
+      </div>
+    </div>
+~
     {# --- Pokémon Results Grid --- #}
     <div class="row pokemon-grid">
         {% for pokemon in pokemons %}
