@@ -28,6 +28,14 @@ O GraphDB ficará disponível em: http://localhost:7200
 
 ---
 
+No separador Import, escolha Upload RDF Files e carregue os arquivos na seguinte ordem (todos para "The default graph"):
+
+app/database/ontology_new.ttl
+
+app/database/pokemon-data-aligned-new.ttl
+
+app/database/type_effectiveness_data.ttl
+
 ### 2. Correr a aplicação web
 
 ```bash
