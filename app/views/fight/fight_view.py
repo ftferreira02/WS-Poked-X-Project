@@ -29,14 +29,13 @@ def pokemon_selection_view(request):
     all_pokemons = PokemonManager.get_all_pokemons()
     pokemon_data = []
     
-    # Get strong Pokemon data using spAttack > 120
+    # Get strong Pokemon data using inferred pdx:isStrong property
     strong_pokemon_query = """
     PREFIX pdx: <http://poked-x.org/pokemon/>
     PREFIX sc: <http://schema.org/>
     SELECT ?pokemon ?name WHERE {
-        ?pokemon pdx:spAttack ?spAttack ;
+        ?pokemon pdx:isStrong true ;
                  sc:name ?name .
-        FILTER(?spAttack > 120)
     }
     """
     strong_results = run_query(strong_pokemon_query)
