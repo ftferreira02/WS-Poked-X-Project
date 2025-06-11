@@ -55,6 +55,73 @@ A aplicação estará disponível em: http://localhost:8000
 
 ---
 
+# WS-Poked-X Project Setup Guide
+
+## Pré-requisitos
+
+- Python ≥ 3.10 (recomenda-se 3.12)
+- `pip` e `virtualenv` (ou `python -m venv`)
+- GraphDB (edição gratuita) instalado localmente
+- Git
+- Navegador Web recente
+
+---
+
+## Passo 1 — Obter o código-fonte
+
+```bash
+git clone https://github.com/ftferreira02/WS-Poked-X-Project.git
+cd WS-Poked-X-Project
+```
+
+---
+
+## Passo 2 — Criar o ambiente Python
+
+```bash
+python -m venv venv          # cria ambiente virtual
+
+# Ativação:
+source venv/bin/activate     # Mac/Linux
+venv\Scripts\activate      # Windows
+
+pip install -r requirements.txt
+```
+
+---
+
+## Passo 3 — Configurar e arrancar o GraphDB
+
+1. Inicie o GraphDB (use o script `graphdb` ou `graphdb.bat` conforme seu sistema).
+2. Abra `http://localhost:7200` no navegador.
+3. Crie um repositório com as seguintes opções:
+   - **Nome:** `Poked-X`
+   - **Regra de inferência:** `OWL 2 RL`
+4. No separador **Import**, escolha **Upload RDF Files** e carregue os arquivos na seguinte ordem **(todos para "The default graph")**:
+   - `ontology_new.ttl`
+   - `pokemon-data-aligned-new.ttl`
+   - `type_effectiveness_data.ttl`
+5. Clique **Import** e aguarde o término (barra verde).
+
+---
+
+## Passo 4 — Migrar a BD Django e lançar o servidor
+
+```bash
+python manage.py migrate       # aplica migrações locais
+python manage.py runserver 8000
+```
+
+A aplicação Django estará disponível em:  
+ http://localhost:8000/
+
+---
+
+## Passo 5 — Aceder à aplicação
+
+- **Interface Web:** [http://localhost:8000/](http://localhost:8000/)
+- **GraphDB Workbench:** [http://localhost:7200/](http://localhost:7200/)
+
 ## Estrutura do Projeto Django
 
 ```text
