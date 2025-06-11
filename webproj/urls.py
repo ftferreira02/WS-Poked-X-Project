@@ -10,6 +10,7 @@ from app.views.fight.fight_view import pokemon_selection_view
 from app.views.geral_view import export_pokemon_rdf
 from app.views.geral_view import all_evolution_chains
 from app.views.geral_view import check_dbpedia_status
+from app.views.geral_view import apply_spin_rules_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,6 +25,8 @@ urlpatterns = [
     path('pokemon/export/id/<int:pokemon_id>/', export_pokemon_rdf, name='export_pokemon_rdf_by_id'),
     path('evolution/', all_evolution_chains, name='evolution_chain'),
     path("debug/dbpedia/<str:name>/", check_dbpedia_status, name='check_dbpedia_status'),
+    path('apply-spin/', apply_spin_rules_view, name='apply_spin_rules'),
+
 
 
 
