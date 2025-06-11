@@ -58,7 +58,6 @@ def pokemon_selection_view(request):
         'form': form,
         'pokemon_data_json': json.dumps(pokemon_data)
     })
-
 def get_strongest_match(request):
     """AJAX endpoint to get the strongest match for a given Pokemon"""
     if request.method == 'GET':
@@ -72,58 +71,18 @@ def get_strongest_match(request):
         PREFIX pdx: <http://poked-x.org/pokemon/>
         PREFIX sc: <http://schema.org/>
         
-        SELECT ?strongestMatch ?name ?strength ?pokedexNumber
+        SELECT ?strongestMatch ?name ?pokedexNumber
         WHERE {{
-            ?strongestMatch pdx:strongestMatchAgainst <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> ;
-                           pdx:matchStrength ?strength ;
-                           sc:name ?name ;
+            <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:strongestMatchAgainst ?strongestMatch .
+            ?strongestMatch sc:name ?name ;
                            pdx:pokedexNumber ?pokedexNumber .
         }}
-        ORDER BY DESC(?strength)
-        LIMIT 1
-        """
-        
-        # Fallback query if no inferred matches exist
-        fallback_query = f"""
-        PREFIX pdx: <http://poked-x.org/pokemon/>
-        PREFIX sc: <http://schema.org/>
-        
-        SELECT ?strongestMatch ?name ?totalAttack ?pokedexNumber
-        WHERE {{
-            # Get target Pokemon types
-            <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:primaryType ?targetType1 .
-            OPTIONAL {{ <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:secondaryType ?targetType2 . }}
-            
-            # Find attackers with good matchup
-            ?strongestMatch pdx:primaryType ?attackerType ;
-                          pdx:attack ?attack ;
-                          pdx:spAttack ?spAttack ;
-                          sc:name ?name ;
-                          pdx:pokedexNumber ?pokedexNumber .
-            
-            # Ensure it's not the same Pokemon
-            FILTER(?strongestMatch != <http://poked-x.org/pokemon/Pokemon/{pokemon_id}>)
-            
-            # Look for type advantages
-            ?effectiveness pdx:attackingType ?attackerType ;
-                          pdx:defendingType ?targetType1 ;
-                          pdx:effectiveness ?effValue .
-            
-            FILTER(?effValue > 1.0)
-            
-            BIND((?attack + ?spAttack) as ?totalAttack)
-        }}
-        ORDER BY DESC(?effValue) DESC(?totalAttack)
         LIMIT 1
         """
         
         try:
             # Try the main query first
             result = run_query(strongest_match_query)
-            
-            if not result or not result.get("results", {}).get("bindings"):
-                # Fall back to simpler query
-                result = run_query(fallback_query)
             
             if result and result.get("results", {}).get("bindings"):
                 binding = result["results"]["bindings"][0]
@@ -138,7 +97,7 @@ def get_strongest_match(request):
                         'id': match_id,
                         'name': binding["name"]["value"],
                         'number': binding.get("pokedexNumber", {}).get("value", "Unknown"),
-                        'strength': binding.get("strength", {}).get("value", "N/A")
+                        'strength': "Super Effective"  # Valor fixo já que sabemos que é o mais forte
                     }
                 })
             else:
@@ -168,58 +127,18 @@ def get_weakest_match(request):
         PREFIX pdx: <http://poked-x.org/pokemon/>
         PREFIX sc: <http://schema.org/>
         
-        SELECT ?weakestMatch ?name ?weakness ?pokedexNumber
+        SELECT ?weakestMatch ?name ?pokedexNumber
         WHERE {{
-            ?weakestMatch pdx:weakestMatchAgainst <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> ;
-                         pdx:matchWeakness ?weakness ;
-                         sc:name ?name ;
+            <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:weakestMatchAgainst ?weakestMatch .
+            ?weakestMatch sc:name ?name ;
                          pdx:pokedexNumber ?pokedexNumber .
         }}
-        ORDER BY ASC(?weakness)
-        LIMIT 1
-        """
-        
-        # Fallback query if no inferred matches exist
-        fallback_query = f"""
-        PREFIX pdx: <http://poked-x.org/pokemon/>
-        PREFIX sc: <http://schema.org/>
-        
-        SELECT ?weakestMatch ?name ?totalAttack ?pokedexNumber
-        WHERE {{
-            # Get target Pokemon types
-            <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:primaryType ?targetType1 .
-            OPTIONAL {{ <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:secondaryType ?targetType2 . }}
-            
-            # Find attackers with poor matchup
-            ?weakestMatch pdx:primaryType ?attackerType ;
-                         pdx:attack ?attack ;
-                         pdx:spAttack ?spAttack ;
-                         sc:name ?name ;
-                         pdx:pokedexNumber ?pokedexNumber .
-            
-            # Ensure it's not the same Pokemon
-            FILTER(?weakestMatch != <http://poked-x.org/pokemon/Pokemon/{pokemon_id}>)
-            
-            # Look for type disadvantages
-            ?effectiveness pdx:attackingType ?attackerType ;
-                          pdx:defendingType ?targetType1 ;
-                          pdx:effectiveness ?effValue .
-            
-            FILTER(?effValue < 1.0)
-            
-            BIND((?attack + ?spAttack) as ?totalAttack)
-        }}
-        ORDER BY ASC(?effValue) ASC(?totalAttack)
         LIMIT 1
         """
         
         try:
             # Try the main query first
             result = run_query(weakest_match_query)
-            
-            if not result or not result.get("results", {}).get("bindings"):
-                # Fall back to simpler query
-                result = run_query(fallback_query)
             
             if result and result.get("results", {}).get("bindings"):
                 binding = result["results"]["bindings"][0]
@@ -234,7 +153,7 @@ def get_weakest_match(request):
                         'id': match_id,
                         'name': binding["name"]["value"],
                         'number': binding.get("pokedexNumber", {}).get("value", "Unknown"),
-                        'strength': binding.get("weakness", {}).get("value", "N/A")
+                        'strength': "Not Very Effective"  # Valor fixo já que sabemos que é o mais fraco
                     }
                 })
             else:
@@ -250,7 +169,6 @@ def get_weakest_match(request):
             })
     
     return JsonResponse({'error': 'Method not allowed'}, status=405)
-
 
 def pokemon_battle_view(request, pokemon1_id="0", pokemon2_id="1", simulate="true"):
     """View for the actual battle simulation"""
