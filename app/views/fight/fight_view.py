@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
 from django.utils.http import urlencode
 from app.sparql_client import run_query
-
+from django.http import JsonResponse
 
 def pokemon_selection_view(request):
     """View for selecting Pokémon to battle"""
@@ -58,6 +58,117 @@ def pokemon_selection_view(request):
         'form': form,
         'pokemon_data_json': json.dumps(pokemon_data)
     })
+def get_strongest_match(request):
+    """AJAX endpoint to get the strongest match for a given Pokemon"""
+    if request.method == 'GET':
+        pokemon_id = request.GET.get('pokemon_id')
+        
+        if not pokemon_id:
+            return JsonResponse({'error': 'Pokemon ID is required'}, status=400)
+        
+        # Query for the strongest match using the inferred data from SPIN rules
+        strongest_match_query = f"""
+        PREFIX pdx: <http://poked-x.org/pokemon/>
+        PREFIX sc: <http://schema.org/>
+        
+        SELECT ?strongestMatch ?name ?pokedexNumber
+        WHERE {{
+            <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:strongestMatchAgainst ?strongestMatch .
+            ?strongestMatch sc:name ?name ;
+                           pdx:pokedexNumber ?pokedexNumber .
+        }}
+        LIMIT 1
+        """
+        
+        try:
+            # Try the main query first
+            result = run_query(strongest_match_query)
+            
+            if result and result.get("results", {}).get("bindings"):
+                binding = result["results"]["bindings"][0]
+                
+                # Extract Pokemon ID from URI
+                match_uri = binding["strongestMatch"]["value"]
+                match_id = match_uri.split("/")[-1]
+                
+                return JsonResponse({
+                    'success': True,
+                    'match': {
+                        'id': match_id,
+                        'name': binding["name"]["value"],
+                        'number': binding.get("pokedexNumber", {}).get("value", "Unknown"),
+                        'strength': "Super Effective"  # Valor fixo já que sabemos que é o mais forte
+                    }
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'No suitable strongest match found'
+                })
+                
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': f'Query failed: {str(e)}'
+            })
+    
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+def get_weakest_match(request):
+    """AJAX endpoint to get the weakest match for a given Pokemon"""
+    if request.method == 'GET':
+        pokemon_id = request.GET.get('pokemon_id')
+        
+        if not pokemon_id:
+            return JsonResponse({'error': 'Pokemon ID is required'}, status=400)
+        
+        # Query for the weakest match using the inferred data from SPIN rules
+        weakest_match_query = f"""
+        PREFIX pdx: <http://poked-x.org/pokemon/>
+        PREFIX sc: <http://schema.org/>
+        
+        SELECT ?weakestMatch ?name ?pokedexNumber
+        WHERE {{
+            <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:weakestMatchAgainst ?weakestMatch .
+            ?weakestMatch sc:name ?name ;
+                         pdx:pokedexNumber ?pokedexNumber .
+        }}
+        LIMIT 1
+        """
+        
+        try:
+            # Try the main query first
+            result = run_query(weakest_match_query)
+            
+            if result and result.get("results", {}).get("bindings"):
+                binding = result["results"]["bindings"][0]
+                
+                # Extract Pokemon ID from URI
+                match_uri = binding["weakestMatch"]["value"]
+                match_id = match_uri.split("/")[-1]
+                
+                return JsonResponse({
+                    'success': True,
+                    'match': {
+                        'id': match_id,
+                        'name': binding["name"]["value"],
+                        'number': binding.get("pokedexNumber", {}).get("value", "Unknown"),
+                        'strength': "Not Very Effective"  # Valor fixo já que sabemos que é o mais fraco
+                    }
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'No suitable weakest match found'
+                })
+                
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': f'Query failed: {str(e)}'
+            })
+    
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 def pokemon_battle_view(request, pokemon1_id="0", pokemon2_id="1", simulate="true"):
     """View for the actual battle simulation"""

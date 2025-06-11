@@ -10,6 +10,11 @@ from django.http import HttpResponse
 import json
 from django.http import JsonResponse
 from app.sparql_client import dbpedia_data_already_loaded
+import os
+from django.conf import settings
+from django.shortcuts import render, redirect
+from .spin_rules_applier import apply_spin_rules
+
 
 
 # Lista de tipos para o dropdown de filtros.
@@ -19,10 +24,21 @@ POKEMON_TYPES = [
     'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'
 ]
 
+# New categories based on inferred classes and SPIN rules
+POKEMON_CATEGORIES = {
+    'dual_type': 'Dual Type',
+    'glass_cannon': 'Glass Cannon',
+    'legendary': 'Legendary',
+    'mega': 'Mega Evolution',
+    'strong': 'Strong',
+    'old_gen': 'Old Generation'
+}
+
 def search_pokemon(request):
     form = PokemonSearchForm(request.GET or None)
     name_filter = request.GET.get("name", "").strip()
     type_filter = request.GET.get("type", "").strip().lower()
+    category_filter = request.GET.get("category", "").strip().lower()
     sort_option = request.GET.get("sort", "")
     pokemons = []
 
@@ -30,8 +46,17 @@ def search_pokemon(request):
     if form.is_valid():
         name_filter = form.cleaned_data.get('name', '').strip()
 
-    # Lógica de busca combinando nome e tipo
-    if name_filter and type_filter:
+    # Lógica de busca combinando nome, tipo e categoria
+    if category_filter:
+        pokemons = PokemonManager.search_by_category(category_filter)
+        if name_filter or type_filter:
+            # Filter the category results further if name or type filters are present
+            if name_filter:
+                pokemons = [p for p in pokemons if name_filter.lower() in p.name.lower()]
+            if type_filter:
+                pokemons = [p for p in pokemons if p.primary_type == type_filter or 
+                           (p.secondary_type and p.secondary_type == type_filter)]
+    elif name_filter and type_filter:
         pokemons = PokemonManager.search_by_name_and_type(name_filter, type_filter)
     elif name_filter:
         pokemons = PokemonManager.search_by_name(name_filter)
@@ -64,9 +89,11 @@ def search_pokemon(request):
         'pokemons': page_obj,
         'page_obj': page_obj,
         'name_filter': name_filter,
-        'active_type': type_filter, 
+        'active_type': type_filter,
+        'active_category': category_filter,
         'sort_option': sort_option,
         'pokemon_types': POKEMON_TYPES,
+        'pokemon_categories': POKEMON_CATEGORIES,
     }
 
     return render(request, 'pokemon_search_form.html', context)
@@ -229,3 +256,40 @@ def check_dbpedia_status(request, name):
     exists = dbpedia_data_already_loaded(name)
     return JsonResponse({"name": name, "exists": exists})
 
+
+def apply_spin_rules_view(request):
+    if request.method == 'POST':
+        spin_path = os.path.join('app/dataBase', 'spin-rules.ttl')
+        # chama a função
+        resultado = apply_spin_rules(spin_file_path=spin_path, dry_run=False)
+        # Retorna um pop-up de sucesso
+        return HttpResponse("""
+        <html>
+            <head>
+            <title>Sucesso</title>
+            <style>
+                body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 50px;
+                }
+                .popup {
+                display: inline-block;
+                padding: 20px;
+                border: 2px solid #4CAF50;
+                background-color: #f9f9f9;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                }
+                .popup h1 {
+                color: #4CAF50;
+                }
+            </style>
+            </head>
+            <body>
+            <div class="popup">
+                <h1>Regras aplicadas com sucesso!</h1>
+            </div>
+            </body>
+        </html>
+        """)

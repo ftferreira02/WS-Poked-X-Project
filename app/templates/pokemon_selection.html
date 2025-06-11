@@ -5,6 +5,112 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'battle.css' %}" />
 <link rel="stylesheet" href="{% static 'pokemon_selection.css' %}" />
+<style>
+.match-buttons-container {
+  margin-top: 15px;
+  text-align: center;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.match-button {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  min-width: 160px;
+}
+
+.strongest-match-button {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+}
+
+.strongest-match-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+.weakest-match-button {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+.weakest-match-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+}
+
+.match-button:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  box-shadow: none;
+  color: #7f8c8d;
+}
+
+.match-button-loading {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.match-info {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  display: none;
+  text-align: left;
+}
+
+.strongest-info {
+  background: rgba(231, 76, 60, 0.1);
+  border-left: 4px solid #e74c3c;
+  color: #c0392b;
+}
+
+.weakest-info {
+  background: rgba(46, 204, 113, 0.1);
+  border-left: 4px solid #2ecc71;
+  color: #27ae60;
+}
+
+.error-info {
+  background: rgba(149, 165, 166, 0.1);
+  border-left: 4px solid #95a5a6;
+  color: #7f8c8d;
+}
+
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+@media (max-width: 768px) {
+  .match-buttons-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .match-button {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+</style>
 {% endblock %} 
 
 {% block body_class %}selection-page{% endblock %} 
@@ -27,7 +133,18 @@
         </div>
         {{ form.pokemon1_id }}
         <div class="pokemon-preview" id="preview1"></div>
+        
+        <div class="match-buttons-container">
+          <button type="button" class="match-button strongest-match-button" id="strongest-match-btn" disabled>
+            ⚔️ Find Strongest Match
+          </button>
+          <button type="button" class="match-button weakest-match-button" id="weakest-match-btn" disabled>
+            🛡️ Find Weakest Match
+          </button>
+        </div>
+        <div id="match-info" class="match-info"></div>
       </div>
+    
       
       <div class="selection-card">
         <h2>Second Pokemon</h2>
@@ -46,9 +163,7 @@
     </div>
   </form>
 </div>
-{% endblock %}
 
-{% block extra_scripts %}
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // Pokemon data from the server
@@ -66,6 +181,10 @@
     const preview1 = document.getElementById('preview1');
     const preview2 = document.getElementById('preview2');
     const battleButton = document.getElementById('battle-button');
+    const strongestMatchBtn = document.getElementById('strongest-match-btn');
+    const weakestMatchBtn = document.getElementById('weakest-match-btn');
+    const matchInfo = document.getElementById('match-info');
+    const vsIndicator = document.getElementById('vs-indicator');
     
     // Function to filter pokemon based on input
     function filterPokemon(inputValue) {
@@ -123,11 +242,99 @@
       selectedEl.style.display = 'block';
       updatePreview(previewEl, pokemon);
       
+      // Enable match buttons if first pokemon is selected
+      if (hiddenInputEl === hiddenInput1) {
+        strongestMatchBtn.disabled = false;
+        weakestMatchBtn.disabled = false;
+        vsIndicator.style.display = 'block';
+      }
+      
       // Check if both Pokemon are selected to enable battle button
       if (hiddenInput1.value && hiddenInput2.value) {
         battleButton.disabled = false;
       }
     }
+    
+    // Function to handle match finding
+    async function findMatch(matchType) {
+      const pokemon1Id = hiddenInput1.value;
+      if (!pokemon1Id) {
+        alert('Please select first Pokemon first');
+        return;
+      }
+      
+      const isStrongest = matchType === 'strongest';
+      const button = isStrongest ? strongestMatchBtn : weakestMatchBtn;
+      const originalText = button.textContent;
+      const loadingText = isStrongest ? '⚔️ Finding Strongest...' : '🛡️ Finding Weakest...';
+      
+      // Update button state
+      button.textContent = loadingText;
+      button.classList.add('match-button-loading');
+      button.disabled = true;
+      matchInfo.style.display = 'none';
+      
+      // Also disable the other button temporarily
+      const otherButton = isStrongest ? weakestMatchBtn : strongestMatchBtn;
+      otherButton.disabled = true;
+      
+      try {
+        const response = await fetch(`/battle/${matchType}-match/?pokemon_id=${pokemon1Id}`);
+        const data = await response.json();
+        
+        if (data.success && data.match) {
+          const match = data.match;
+          
+          // Auto-select the match as Pokemon 2
+          const pokemon = {
+            id: match.id,
+            name: match.name,
+            number: match.number
+          };
+          
+          selectPokemon(input2, hiddenInput2, selectedPokemon2, preview2, pokemon);
+          
+          // Show match info
+          const strengthText = match.strength !== 'N/A' ? 
+            `<br>Match Score: ${parseFloat(match.strength).toFixed(2)}` : '';
+          
+          matchInfo.innerHTML = `
+            <strong>${isStrongest ? 'Strongest' : 'Weakest'} Match Found!</strong><br>
+            ${match.name} has been selected as your ${isStrongest ? 'strongest opponent' : 'weakest opponent'}.
+            ${strengthText}
+          `;
+          matchInfo.className = `match-info ${isStrongest ? 'strongest-info' : 'weakest-info'}`;
+          matchInfo.style.display = 'block';
+          
+        } else {
+          matchInfo.innerHTML = `
+            <strong>No ${matchType} match found</strong><br>
+            ${data.error || 'Please select a Pokemon manually.'}
+          `;
+          matchInfo.className = 'match-info error-info';
+          matchInfo.style.display = 'block';
+        }
+        
+      } catch (error) {
+        console.error(`Error finding ${matchType} match:`, error);
+        matchInfo.innerHTML = `
+          <strong>Error</strong><br>
+          Failed to find ${matchType} match. Please try again or select manually.
+        `;
+        matchInfo.className = 'match-info error-info';
+        matchInfo.style.display = 'block';
+      }
+      
+      // Reset button states
+      button.textContent = originalText;
+      button.classList.remove('match-button-loading');
+      button.disabled = !hiddenInput1.value;
+      otherButton.disabled = !hiddenInput1.value;
+    }
+    
+    // Match button event listeners
+    strongestMatchBtn.addEventListener('click', () => findMatch('strongest'));
+    weakestMatchBtn.addEventListener('click', () => findMatch('weakest'));
     
     // Event listener for input1
     input1.addEventListener('input', function() {
@@ -139,6 +346,10 @@
         hiddenInput1.value = '';
         selectedPokemon1.style.display = 'none';
         preview1.innerHTML = '';
+        strongestMatchBtn.disabled = true;
+        weakestMatchBtn.disabled = true;
+        matchInfo.style.display = 'none';
+        vsIndicator.style.display = 'none';
         battleButton.disabled = true;
       }
     });
@@ -157,7 +368,7 @@
       }
     });
     
-    // Event delegation for suggestion1 clicks
+    // Event delegation for suggestion clicks
     suggestions1.addEventListener('click', function(e) {
       const item = e.target.closest('.suggestion-item');
       if (item) {
@@ -171,7 +382,6 @@
       }
     });
     
-    // Event delegation for suggestion2 clicks
     suggestions2.addEventListener('click', function(e) {
       const item = e.target.closest('.suggestion-item');
       if (item) {
@@ -203,3 +413,5 @@
   });
 </script>
 {% endblock %}
+
+{% block extra_scripts %}{% endblock %}

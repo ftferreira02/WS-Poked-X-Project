@@ -12,6 +12,12 @@
 <http://poked-x.org/pokemon/rule/InferStrongAgainst> a spin:Rule ;
     spin:body pdx:construct2 .
 
+<http://poked-x.org/pokemon/rule/InferStrongestMatchAgainst> a spin:Rule ;
+    spin:body pdx:construct10 .
+
+<http://poked-x.org/pokemon/rule/InferWeakestMatchAgainst> a spin:Rule ;
+    spin:body pdx:construct11 .
+
 pdx:construct1 a sp:Construct ;
     sp:text """
     CONSTRUCT {
@@ -115,5 +121,110 @@ pdx:construct9 a sp:Construct ;
         ?pokemon pdx:primaryType ?t1 .
         ?pokemon pdx:secondaryType ?t2 .
         FILTER (?t1 != ?t2)
+    }
+"""^^xsd:string .
+
+
+pdx:construct10_simple a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?pokemon pdx:strongestMatchAgainst ?strongestOpponent .
+    }
+    WHERE {
+        # Para cada Pokémon, encontrar seu oponente mais forte
+        ?pokemon pdx:primaryType ?pokemonType ;
+                 pdx:defense ?pokemonDef ;
+                 pdx:spDefense ?pokemonSpDef .
+        
+        # Encontrar oponentes que são super efetivos contra este Pokémon
+        ?opponent pdx:primaryType ?opponentType ;
+                  pdx:attack ?oppAttack ;
+                  pdx:spAttack ?oppSpAttack .
+        
+        FILTER(?pokemon != ?opponent)
+        
+        # Verificar efetividade do oponente contra o Pokémon
+        ?eff pdx:attackingType ?opponentType ;
+             pdx:defendingType ?pokemonType ;
+             pdx:effectiveness ?effValue .
+        FILTER(?effValue >= 2.0)
+        
+        # Calcular "força" do oponente (stats ofensivos altos)
+        BIND((?oppAttack + ?oppSpAttack) AS ?opponentPower)
+        
+        # Selecionar apenas o oponente mais forte
+        {
+            SELECT ?pokemon (MAX(?opponentPower) AS ?maxPower) WHERE {
+                ?pokemon pdx:primaryType ?pokemonType .
+                ?opponent pdx:primaryType ?opponentType ;
+                          pdx:attack ?oppAttack ;
+                          pdx:spAttack ?oppSpAttack .
+                FILTER(?pokemon != ?opponent)
+                
+                ?eff pdx:attackingType ?opponentType ;
+                     pdx:defendingType ?pokemonType ;
+                     pdx:effectiveness ?effValue .
+                FILTER(?effValue >= 2.0)
+                
+                BIND((?oppAttack + ?oppSpAttack) AS ?opponentPower)
+            }
+            GROUP BY ?pokemon
+        }
+        
+        # Garantir que pegamos o oponente com o poder máximo
+        FILTER((?oppAttack + ?oppSpAttack) = ?maxPower)
+        BIND(?opponent AS ?strongestOpponent)
+    }
+"""^^xsd:string .
+
+pdx:construct11_simple a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?pokemon pdx:weakestMatchAgainst ?weakestOpponent .
+    }
+    WHERE {
+        # Para cada Pokémon, encontrar seu oponente mais fraco
+        ?pokemon pdx:primaryType ?pokemonType ;
+                 pdx:attack ?pokemonAttack ;
+                 pdx:spAttack ?pokemonSpAttack .
+        
+        # Encontrar oponentes que são resistentes ou imunes aos ataques deste Pokémon
+        ?opponent pdx:primaryType ?opponentType ;
+                  pdx:defense ?oppDef ;
+                  pdx:spDefense ?oppSpDef .
+        
+        FILTER(?pokemon != ?opponent)
+        
+        # Verificar efetividade do Pokémon contra o oponente (baixa efetividade)
+        ?eff pdx:attackingType ?pokemonType ;
+             pdx:defendingType ?opponentType ;
+             pdx:effectiveness ?effValue .
+        FILTER(?effValue <= 0.5)
+        
+        # Calcular "resistência" do oponente (stats defensivos altos)
+        BIND((?oppDef + ?oppSpDef) AS ?opponentResistance)
+        
+        # Selecionar apenas o oponente mais resistente (mais difícil de derrotar)
+        {
+            SELECT ?pokemon (MAX(?opponentResistance) AS ?maxResistance) WHERE {
+                ?pokemon pdx:primaryType ?pokemonType .
+                ?opponent pdx:primaryType ?opponentType ;
+                          pdx:defense ?oppDef ;
+                          pdx:spDefense ?oppSpDef .
+                FILTER(?pokemon != ?opponent)
+                
+                ?eff pdx:attackingType ?pokemonType ;
+                     pdx:defendingType ?opponentType ;
+                     pdx:effectiveness ?effValue .
+                FILTER(?effValue <= 0.5)
+                
+                BIND((?oppDef + ?oppSpDef) AS ?opponentResistance)
+            }
+            GROUP BY ?pokemon
+        }
+        
+        # Garantir que pegamos o oponente com a resistência máxima
+        FILTER((?oppDef + ?oppSpDef) = ?maxResistance)
+        BIND(?opponent AS ?weakestOpponent)
     }
 """^^xsd:string .
