@@ -211,19 +211,45 @@
     }
     </style>
 
-    <div class="row pokemon-grid" property="itemListElement" typeof="ItemList">
     <div class="container my-4">
-      <div class="d-flex justify-content-center">
-        <form action="{% url 'apply_spin_rules' %}" method="post" class="w-50">
+      <div class="d-flex justify-content-center" id="spinRulesContainer">
+        <form action="{% url 'apply_spin_rules' %}" method="post" class="w-50" id="spinRulesForm">
           {% csrf_token %}
-          <button type="submit" class="btn btn-success btn-lg w-100">
+          <button type="submit" class="btn btn-success btn-lg w-100" id="spinRulesButton">
             <i class="bi bi-lightning-charge-fill me-2"></i>
             Aplicar SPIN Rules
           </button>
         </form>
       </div>
     </div>
-~
+
+    <script>
+      // Check if SPIN rules have been applied before
+      document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('spinRulesApplied')) {
+          document.getElementById('spinRulesContainer').style.display = 'none';
+        }
+      });
+
+      // Handle form submission
+      document.getElementById('spinRulesForm').addEventListener('submit', function(e) {
+        // Store that SPIN rules have been applied
+        localStorage.setItem('spinRulesApplied', 'true');
+        
+        // Disable the button immediately
+        document.getElementById('spinRulesButton').disabled = true;
+        
+        // Hide the container with a fade effect
+        const container = document.getElementById('spinRulesContainer');
+        container.style.transition = 'opacity 0.5s ease';
+        container.style.opacity = '0';
+        
+        setTimeout(() => {
+          container.style.display = 'none';
+        }, 500);
+      });
+    </script>
+
     {# --- Pokémon Results Grid --- #}
     <div class="row pokemon-grid" property="itemListElement" typeof="ItemList">
         {% for pokemon in pokemons %}
