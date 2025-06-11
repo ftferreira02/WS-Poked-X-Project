@@ -146,10 +146,8 @@ def get_same_type_pokemons(pokemon_id):
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
     SELECT ?otherName WHERE {{
-        <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:primaryType ?type .
-        ?other pdx:primaryType ?type ;
-               sc:name ?otherName .
-        FILTER(<http://poked-x.org/pokemon/Pokemon/{pokemon_id}> != ?other)
+        <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:hasSameTypeAs ?other .
+        ?other sc:name ?otherName .
     }}
     ORDER BY RAND()
     LIMIT 1
