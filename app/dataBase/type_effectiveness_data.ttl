@@ -1,0 +1,268 @@
+@prefix pdx: <http://poked-x.org/pokemon/> .
+@prefix pdxType: <http://poked-x.org/pokemon/Type/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Type Effectiveness Data
+
+# This file contains the type effectiveness relationships needed for the SPIN rules
+
+# Fire vs other types
+
+pdx:effectiveness_fire_grass a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fire ;
+    pdx:defendingType pdxType:grass ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_fire_ice a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fire ;
+    pdx:defendingType pdxType:ice ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_fire_bug a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fire ;
+    pdx:defendingType pdxType:bug ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_fire_steel a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fire ;
+    pdx:defendingType pdxType:steel ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_fire_water a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fire ;
+    pdx:defendingType pdxType:water ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_fire_fire a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fire ;
+    pdx:defendingType pdxType:fire ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_fire_rock a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fire ;
+    pdx:defendingType pdxType:rock ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_fire_dragon a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fire ;
+    pdx:defendingType pdxType:dragon ;
+    pdx:effectiveness 0.5 .
+
+# Water vs other types
+
+pdx:effectiveness_water_fire a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:water ;
+    pdx:defendingType pdxType:fire ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_water_ground a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:water ;
+    pdx:defendingType pdxType:ground ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_water_rock a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:water ;
+    pdx:defendingType pdxType:rock ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_water_water a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:water ;
+    pdx:defendingType pdxType:water ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_water_grass a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:water ;
+    pdx:defendingType pdxType:grass ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_water_dragon a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:water ;
+    pdx:defendingType pdxType:dragon ;
+    pdx:effectiveness 0.5 .
+
+# Grass vs other types
+
+pdx:effectiveness_grass_water a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:grass ;
+    pdx:defendingType pdxType:water ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_grass_ground a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:grass ;
+    pdx:defendingType pdxType:ground ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_grass_rock a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:grass ;
+    pdx:defendingType pdxType:rock ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_grass_fire a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:grass ;
+    pdx:defendingType pdxType:fire ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_grass_grass a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:grass ;
+    pdx:defendingType pdxType:grass ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_grass_poison a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:grass ;
+    pdx:defendingType pdxType:poison ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_grass_flying a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:grass ;
+    pdx:defendingType pdxType:flying ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_grass_bug a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:grass ;
+    pdx:defendingType pdxType:bug ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_grass_dragon a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:grass ;
+    pdx:defendingType pdxType:dragon ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_grass_steel a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:grass ;
+    pdx:defendingType pdxType:steel ;
+    pdx:effectiveness 0.5 .
+
+# Electric vs other types
+
+pdx:effectiveness_electric_water a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:electric ;
+    pdx:defendingType pdxType:water ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_electric_flying a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:electric ;
+    pdx:defendingType pdxType:flying ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_electric_electric a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:electric ;
+    pdx:defendingType pdxType:electric ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_electric_grass a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:electric ;
+    pdx:defendingType pdxType:grass ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_electric_dragon a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:electric ;
+    pdx:defendingType pdxType:dragon ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_electric_ground a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:electric ;
+    pdx:defendingType pdxType:ground ;
+    pdx:effectiveness 0.0 .
+
+# Ice vs other types
+
+pdx:effectiveness_ice_grass a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:ice ;
+    pdx:defendingType pdxType:grass ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_ice_ground a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:ice ;
+    pdx:defendingType pdxType:ground ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_ice_flying a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:ice ;
+    pdx:defendingType pdxType:flying ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_ice_dragon a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:ice ;
+    pdx:defendingType pdxType:dragon ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_ice_fire a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:ice ;
+    pdx:defendingType pdxType:fire ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_ice_water a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:ice ;
+    pdx:defendingType pdxType:water ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_ice_ice a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:ice ;
+    pdx:defendingType pdxType:ice ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_ice_steel a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:ice ;
+    pdx:defendingType pdxType:steel ;
+    pdx:effectiveness 0.5 .
+
+# Fighting vs other types
+
+pdx:effectiveness_fighting_normal a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fighting ;
+    pdx:defendingType pdxType:normal ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_fighting_ice a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fighting ;
+    pdx:defendingType pdxType:ice ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_fighting_rock a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fighting ;
+    pdx:defendingType pdxType:rock ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_fighting_dark a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fighting ;
+    pdx:defendingType pdxType:dark ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_fighting_steel a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fighting ;
+    pdx:defendingType pdxType:steel ;
+    pdx:effectiveness 2.0 .
+
+pdx:effectiveness_fighting_poison a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fighting ;
+    pdx:defendingType pdxType:poison ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_fighting_flying a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fighting ;
+    pdx:defendingType pdxType:flying ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_fighting_psychic a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fighting ;
+    pdx:defendingType pdxType:psychic ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_fighting_bug a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fighting ;
+    pdx:defendingType pdxType:bug ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_fighting_fairy a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fighting ;
+    pdx:defendingType pdxType:fairy ;
+    pdx:effectiveness 0.5 .
+
+pdx:effectiveness_fighting_ghost a pdx:TypeEffectiveness ;
+    pdx:attackingType pdxType:fighting ;
+    pdx:defendingType pdxType:ghost ;
+    pdx:effectiveness 0.0 .
+
+# Add more type effectiveness relationships as needed...
+
+# This is a comprehensive but not exhaustive list

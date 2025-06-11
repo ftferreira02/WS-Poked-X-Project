@@ -12,6 +12,12 @@
 <http://poked-x.org/pokemon/rule/InferStrongAgainst> a spin:Rule ;
     spin:body pdx:construct2 .
 
+<http://poked-x.org/pokemon/rule/InferStrongestMatchAgainst> a spin:Rule ;
+    spin:body pdx:construct10 .
+
+<http://poked-x.org/pokemon/rule/InferWeakestMatchAgainst> a spin:Rule ;
+    spin:body pdx:construct11 .
+
 pdx:construct1 a sp:Construct ;
     sp:text """
     CONSTRUCT {
@@ -115,5 +121,59 @@ pdx:construct9 a sp:Construct ;
         ?pokemon pdx:primaryType ?t1 .
         ?pokemon pdx:secondaryType ?t2 .
         FILTER (?t1 != ?t2)
+    }
+"""^^xsd:string .
+
+pdx:construct10_simple a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?attacker pdx:strongestMatchAgainst ?target .
+    }
+    WHERE {
+        # Apenas Pokémon com stats altos como atacantes
+        ?attacker pdx:attack ?atkAttack ;
+                  pdx:spAttack ?atkSpAttack ;
+                  pdx:primaryType ?atkType .
+        FILTER(?atkAttack > 100 || ?atkSpAttack > 100)
+        
+        # Apenas alvos com defesas baixas
+        ?target pdx:defense ?defDefense ;
+                pdx:spDefense ?defSpDefense ;
+                pdx:primaryType ?defType .
+        FILTER(?defDefense < 80 || ?defSpDefense < 80)
+        FILTER(?attacker != ?target)
+        
+        # Verificar se é super efetivo
+        ?eff pdx:attackingType ?atkType ;
+             pdx:defendingType ?defType ;
+             pdx:effectiveness ?effValue .
+        FILTER(?effValue >= 2.0)
+    }
+"""^^xsd:string .
+
+pdx:construct11_simple a sp:Construct ;
+    sp:text """
+    CONSTRUCT {
+        ?attacker pdx:weakestMatchAgainst ?target .
+    }
+    WHERE {
+        # Apenas Pokémon com stats baixos como atacantes (fracos)
+        ?attacker pdx:attack ?atkAttack ;
+                  pdx:spAttack ?atkSpAttack ;
+                  pdx:primaryType ?atkType .
+        FILTER(?atkAttack < 80 || ?atkSpAttack < 80)
+        
+        # Apenas alvos com defesas altas (difíceis de derrotar)
+        ?target pdx:defense ?defDefense ;
+                pdx:spDefense ?defSpDefense ;
+                pdx:primaryType ?defType .
+        FILTER(?defDefense > 100 || ?defSpDefense > 100)
+        FILTER(?attacker != ?target)
+        
+        # Verificar se é pouco efetivo ou ineficaz
+        ?eff pdx:attackingType ?atkType ;
+             pdx:defendingType ?defType ;
+             pdx:effectiveness ?effValue .
+        FILTER(?effValue <= 0.5)
     }
 """^^xsd:string .
