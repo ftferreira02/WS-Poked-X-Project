@@ -234,59 +234,68 @@ def check_dbpedia_status(request, name):
     return JsonResponse({"name": name, "exists": exists})
 
 def compare_teams(request):
+    """View for comparing Pokemon teams"""
     if request.method == 'POST':
-        team1_ids = request.POST.getlist('team1[]')
-        team2_ids = request.POST.getlist('team2[]')
-        
-        if len(team1_ids) > 6 or len(team2_ids) > 6:
-            return JsonResponse({'error': 'Teams cannot have more than 6 Pokémon'}, status=400)
+        try:
+            data = json.loads(request.body)
+            team1_ids = data.get('team1', [])
+            team2_ids = data.get('team2', [])
             
-        team1_coverage = get_team_coverage(team1_ids)
-        team2_coverage = get_team_coverage(team2_ids)
-        
-        team1_roles = analyze_team_roles(team1_ids)
-        team2_roles = analyze_team_roles(team2_ids)
-        
-        return JsonResponse({
-            'team1': {
-                'coverage': {
-                    'offensive': list(team1_coverage['offensive']),
-                    'defensive': list(team1_coverage['defensive'])
+            if len(team1_ids) > 6 or len(team2_ids) > 6:
+                return JsonResponse({'error': 'Teams cannot have more than 6 Pokémon'}, status=400)
+            
+            # Get team coverage and roles analysis
+            team1_coverage = get_team_coverage(team1_ids)
+            team2_coverage = get_team_coverage(team2_ids)
+            
+            team1_roles = analyze_team_roles(team1_ids)
+            team2_roles = analyze_team_roles(team2_ids)
+            
+            # Calculate balance scores (example implementation)
+            team1_balance = len(team1_roles) / 6 * 100 if team1_roles else 0
+            team2_balance = len(team2_roles) / 6 * 100 if team2_roles else 0
+            
+            return JsonResponse({
+                'team1': {
+                    'offensive_coverage': team1_coverage['offensive'],
+                    'defensive_coverage': team1_coverage['defensive'],
+                    'roles': team1_roles,
+                    'balance_score': f"{team1_balance:.1f}%"
                 },
-                'roles': team1_roles
-            },
-            'team2': {
-                'coverage': {
-                    'offensive': list(team2_coverage['offensive']),
-                    'defensive': list(team2_coverage['defensive'])
-                },
-                'roles': team2_roles
-            }
-        })
+                'team2': {
+                    'offensive_coverage': team2_coverage['offensive'],
+                    'defensive_coverage': team2_coverage['defensive'],
+                    'roles': team2_roles,
+                    'balance_score': f"{team2_balance:.1f}%"
+                }
+            })
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
     
-    # For GET requests, render the template with all Pokémon data
-    query = """
-    PREFIX pdx: <http://poked-x.org/pokemon/>
-    PREFIX sc: <http://schema.org/>
+    # GET request - render the template
+    return render(request, 'compare_teams.html')
+
+@csrf_exempt
+def search_pokemon_ajax(request):
+    """AJAX endpoint for Pokemon search autocomplete"""
+    query = request.GET.get('query', '').strip().lower()
+    if len(query) < 2:
+        return JsonResponse({'results': []})
     
-    SELECT ?id ?name ?image WHERE {
-        ?pokemon a pdx:Pokemon ;
-                sc:identifier ?id ;
-                sc:name ?name .
-        OPTIONAL { ?pokemon sc:image ?image }
-    }
-    ORDER BY ?id
-    """
-    results = run_query(query)
-    pokemon_data = []
-    for result in results["results"]["bindings"]:
-        pokemon_data.append({
-            'id': result['id']['value'],
-            'name': result['name']['value'],
-            'image': result.get('image', {}).get('value', '')
-        })
+    # Get all Pokemon that match the query
+    pokemons = PokemonManager.search_by_name(query)
     
-    return render(request, 'compare_teams.html', {
-        'pokemon_data_json': json.dumps(pokemon_data)
-    })
+    # Format results for autocomplete
+    results = [{
+        'id': p.id,
+        'number': p.number,
+        'name': p.name,
+        'primaryType': p.primary_type,
+        'secondaryType': p.secondary_type if hasattr(p, 'secondary_type') else None,
+        'imageUrl': f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{p.number}.png"
+    } for p in pokemons[:10]]  # Limit to 10 results
+    
+    return JsonResponse({'results': results})
 

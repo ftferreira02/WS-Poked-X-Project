@@ -4,7 +4,7 @@ from django.urls import path
 from app.views.geral_view import (
     search_pokemon, pokemon_stats, compare_and_select_pokemon,
     ask_pokemon_question, export_pokemon_rdf, all_evolution_chains,
-    check_dbpedia_status, compare_teams
+    check_dbpedia_status, compare_teams, search_pokemon_ajax
 )
 from app.views.fight.fight_view import delete_battle_view, pokemon_battle_view, pokemon_selection_view
 
@@ -22,6 +22,7 @@ urlpatterns = [
     path('pokemon/export/id/<int:pokemon_id>/', export_pokemon_rdf, name='export_pokemon_rdf_by_id'),
     path('evolution/', all_evolution_chains, name='evolution_chain'),
     path("debug/dbpedia/<str:name>/", check_dbpedia_status, name='check_dbpedia_status'),
+    path('pokemon/search/ajax/', search_pokemon_ajax, name='search_pokemon_ajax'),
 ]
 
 
