@@ -14,17 +14,17 @@ services:
       - graphdb-data:/opt/graphdb/home
     restart: unless-stopped
 
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/webproj
-    working_dir: /webproj
-    ports:
-      - "8000:8000"
-    depends_on:
-      - graphdb
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - .:/webproj
+  #   working_dir: /webproj
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     - graphdb
 
 
 volumes:
