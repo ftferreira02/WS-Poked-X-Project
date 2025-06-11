@@ -597,3 +597,159 @@ class PokemonManager:
         except Exception as e:
             print(f"Erro ao obter Pokémon com id {pokemon_id}: {e}")
             return None
+
+    @staticmethod
+    def search_by_category(category):
+        """Search Pokemon by inferred class or SPIN rule category."""
+        query = ""
+        if category == "dual_type":
+            query = """
+            PREFIX pdx: <http://poked-x.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf WHERE {
+                ?pokemon a pdx:Pokemon ;
+                        sc:name ?name ;
+                        pdx:pokedexNumber ?number ;
+                        pdx:primaryType ?primaryType ;
+                        pdx:secondaryType ?secondaryType ;
+                        pdx:totalPoints ?totalPoints .
+                OPTIONAL { ?pokemon pdx:megaEvolutionOf ?megaOf }
+            }
+            ORDER BY ?number
+            """
+        elif category == "legendary":
+            query = """
+            PREFIX pdx: <http://poked-x.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf WHERE {
+                ?pokemon a pdx:Pokemon ;
+                        sc:name ?name ;
+                        pdx:pokedexNumber ?number ;
+                        pdx:primaryType ?primaryType ;
+                        pdx:isLegendary true ;
+                        pdx:totalPoints ?totalPoints .
+                OPTIONAL { ?pokemon pdx:secondaryType ?secondaryType }
+                OPTIONAL { ?pokemon pdx:megaEvolutionOf ?megaOf }
+            }
+            ORDER BY ?number
+            """
+        elif category == "mega":
+            query = """
+            PREFIX pdx: <http://poked-x.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf WHERE {
+                ?pokemon a pdx:Pokemon ;
+                        sc:name ?name ;
+                        pdx:pokedexNumber ?number ;
+                        pdx:primaryType ?primaryType ;
+                        pdx:totalPoints ?totalPoints ;
+                        pdx:megaEvolutionOf ?megaOf .
+                OPTIONAL { ?pokemon pdx:secondaryType ?secondaryType }
+            }
+            ORDER BY ?number
+            """
+        elif category == "strong":
+            query = """
+            PREFIX pdx: <http://poked-x.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf WHERE {
+                ?pokemon a pdx:Pokemon ;
+                        sc:name ?name ;
+                        pdx:pokedexNumber ?number ;
+                        pdx:primaryType ?primaryType ;
+                        pdx:totalPoints ?totalPoints ;
+                        pdx:isStrong true .
+                OPTIONAL { ?pokemon pdx:secondaryType ?secondaryType }
+                OPTIONAL { ?pokemon pdx:megaEvolutionOf ?megaOf }
+            }
+            ORDER BY ?number
+            """
+        elif category == "old_gen":
+            query = """
+            PREFIX pdx: <http://poked-x.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf WHERE {
+                ?pokemon a pdx:Pokemon ;
+                        sc:name ?name ;
+                        pdx:pokedexNumber ?number ;
+                        pdx:primaryType ?primaryType ;
+                        pdx:totalPoints ?totalPoints ;
+                        pdx:isFromOldGen true .
+                OPTIONAL { ?pokemon pdx:secondaryType ?secondaryType }
+                OPTIONAL { ?pokemon pdx:megaEvolutionOf ?megaOf }
+            }
+            ORDER BY ?number
+            """
+        elif category == "fast":
+            query = """
+            PREFIX pdx: <http://poked-x.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf WHERE {
+                ?pokemon a pdx:Pokemon ;
+                        sc:name ?name ;
+                        pdx:pokedexNumber ?number ;
+                        pdx:primaryType ?primaryType ;
+                        pdx:totalPoints ?totalPoints ;
+                        pdx:isFast true .
+                OPTIONAL { ?pokemon pdx:secondaryType ?secondaryType }
+                OPTIONAL { ?pokemon pdx:megaEvolutionOf ?megaOf }
+            }
+            ORDER BY ?number
+            """
+        elif category == "mixed_type":
+            query = """
+            PREFIX pdx: <http://poked-x.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf WHERE {
+                ?pokemon a pdx:Pokemon ;
+                        sc:name ?name ;
+                        pdx:pokedexNumber ?number ;
+                        pdx:primaryType ?primaryType ;
+                        pdx:totalPoints ?totalPoints ;
+                        pdx:isMixedType true .
+                OPTIONAL { ?pokemon pdx:secondaryType ?secondaryType }
+                OPTIONAL { ?pokemon pdx:megaEvolutionOf ?megaOf }
+            }
+            ORDER BY ?number
+            """
+        elif category == "glass_cannon":
+            query = """
+            PREFIX pdx: <http://poked-x.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf WHERE {
+                ?pokemon a pdx:Pokemon ;
+                        sc:name ?name ;
+                        pdx:pokedexNumber ?number ;
+                        pdx:primaryType ?primaryType ;
+                        pdx:totalPoints ?totalPoints ;
+                        pdx:spAttack ?spAtk ;
+                        pdx:defense ?def .
+                FILTER(?spAtk >= 100 && ?def <= 70)
+                OPTIONAL { ?pokemon pdx:secondaryType ?secondaryType }
+                OPTIONAL { ?pokemon pdx:megaEvolutionOf ?megaOf }
+            }
+            ORDER BY ?number
+            """
+        elif category == "fighter":
+            query = """
+            PREFIX pdx: <http://poked-x.org/pokemon/>
+            PREFIX sc: <http://schema.org/>
+            SELECT ?pokemon ?name ?number ?primaryType ?secondaryType ?totalPoints ?megaOf WHERE {
+                ?pokemon a pdx:Pokemon ;
+                        sc:name ?name ;
+                        pdx:pokedexNumber ?number ;
+                        pdx:primaryType ?primaryType ;
+                        pdx:totalPoints ?totalPoints ;
+                        pdx:attack ?atk ;
+                        pdx:defense ?def .
+                FILTER(?atk >= 90 && ?def >= 85)
+                OPTIONAL { ?pokemon pdx:secondaryType ?secondaryType }
+                OPTIONAL { ?pokemon pdx:megaEvolutionOf ?megaOf }
+            }
+            ORDER BY ?number
+            """
+
+        if query:
+            results = run_query(query)
+            return PokemonManager._parse_results(results)
+        return []

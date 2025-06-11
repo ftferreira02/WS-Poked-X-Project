@@ -24,28 +24,47 @@
     </form>
 
 <div class="container mt-4">
-    <div class="row mb-4 align-items-center filter-sort-section">
-        <div class="col-lg-9 col-md-8 type-filters">
-            <h5 class="filter-title me-3">Filter by type:</h5>
-             <div class="type-list" property="filter">
-                 <a href="{% url 'search_pokemon' %}?name={{ name_filter|urlencode }}&sort={{ sort_option }}"
-                    class="type all-types {% if not active_type %}active{% endif %}">
-                     All
-                 </a>
-                 {% for t in pokemon_types %}
-                     <a href="?type={{ t|urlencode }}{% if name_filter %}&name={{ name_filter|urlencode }}{% endif %}&sort={{ sort_option }}"
-                        class="type {{ t }} {% if t == active_type %}active{% endif %}"
-                        property="filterValue">
-                         {{ t|title }}
-                     </a>
-                 {% endfor %}
-             </div>
+    <div class="row mb-4 align-items-start filter-sort-section">
+        <div class="col-lg-5 col-md-6 type-filters">
+            <h5 class="filter-title">Filter by type:</h5>
+            <div class="type-list" property="filter">
+                <a href="{% url 'search_pokemon' %}?name={{ name_filter|urlencode }}&sort={{ sort_option }}"
+                   class="type all-types {% if not active_type %}active{% endif %}">
+                    All
+                </a>
+                {% for t in pokemon_types %}
+                    <a href="?type={{ t|urlencode }}{% if name_filter %}&name={{ name_filter|urlencode }}{% endif %}&sort={{ sort_option }}"
+                       class="type {{ t }} {% if t == active_type %}active{% endif %}"
+                       property="filterValue">
+                        {{ t|title }}
+                    </a>
+                {% endfor %}
+            </div>
         </div>
 
-        <div class="col-lg-3 col-md-4 sort-selector">
+        <div class="col-lg-5 col-md-6 category-filters">
+            <h5 class="filter-title">Filter by category:</h5>
+            <div class="category-list">
+                <a href="{% url 'search_pokemon' %}?name={{ name_filter|urlencode }}&sort={{ sort_option }}"
+                   class="category all-categories {% if not active_category %}active{% endif %}">
+                    All
+                </a>
+                {% for category, label in pokemon_categories.items %}
+                    <a href="?category={{ category|urlencode }}{% if name_filter %}&name={{ name_filter|urlencode }}{% endif %}&sort={{ sort_option }}"
+                       class="category {{ category }} {% if category == active_category %}active{% endif %}"
+                       title="{{ label }}"
+                       property="filterValue">
+                        {{ label }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-12 sort-selector">
             <form method="GET" action="{% url 'search_pokemon' %}" class="d-flex align-items-center justify-content-md-end">
                 <input type="hidden" name="name" value="{{ name_filter|default:'' }}">
                 <input type="hidden" name="type" value="{{ active_type|default:'' }}">
+                <input type="hidden" name="category" value="{{ active_category|default:'' }}">
 
                 <label for="sort" class="form-label me-2 mb-0 fw-bold">Sort by:</label>
                 <select name="sort" id="sort" class="form-select form-select-sm" onchange="this.form.submit()" property="sortOption">
@@ -59,6 +78,138 @@
             </form>
         </div>
     </div>
+
+    <style>
+    .category-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 0.5rem;
+        justify-content: flex-start;
+        max-width: 600px;
+    }
+
+    .category {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1.2rem;
+        border-radius: 25px;
+        text-decoration: none;
+        color: white;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        min-width: 120px;
+        text-align: center;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+    }
+
+    .category.all-categories {
+        background-color: #78909c;
+        min-width: 80px;
+    }
+
+    .category.dual_type {
+        background-color: #9575cd;
+    }
+
+    .category.glass_cannon {
+        background-color: #7e57c2;
+    }
+
+    .category.legendary {
+        background-color: #ffd700;
+        color: #333;
+    }
+
+    .category.mega {
+        background-color: #4db6ac;
+    }
+
+    .category.strong {
+        background-color: #f06292;
+    }
+
+    .category.old_gen {
+        background-color: #8d6e63;
+    }
+
+    .category:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        filter: brightness(108%);
+        text-decoration: none;
+        color: white;
+    }
+
+    .category.legendary:hover {
+        color: #333;
+    }
+
+    .category.active {
+        transform: translateY(1px);
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        filter: brightness(95%);
+    }
+
+    .filter-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #444;
+        margin-bottom: 1rem;
+        letter-spacing: 0.3px;
+    }
+
+    .filter-sort-section {
+        background-color: #f8f9fa;
+        padding: 1.8rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    @media (max-width: 768px) {
+        .category-filters {
+            margin-top: 2rem;
+        }
+        .sort-selector {
+            margin-top: 2rem;
+        }
+        .filter-sort-section {
+            padding: 1.2rem;
+        }
+        .category {
+            min-width: calc(50% - 0.6rem);
+            padding: 0.5rem 1rem;
+        }
+        .category-list {
+            gap: 0.8rem;
+        }
+    }
+
+    /* Adjust the type filters to ensure consistency */
+    .type-list {
+        gap: 0.6rem;
+        margin-top: 0.5rem;
+    }
+
+    .type, .category {
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    /* Update the container layout */
+    .filter-sort-section > .row {
+        --bs-gutter-x: 2rem;
+    }
+
+    .type-filters, .category-filters {
+        padding-right: 2rem;
+    }
+    </style>
 
     <div class="row pokemon-grid" property="itemListElement" typeof="ItemList">
         {% for pokemon in pokemons %}
