@@ -60,6 +60,17 @@
   <!-- Adicione este código abaixo da div .game e antes da div .status -->
   <div class="battle-history-container">
     <div class="battle-history-title">Battle Historic</div>
+    <!-- Debug output -->
+    <div style="display: none;">
+      Debug - Battle History Data:
+      {% for battle in battle_history %}
+        Battle ID: {{ battle.battle_id }}
+        Pokemon1: {{ battle.pokemon1_name }}
+        Pokemon2: {{ battle.pokemon2_name }}
+        Winner: {{ battle.winner_name }}
+        Date: {{ battle.date }}
+      {% endfor %}
+    </div>
     {% for battle in battle_history %}
     <div class="battle-log-entry">
       <span class="battle-date">{{ battle.date|date:"Y-m-d H:i" }}</span><br />
@@ -67,6 +78,7 @@
         ⚔️ {{ battle.pokemon1_name }} vs {{ battle.pokemon2_name }}<br />
         🏆 Vencedor: <strong>{{ battle.winner_name }}</strong>
       </span>
+      <!-- Debug: Battle ID = {{ battle.battle_id }} -->
       <form method="post" action="{% url 'delete_battle' battle.battle_id %}?pokemon1_id={{ pokemon1.id }}&pokemon2_id={{ pokemon2.id }}" style="display:inline;">
         {% csrf_token %}
         <button type="submit" title="Remove Battle" class="remove-battle-button" style="background-color: transparent; border: none; cursor: pointer; color: red;">

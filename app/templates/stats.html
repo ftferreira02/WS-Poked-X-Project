@@ -25,70 +25,73 @@
     </div>
   {% else %}
     <div class="column card-column">
-      <div class="card">
-        <h1>{{ stats.name }}</h1>
-        <h2>{{ stats.pokedexNumber }}</h2>
+      <div class="card" vocab="http://schema.org/ http://poked-x.org/pokemon/" typeof="pdx:Pokemon" resource="http://poked-x.org/pokemon/Pokemon/{{ stats.id }}">
+        <h1 property="name">{{ stats.name }}</h1>
+        <h2 property="identifier">{{ stats.pokedexNumber }}</h2>
 
         <div class="image">
-          <img src="{% static 'pokemon-images-index/' %}{{ stats.id }}.png?v={{ stats.id }}" alt="{{ stats.name }}">
+          <img src="{% static 'pokemon-images-index/' %}{{ stats.id }}.png?v={{ stats.id }}" 
+               alt="{{ stats.name }}" 
+               property="image">
         </div>
 
         <div class="descripton">
-          <p>{{ stats.description }}</p>
+          <p property="description">{{ stats.description }}</p>
 
           {% if stats.designer or stats.firstAppearance %}
             <div class="about">
               {% if stats.designer %}
-                <p><strong>designer:</strong> {{ stats.designer }}</p>
+                <p><strong>designer:</strong> <span property="dbo:designer">{{ stats.designer }}</span></p>
               {% endif %}
               {% if stats.firstAppearance %}
-                <p><strong>First Appearance:</strong> {{ stats.firstAppearance }}</p>
+                <p><strong>First Appearance:</strong> <span property="dbo:firstAppearance">{{ stats.firstAppearance }}</span></p>
               {% endif %}
             </div>
           {% endif %}
         </div>
         
-        <div class="type {{ stats.primaryType|lower }}" id="primary-type">
+        <div class="type {{ stats.primaryType|lower }}" id="primary-type" property="pdx:primaryType">
           {{ stats.primaryType|title }}
         </div>
         <div class="info-grid">
           <div>
             <p><img class="icon-img" src="{% static 'icons/height.svg' %}" alt="height">
-               <span class="highlight">Height:</span> {{ stats.height }} m</p>
+               <span class="highlight">Height:</span> <span property="pdx:height">{{ stats.height }}</span> m</p>
             <p><img class="icon-img" src="{% static 'icons/generation.svg' %}" alt="generation">
-               <span class="highlight">Generation:</span> {{ stats.generation }}</p>
+               <span class="highlight">Generation:</span> <span property="pdx:generation">{{ stats.generation }}</span></p>
           </div>
           <div>
             <p><img class="icon-img" src="{% static 'icons/weight.svg' %}" alt="weight">
-               <span class="highlight">Weight:</span> {{ stats.weight }} kg</p>
+               <span class="highlight">Weight:</span> <span property="pdx:weight">{{ stats.weight }}</span> kg</p>
             <p><img class="icon-img" src="{% static 'icons/crown.svg' %}" alt="legendary">
-               <span class="highlight">Legendary:</span> {{ stats.isLegendary|yesno:"Yes,No" }}</p>
+               <span class="highlight">Legendary:</span> <span property="pdx:isLegendary">{{ stats.isLegendary|yesno:"Yes,No" }}</span></p>
           </div>
         </div>
         
         {% if stats.secondaryType != "nan" and stats.secondaryType %}
           <p class="secondary-type">
-            <span class="highlight" id="secondary-type">Secondary Type:</span> {{ stats.secondaryType|title }}
+            <span class="highlight" id="secondary-type">Secondary Type:</span> 
+            <span property="pdx:secondaryType">{{ stats.secondaryType|title }}</span>
           </p>
         {% endif %}
 
-        <div class="stats">
+        <div class="stats" property="pdx:stats" typeof="pdx:PokemonStats">
           <div class="column-stats">
-            <div class="stat"><span>HP</span><div class="bar"><div class="fill" style="width: {{ stats.hp|floatformat:0 }}%;"></div></div></div>
-            <div class="stat"><span>Attack</span><div class="bar"><div class="fill" style="width: {{ stats.attack|floatformat:0 }}%;"></div></div></div>
-            <div class="stat"><span>Defense</span><div class="bar"><div class="fill" style="width: {{ stats.defense|floatformat:0 }}%;"></div></div></div>
+            <div class="stat"><span>HP</span><div class="bar"><div class="fill" style="width: {{ stats.hp|floatformat:0 }}%;" property="pdx:hp" content="{{ stats.hp }}"></div></div></div>
+            <div class="stat"><span>Attack</span><div class="bar"><div class="fill" style="width: {{ stats.attack|floatformat:0 }}%;" property="pdx:attack" content="{{ stats.attack }}"></div></div></div>
+            <div class="stat"><span>Defense</span><div class="bar"><div class="fill" style="width: {{ stats.defense|floatformat:0 }}%;" property="pdx:defense" content="{{ stats.defense }}"></div></div></div>
           </div>
 
           <div class="column-stats">
-            <div class="stat"><span>Sp. Attack</span><div class="bar"><div class="fill" style="width: {{ stats.spAttack|floatformat:0 }}%;"></div></div></div>
-            <div class="stat"><span>Sp. Defense</span><div class="bar"><div class="fill" style="width: {{ stats.spDefense|floatformat:0 }}%;"></div></div></div>
-            <div class="stat"><span>Speed</span><div class="bar"><div class="fill" style="width: {{ stats.speed|floatformat:0 }}%;"></div></div></div>
+            <div class="stat"><span>Sp. Attack</span><div class="bar"><div class="fill" style="width: {{ stats.spAttack|floatformat:0 }}%;" property="pdx:specialAttack" content="{{ stats.spAttack }}"></div></div></div>
+            <div class="stat"><span>Sp. Defense</span><div class="bar"><div class="fill" style="width: {{ stats.spDefense|floatformat:0 }}%;" property="pdx:specialDefense" content="{{ stats.spDefense }}"></div></div></div>
+            <div class="stat"><span>Speed</span><div class="bar"><div class="fill" style="width: {{ stats.speed|floatformat:0 }}%;" property="pdx:speed" content="{{ stats.speed }}"></div></div></div>
           </div>
         </div>
 
         <div class="card-footer">
           <div class="export-rdf">
-            <a class="export-link" href="{% url 'export_pokemon_rdf_by_id' stats.id %}" target="_blank">
+            <a class="export-link" href="{% url 'export_pokemon_rdf_by_id' stats.id %}" target="_blank" rel="alternate" type="application/rdf+xml">
               Export RDF
             </a>
           </div>
@@ -111,9 +114,9 @@
         <div class="matchup-container">
           <div class="weak-against">
             <h3>Weak Against</h3>
-            <div class="type-list">
+            <div class="type-list" property="pdx:weakAgainst">
               {% for type in stats.strongAgainst %}
-                <span class="type {{ type }}">{{ type|title }}</span>
+                <span class="type {{ type }}" typeof="pdx:Type">{{ type|title }}</span>
               {% empty %}
                 <span>No weaknesses</span>
               {% endfor %}
@@ -121,9 +124,9 @@
           </div>
           <div class="strong-against">
             <h3>Strong Against</h3>
-            <div class="type-list">
+            <div class="type-list" property="pdx:strongAgainst">
               {% for type in stats.weakAgainst %}
-                <span class="type {{ type }}">{{ type|title }}</span>
+                <span class="type {{ type }}" typeof="pdx:Type">{{ type|title }}</span>
               {% empty %}
                 <span>No strengths</span>
               {% endfor %}
@@ -134,7 +137,7 @@
         {% if stats.sameTypePokemon %}
           <div class="same-type-section">
             <h2>{{ stats.name }} Is the Same Type As...</h2>
-            <p class="same-type-pokemon">{{ stats.sameTypePokemon }}</p>
+            <p class="same-type-pokemon" property="pdx:sameTypePokemon">{{ stats.sameTypePokemon }}</p>
             <p class="hint">(Refresh to see other {{ stats.primaryType|title }} type Pokémon)</p>
           </div>
         {% endif %}

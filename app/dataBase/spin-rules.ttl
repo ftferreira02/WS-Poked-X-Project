@@ -124,188 +124,56 @@ pdx:construct9 a sp:Construct ;
     }
 """^^xsd:string .
 
-pdx:construct10 a sp:Construct ;
+pdx:construct10_simple a sp:Construct ;
     sp:text """
     CONSTRUCT {
         ?attacker pdx:strongestMatchAgainst ?target .
-        ?attacker pdx:matchStrength ?strength .
     }
     WHERE {
-        # Get target Pokemon and its defensive stats and types
-        ?target pdx:primaryType ?targetType1 ;
-                pdx:defense ?targetDefense ;
-                pdx:spDefense ?targetSpDefense ;
-                pdx:hp ?targetHp .
-        OPTIONAL { ?target pdx:secondaryType ?targetType2 . }
+        # Apenas Pokémon com stats altos como atacantes
+        ?attacker pdx:attack ?atkAttack ;
+                  pdx:spAttack ?atkSpAttack ;
+                  pdx:primaryType ?atkType .
+        FILTER(?atkAttack > 100 || ?atkSpAttack > 100)
         
-        # Get potential attacker Pokemon (different from target)
-        ?attacker pdx:primaryType ?attackerType1 ;
-                  pdx:attack ?attackerAttack ;
-                  pdx:spAttack ?attackerSpAttack ;
-                  pdx:speed ?attackerSpeed .
-        OPTIONAL { ?attacker pdx:secondaryType ?attackerType2 . }
-        FILTER (?attacker != ?target)
+        # Apenas alvos com defesas baixas
+        ?target pdx:defense ?defDefense ;
+                pdx:spDefense ?defSpDefense ;
+                pdx:primaryType ?defType .
+        FILTER(?defDefense < 80 || ?defSpDefense < 80)
+        FILTER(?attacker != ?target)
         
-        # Calculate physical and special attack ratios
-        BIND(?attackerAttack / ?targetDefense as ?physicalRatio)
-        BIND(?attackerSpAttack / ?targetSpDefense as ?specialRatio)
-        
-        # Get the maximum attack ratio (attacker chooses best attack type)
-        BIND(IF(?physicalRatio > ?specialRatio, ?physicalRatio, ?specialRatio) as ?attackRatio)
-        
-        # Calculate type effectiveness for primary attacker type
-        OPTIONAL {
-            ?eff1 pdx:attackingType ?attackerType1 ;
-                   pdx:defendingType ?targetType1 ;
-                   pdx:effectiveness ?eff1Value .
-        }
-        BIND(COALESCE(?eff1Value, 1.0) as ?modifier1)
-        
-        # Secondary type effectiveness (if target has secondary type)
-        OPTIONAL {
-            ?eff2 pdx:attackingType ?attackerType1 ;
-                   pdx:defendingType ?targetType2 ;
-                   pdx:effectiveness ?eff2Value .
-        }
-        BIND(IF(BOUND(?targetType2), COALESCE(?eff2Value, 1.0), 1.0) as ?modifier2)
-        
-        # Type effectiveness for secondary attacker type (if exists)
-        OPTIONAL {
-            ?eff3 pdx:attackingType ?attackerType2 ;
-                   pdx:defendingType ?targetType1 ;
-                   pdx:effectiveness ?eff3Value .
-        }
-        OPTIONAL {
-            ?eff4 pdx:attackingType ?attackerType2 ;
-                   pdx:defendingType ?targetType2 ;
-                   pdx:effectiveness ?eff4Value .
-        }
-        
-        # Calculate modifiers for secondary attacker type
-        BIND(IF(BOUND(?attackerType2), COALESCE(?eff3Value, 1.0), 1.0) as ?modifier3)
-        BIND(IF(BOUND(?attackerType2) && BOUND(?targetType2), COALESCE(?eff4Value, 1.0), 1.0) as ?modifier4)
-        
-        # Calculate best type effectiveness (choose best between primary and secondary types)
-        BIND(?modifier1 * ?modifier2 as ?primaryTypeEff)
-        BIND(IF(BOUND(?attackerType2), ?modifier3 * ?modifier4, 0.0) as ?secondaryTypeEff)
-        BIND(IF(?secondaryTypeEff > ?primaryTypeEff, ?secondaryTypeEff, ?primaryTypeEff) as ?typeEffectiveness)
-        
-        # Speed factor (faster Pokemon have slight advantage)
-        ?target pdx:speed ?targetSpeed .
-        BIND(IF(?attackerSpeed > ?targetSpeed, 1.1, 1.0) as ?speedBonus)
-        
-        # HP factor (consider target's survivability)
-        BIND(500.0 / (?targetHp + 100.0) as ?hpFactor)
-        
-        # Final strength calculation with multiple factors
-        BIND(?attackRatio * ?typeEffectiveness * ?speedBonus * ?hpFactor as ?strength)
-        
-        # More inclusive filter - include various advantageous scenarios
-        FILTER(
-            ?typeEffectiveness >= 2.0 ||  # Super effective
-            (?typeEffectiveness > 1.0 && ?attackRatio > 1.0) ||  # Type + stat advantage
-            ?attackRatio > 1.5 ||  # Strong stat advantage
-            (?attackRatio > 1.1 && ?speedBonus > 1.0)  # Moderate advantage with speed
-        )
+        # Verificar se é super efetivo
+        ?eff pdx:attackingType ?atkType ;
+             pdx:defendingType ?defType ;
+             pdx:effectiveness ?effValue .
+        FILTER(?effValue >= 2.0)
     }
 """^^xsd:string .
 
-pdx:construct11 a sp:Construct ;
+pdx:construct11_simple a sp:Construct ;
     sp:text """
     CONSTRUCT {
         ?attacker pdx:weakestMatchAgainst ?target .
-        ?attacker pdx:matchWeakness ?weakness .
     }
     WHERE {
-        # Get target Pokemon and its defensive stats and types
-        ?target pdx:primaryType ?targetType1 ;
-                pdx:defense ?targetDefense ;
-                pdx:spDefense ?targetSpDefense ;
-                pdx:attack ?targetAttack ;
-                pdx:spAttack ?targetSpAttack .
-        OPTIONAL { ?target pdx:secondaryType ?targetType2 . }
+        # Apenas Pokémon com stats baixos como atacantes (fracos)
+        ?attacker pdx:attack ?atkAttack ;
+                  pdx:spAttack ?atkSpAttack ;
+                  pdx:primaryType ?atkType .
+        FILTER(?atkAttack < 80 || ?atkSpAttack < 80)
         
-        # Get potential attacker Pokemon (different from target)
-        ?attacker pdx:primaryType ?attackerType1 ;
-                  pdx:attack ?attackerAttack ;
-                  pdx:spAttack ?attackerSpAttack ;
-                  pdx:defense ?attackerDefense ;
-                  pdx:spDefense ?attackerSpDefense .
-        OPTIONAL { ?attacker pdx:secondaryType ?attackerType2 . }
-        FILTER (?attacker != ?target)
+        # Apenas alvos com defesas altas (difíceis de derrotar)
+        ?target pdx:defense ?defDefense ;
+                pdx:spDefense ?defSpDefense ;
+                pdx:primaryType ?defType .
+        FILTER(?defDefense > 100 || ?defSpDefense > 100)
+        FILTER(?attacker != ?target)
         
-        # Calculate attack ratios (attacker vs target defense)
-        BIND(?attackerAttack / ?targetDefense as ?physicalRatio)
-        BIND(?attackerSpAttack / ?targetSpDefense as ?specialRatio)
-        BIND(IF(?physicalRatio > ?specialRatio, ?physicalRatio, ?specialRatio) as ?attackRatio)
-        
-        # Calculate defensive ratios (target vs attacker defense)
-        BIND(?targetAttack / ?attackerDefense as ?counterPhysicalRatio)
-        BIND(?targetSpAttack / ?attackerSpDefense as ?counterSpecialRatio)
-        BIND(IF(?counterPhysicalRatio > ?counterSpecialRatio, ?counterPhysicalRatio, ?counterSpecialRatio) as ?counterAttackRatio)
-        
-        # Calculate type effectiveness for attacker
-        OPTIONAL {
-            ?eff1 pdx:attackingType ?attackerType1 ;
-                   pdx:defendingType ?targetType1 ;
-                   pdx:effectiveness ?eff1Value .
-        }
-        BIND(COALESCE(?eff1Value, 1.0) as ?modifier1)
-        
-        OPTIONAL {
-            ?eff2 pdx:attackingType ?attackerType1 ;
-                   pdx:defendingType ?targetType2 ;
-                   pdx:effectiveness ?eff2Value .
-        }
-        BIND(IF(BOUND(?targetType2), COALESCE(?eff2Value, 1.0), 1.0) as ?modifier2)
-        
-        # Secondary attacker type effectiveness
-        OPTIONAL {
-            ?eff3 pdx:attackingType ?attackerType2 ;
-                   pdx:defendingType ?targetType1 ;
-                   pdx:effectiveness ?eff3Value .
-        }
-        OPTIONAL {
-            ?eff4 pdx:attackingType ?attackerType2 ;
-                   pdx:defendingType ?targetType2 ;
-                   pdx:effectiveness ?eff4Value .
-        }
-        
-        BIND(IF(BOUND(?attackerType2), COALESCE(?eff3Value, 1.0), 1.0) as ?modifier3)
-        BIND(IF(BOUND(?attackerType2) && BOUND(?targetType2), COALESCE(?eff4Value, 1.0), 1.0) as ?modifier4)
-        
-        # Best type effectiveness for attacker
-        BIND(?modifier1 * ?modifier2 as ?primaryTypeEff)
-        BIND(IF(BOUND(?attackerType2), ?modifier3 * ?modifier4, 0.0) as ?secondaryTypeEff)
-        BIND(IF(?secondaryTypeEff > ?primaryTypeEff, ?secondaryTypeEff, ?primaryTypeEff) as ?typeEffectiveness)
-        
-        # Calculate reverse type effectiveness (target attacking attacker)
-        OPTIONAL {
-            ?reff1 pdx:attackingType ?targetType1 ;
-                    pdx:defendingType ?attackerType1 ;
-                    pdx:effectiveness ?reff1Value .
-        }
-        BIND(COALESCE(?reff1Value, 1.0) as ?rmodifier1)
-        
-        OPTIONAL {
-            ?reff2 pdx:attackingType ?targetType1 ;
-                    pdx:defendingType ?attackerType2 ;
-                    pdx:effectiveness ?reff2Value .
-        }
-        BIND(IF(BOUND(?attackerType2), COALESCE(?reff2Value, 1.0), 1.0) as ?rmodifier2)
-        
-        BIND(?rmodifier1 * ?rmodifier2 as ?reverseTypeEff)
-        
-        # Weakness calculation considers multiple disadvantage factors
-        BIND((?counterAttackRatio * ?reverseTypeEff) / (?attackRatio * ?typeEffectiveness) as ?weakness)
-        
-        # More inclusive filter for weak matchups
-        FILTER(
-            ?typeEffectiveness <= 0.5 ||  # Not very effective or immune
-            (?typeEffectiveness < 1.0 && ?attackRatio < 1.0) ||  # Type + stat disadvantage
-            ?attackRatio < 0.7 ||  # Poor stat matchup
-            (?weakness > 1.5) ||  # Overall disadvantage ratio
-            (?reverseTypeEff >= 2.0 && ?counterAttackRatio > 1.0)  # Target has super effective counter
-        )
+        # Verificar se é pouco efetivo ou ineficaz
+        ?eff pdx:attackingType ?atkType ;
+             pdx:defendingType ?defType ;
+             pdx:effectiveness ?effValue .
+        FILTER(?effValue <= 0.5)
     }
 """^^xsd:string .
