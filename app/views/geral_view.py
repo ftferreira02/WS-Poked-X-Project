@@ -14,7 +14,11 @@ from ..sparql_client import (
     get_dbpedia_info, get_full_dbpedia_info_turtle,
     insert_turtle_to_graphdb, get_pokemon_role, get_team_coverage, analyze_team_roles
 )
+from app.models.team.team_analysis import analyze_type_coverage, calculate_team_balance_score
+from django.views.decorators.csrf import ensure_csrf_cookie
+import logging
 
+logger = logging.getLogger(__name__)
 
 # Lista de tipos para o dropdown de filtros.
 POKEMON_TYPES = [
@@ -233,48 +237,45 @@ def check_dbpedia_status(request, name):
     exists = dbpedia_data_already_loaded(name)
     return JsonResponse({"name": name, "exists": exists})
 
+@ensure_csrf_cookie
 def compare_teams(request):
-    """View for comparing Pokemon teams"""
-    if request.method == 'POST':
+    """View for comparing Pokemon teams."""
+    if request.method == "POST":
         try:
+            # Log request data for debugging
+            logger.debug(f"Request body: {request.body}")
+            
             data = json.loads(request.body)
             team1_ids = data.get('team1', [])
             team2_ids = data.get('team2', [])
             
-            if len(team1_ids) > 6 or len(team2_ids) > 6:
-                return JsonResponse({'error': 'Teams cannot have more than 6 Pokémon'}, status=400)
+            logger.debug(f"Team 1 IDs: {team1_ids}")
+            logger.debug(f"Team 2 IDs: {team2_ids}")
             
-            # Get team coverage and roles analysis
-            team1_coverage = get_team_coverage(team1_ids)
-            team2_coverage = get_team_coverage(team2_ids)
-            
-            team1_roles = analyze_team_roles(team1_ids)
-            team2_roles = analyze_team_roles(team2_ids)
-            
-            # Calculate balance scores (example implementation)
-            team1_balance = len(team1_roles) / 6 * 100 if team1_roles else 0
-            team2_balance = len(team2_roles) / 6 * 100 if team2_roles else 0
-            
-            return JsonResponse({
+            # Analyze teams
+            analysis = {
                 'team1': {
-                    'offensive_coverage': team1_coverage['offensive'],
-                    'defensive_coverage': team1_coverage['defensive'],
-                    'roles': team1_roles,
-                    'balance_score': f"{team1_balance:.1f}%"
+                    'roles': analyze_team_roles(team1_ids),
+                    'coverage': analyze_type_coverage(team1_ids),
+                    'balance_score': calculate_team_balance_score(team1_ids)
                 },
                 'team2': {
-                    'offensive_coverage': team2_coverage['offensive'],
-                    'defensive_coverage': team2_coverage['defensive'],
-                    'roles': team2_roles,
-                    'balance_score': f"{team2_balance:.1f}%"
+                    'roles': analyze_team_roles(team2_ids),
+                    'coverage': analyze_type_coverage(team2_ids),
+                    'balance_score': calculate_team_balance_score(team2_ids)
                 }
-            })
-        except json.JSONDecodeError:
+            }
+            
+            logger.debug(f"Analysis result: {analysis}")
+            return JsonResponse(analysis)
+            
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error: {str(e)}")
             return JsonResponse({'error': 'Invalid JSON data'}, status=400)
         except Exception as e:
+            logger.error(f"Unexpected error in compare_teams: {str(e)}", exc_info=True)
             return JsonResponse({'error': str(e)}, status=500)
-    
-    # GET request - render the template
+        
     return render(request, 'compare_teams.html')
 
 @csrf_exempt

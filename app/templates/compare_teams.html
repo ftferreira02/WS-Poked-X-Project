@@ -34,23 +34,24 @@
         </div>
         <div class="selected-team" id="team1-pokemon"></div>
       </div>
-      <div class="team-analysis" id="team1-analysis">
-        <div class="coverage">
+      <div class="team-analysis" id="team1-analysis" style="display: none;">
+        <div class="analysis-section">
           <h3>Type Coverage</h3>
-          <div class="coverage-section">
-            <h4>Offensive Coverage</h4>
-            <div class="type-list" id="team1-offensive"></div>
-          </div>
-          <div class="coverage-section">
-            <h4>Defensive Coverage</h4>
-            <div class="type-list" id="team1-defensive"></div>
+          <div class="coverage-grid">
+            <div class="offensive-coverage">
+              <h4>Offensive Coverage</h4>
+              <div id="team1-offensive-coverage" class="type-grid"></div>
+            </div>
+            <div class="defensive-coverage">
+              <h4>Defensive Coverage</h4>
+              <div id="team1-defensive-coverage" class="type-grid"></div>
+            </div>
           </div>
         </div>
-        <div class="roles">
+        <div class="analysis-section">
           <h3>Team Roles</h3>
-          <div class="roles-list" id="team1-roles"></div>
+          <div id="team1-roles" class="roles-grid"></div>
         </div>
-        <div class="waiting-message">Waiting for comparison...</div>
       </div>
     </div>
 
@@ -78,23 +79,24 @@
         </div>
         <div class="selected-team" id="team2-pokemon"></div>
       </div>
-      <div class="team-analysis" id="team2-analysis">
-        <div class="coverage">
+      <div class="team-analysis" id="team2-analysis" style="display: none;">
+        <div class="analysis-section">
           <h3>Type Coverage</h3>
-          <div class="coverage-section">
-            <h4>Offensive Coverage</h4>
-            <div class="type-list" id="team2-offensive"></div>
-          </div>
-          <div class="coverage-section">
-            <h4>Defensive Coverage</h4>
-            <div class="type-list" id="team2-defensive"></div>
+          <div class="coverage-grid">
+            <div class="offensive-coverage">
+              <h4>Offensive Coverage</h4>
+              <div id="team2-offensive-coverage" class="type-grid"></div>
+            </div>
+            <div class="defensive-coverage">
+              <h4>Defensive Coverage</h4>
+              <div id="team2-defensive-coverage" class="type-grid"></div>
+            </div>
           </div>
         </div>
-        <div class="roles">
+        <div class="analysis-section">
           <h3>Team Roles</h3>
-          <div class="roles-list" id="team2-roles"></div>
+          <div id="team2-roles" class="roles-grid"></div>
         </div>
-        <div class="waiting-message">Waiting for comparison...</div>
       </div>
     </div>
   </div>
@@ -277,55 +279,67 @@
     // Compare button click handler
     document.getElementById('compare-button').addEventListener('click', async () => {
       try {
+        // Debug log the data being sent
+        const requestData = {
+          team1: teams.team1.map(p => parseInt(p.id)),
+          team2: teams.team2.map(p => parseInt(p.id))
+        };
+        console.log('Sending data:', requestData);
+
         const response = await fetch('/compare/teams/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')
           },
-          body: JSON.stringify({
-            team1: teams.team1.map(p => p.id),
-            team2: teams.team2.map(p => p.id)
-          })
+          body: JSON.stringify(requestData)
         });
 
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
-        updateTeamAnalysis('team1', data.team1);
-        updateTeamAnalysis('team2', data.team2);
+        console.log('Team analysis data:', data);
+        
+        // Update analysis for both teams
+        ['team1', 'team2'].forEach(teamId => {
+          const teamData = data[teamId];
+          
+          // Update balance score
+          document.getElementById(`${teamId}-balance`).textContent = teamData.balance_score;
+          
+          // Update offensive coverage
+          const offensiveDiv = document.getElementById(`${teamId}-offensive-coverage`);
+          offensiveDiv.innerHTML = teamData.coverage.offensive
+            .map(type => `<span class="type ${type.toLowerCase()}">${type}</span>`)
+            .join('');
+          
+          // Update defensive coverage
+          const defensiveDiv = document.getElementById(`${teamId}-defensive-coverage`);
+          defensiveDiv.innerHTML = teamData.coverage.defensive
+            .map(type => `<span class="type ${type.toLowerCase()}">${type}</span>`)
+            .join('');
+          
+          // Update roles
+          const rolesDiv = document.getElementById(`${teamId}-roles`);
+          rolesDiv.innerHTML = Object.entries(teamData.roles)
+            .map(([role, count]) => `
+              <div class="role-item">
+                <span class="role-name">${role}</span>
+                <span class="role-count">${count}</span>
+              </div>
+            `).join('');
+          
+          // Show analysis section
+          document.getElementById(`${teamId}-analysis`).style.display = 'block';
+        });
       } catch (error) {
         console.error('Error comparing teams:', error);
+        alert('Error comparing teams: ' + error.message);
       }
     });
-
-    // Function to update team analysis display
-    function updateTeamAnalysis(teamId, analysis) {
-      // Hide waiting message
-      document.querySelector(`#${teamId}-analysis .waiting-message`).style.display = 'none';
-
-      // Update offensive coverage
-      const offensiveDiv = document.getElementById(`${teamId}-offensive`);
-      offensiveDiv.innerHTML = analysis.offensive_coverage.map(type => 
-        `<span class="type ${type.toLowerCase()}">${type}</span>`
-      ).join('');
-
-      // Update defensive coverage
-      const defensiveDiv = document.getElementById(`${teamId}-defensive`);
-      defensiveDiv.innerHTML = analysis.defensive_coverage.map(type => 
-        `<span class="type ${type.toLowerCase()}">${type}</span>`
-      ).join('');
-
-      // Update roles
-      const rolesDiv = document.getElementById(`${teamId}-roles`);
-      rolesDiv.innerHTML = Object.entries(analysis.roles).map(([role, count]) => `
-        <div class="role-item">
-          <span class="role-name">${role}</span>
-          <span class="role-count">${count}</span>
-        </div>
-      `).join('');
-
-      // Update balance score
-      document.getElementById(`${teamId}-balance`).textContent = analysis.balance_score;
-    }
 
     // Helper function to get CSRF token
     function getCookie(name) {
