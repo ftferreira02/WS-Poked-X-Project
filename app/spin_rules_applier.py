@@ -9,7 +9,7 @@ import os
 
 # Configurações do GraphDB - ajuste conforme necessário
 GRAPHDB_ENDPOINT = "http://localhost:7200/repositories/Poked-X"
-SPARQL_UPDATE_ENDPOINT = "http://localhost:7200/repositories/Poked-X/statements"
+SPARQL_UPDATE_ENDPOINT = "http:/localhost:7200/repositories/Poked-X/statements"
 
 def get_spin_rules_path(provided_path=None):
     """Helper function to get the correct path to spin-rules.ttl"""
