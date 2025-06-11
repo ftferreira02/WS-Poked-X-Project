@@ -140,19 +140,40 @@ def dbpedia_data_already_loaded(pokemon_name):
 
 @staticmethod
 def get_same_type_pokemons(pokemon_id):
-    query = f"""
+    # First try using SPIN rule relationships
+    spin_query = f"""
     PREFIX pdx: <http://poked-x.org/pokemon/>
     PREFIX sc: <http://schema.org/>
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-    SELECT ?otherName WHERE {{
+    SELECT ?otherName 
+    WHERE {{
         <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:hasSameTypeAs ?other .
         ?other sc:name ?otherName .
     }}
     ORDER BY RAND()
     LIMIT 1
     """
-    results = run_query(query)
+    results = run_query(spin_query)
+    if results["results"]["bindings"]:
+        return results["results"]["bindings"][0]["otherName"]["value"]
+    
+    # Fallback: If no SPIN results, use direct type matching
+    fallback_query = f"""
+    PREFIX pdx: <http://poked-x.org/pokemon/>
+    PREFIX sc: <http://schema.org/>
+    
+    SELECT ?otherName
+    WHERE {{
+        <http://poked-x.org/pokemon/Pokemon/{pokemon_id}> pdx:primaryType ?type .
+        ?other pdx:primaryType ?type ;
+               sc:name ?otherName .
+        FILTER(<http://poked-x.org/pokemon/Pokemon/{pokemon_id}> != ?other)
+    }}
+    ORDER BY RAND()
+    LIMIT 1
+    """
+    results = run_query(fallback_query)
     if results["results"]["bindings"]:
         return results["results"]["bindings"][0]["otherName"]["value"]
     return None
